@@ -33,9 +33,23 @@ import { useViewState } from '../state/viewState';
 
 interface Props {
   readonly projection: GeoProjection;
+  readonly width: number;
+  readonly height: number;
 }
 
-function DeploymentsImpl({ projection }: Props) {
+/**
+ * Room a label needs on its side of the dot, in screen px — a little over the
+ * longest string in deployments.ts ("ARLESHEIM · FORTE ENTERPRISE") at the
+ * `micro` size. Approximate on purpose: measuring text per frame would mean a
+ * DOM read inside render, and the only decision it feeds is which side to put
+ * the label on, where being 20px pessimistic costs nothing.
+ */
+const LABEL_CLEARANCE = 260;
+
+/** A dot closer than this to the edge is not worth drawing. */
+const EDGE_MARGIN = 12;
+
+function DeploymentsImpl({ projection, width, height }: Props) {
   const camera = useViewState((s) => s.camera);
 
   const sites = DEPLOYMENTS.map((site) => {
@@ -44,15 +58,45 @@ function DeploymentsImpl({ projection }: Props) {
     // Apply the camera by hand so the marker stays in screen space.
     const x = projected[0] * camera.k + camera.x;
     const y = projected[1] * camera.k + camera.y;
-    return { site, x, y };
+
+    /*
+     * EDGE HANDLING — the frame is just another label collision.
+     *
+     * Once a scene can carry a camera, any marker can end up near the edge of
+     * the viewport, and a label that runs off the frame reads as a rendering
+     * fault rather than as a marker that happens to be at the border. That
+     * showed up the moment the first zoomed scene landed: at the UK camera,
+     * Slovakia's dot sits inside the frame with its label hanging over the
+     * right edge.
+     *
+     * The rule is the one §7e already states for markers that collide with
+     * each other: FLIP THE LABEL, NEVER MOVE THE DOT. The dot is where the
+     * deployment is, so it stays put and the text goes to whichever side has
+     * room. Only when the dot itself is off-frame is the marker dropped, and
+     * then nothing is lost — it was outside the viewport anyway.
+     *
+     * This also means a hand-set `labelSide` is a preference rather than a
+     * promise: it is honoured whenever it fits, which at the fitted frame is
+     * always, so nothing about the existing scenes changes.
+     */
+    if (x < EDGE_MARGIN || x > width - EDGE_MARGIN) return null;
+    if (y < EDGE_MARGIN || y > height - EDGE_MARGIN) return null;
+
+    const prefersLeft = site.labelSide === 'left';
+    const fitsLeft = x - LABEL_CLEARANCE >= 0;
+    const fitsRight = x + LABEL_CLEARANCE <= width;
+    // Keep the declared side unless it does not fit and the other one does.
+    const left = prefersLeft ? !(!fitsLeft && fitsRight) : !fitsRight && fitsLeft;
+
+    return { site, x, y, left };
   }).filter((s): s is NonNullable<typeof s> => s !== null);
 
   if (sites.length === 0) return null;
 
   return (
     <g className="deployments" aria-label="IonQ sites">
-      {sites.map(({ site, x, y }) => {
-        const side = site.labelSide === 'left' ? -1 : 1;
+      {sites.map(({ site, x, y, left }) => {
+        const side = left ? -1 : 1;
         return (
         <g
           key={site.id}
@@ -77,7 +121,7 @@ function DeploymentsImpl({ projection }: Props) {
             className="deployment-label"
             x={18 * side}
             y={-16}
-            textAnchor={site.labelSide === 'left' ? 'end' : 'start'}
+            textAnchor={left ? 'end' : 'start'}
           >
             {site.label}
           </text>
@@ -92,7 +136,7 @@ function DeploymentsImpl({ projection }: Props) {
             className="deployment-detail"
             x={18 * side}
             y={-5}
-            textAnchor={site.labelSide === 'left' ? 'end' : 'start'}
+            textAnchor={left ? 'end' : 'start'}
           >
             {site.precision === 'site' && site.detail
               ? `${site.place} · ${site.detail}`

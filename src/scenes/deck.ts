@@ -96,6 +96,36 @@ export const DECK: readonly Scene[] = [
     // moving. Markers stay off: the deployment story belongs to EuroQCI, and
     // `deployments: true` is a one-word change if a rehearsal disagrees.
   },
+  {
+    id: 'uk',
+    title: 'United Kingdom',
+    caption: 'Oxford Ionics · ion-trap engineering',
+    // The first scene in the deck to move the camera, and it needed no new
+    // code to do it: `camera` has been on the Scene type since State 1 and
+    // cameraControl.ts has been wired to it since the sequencer was built.
+    // This is that seam being used for the first time, exactly as intended —
+    // the reason scenes were never bare layer toggles.
+    //
+    // The layer stays as it was on the previous scene, so this reads as a
+    // move rather than a change of subject: the six are established at region
+    // scale, then the camera flies into one of them. Swapping the layer at the
+    // same time as the camera would give the eye two things to track at once.
+    layers: ['political-engagement'],
+    // Centred on the UK land mass rather than on London — the subject is the
+    // country, and a capital-centred frame would push Scotland off the top.
+    // k=7 of a possible 8: the UK is unmistakably the subject while Belgium
+    // and Germany stay in frame at the right edge, so the previous scene is
+    // still legible as context rather than replaced outright. Checked on the
+    // real build at 2560x1440, not estimated.
+    camera: { lon: -2.8, lat: 54.3, k: 7 },
+    // Oxford Ionics is the point of standing here. Two others stay in frame at
+    // this camera — QuantumBasel in Switzerland and, at the right edge,
+    // Slovakia — which is true and not misleading: the caption names the UK
+    // site, and the layer tint is what says who the scene is about. If a
+    // rehearsal wants Oxford alone, that is the `markers?: string[]` migration
+    // sketched in scenes/types.ts, not a camera nudge to hide them.
+    deployments: true,
+  },
 ];
 
 /** Index bounds helper, so nothing off-by-ones its way past the end mid-talk. */

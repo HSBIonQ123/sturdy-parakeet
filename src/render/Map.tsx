@@ -420,7 +420,16 @@ export function Map() {
         {/* Also outside the camera group, and for the same reason as the
             vignette: a site marker must hold a constant size on screen. It
             takes the projection and applies the camera itself. */}
-        {optics && showDeployments ? <Deployments projection={optics.projection} /> : null}
+        {optics && showDeployments ? (
+          // The viewport goes with it so a marker can tell where the frame
+          // edge is: once scenes carry cameras, a label near the edge has to
+          // flip rather than run off the screen.
+          <Deployments
+            projection={optics.projection}
+            width={size.width}
+            height={size.height}
+          />
+        ) : null}
 
         {/* Outside the camera group: the vignette is a property of the frame,
             not of the map, so it must not pan or scale. */}

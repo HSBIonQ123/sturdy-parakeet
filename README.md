@@ -19,6 +19,7 @@ The deck as it stands:
 | 04 | Horizon Europe | the 27, plus 19 associated states hatched |
 | 05 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
 | 06 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
+| 07 | United Kingdom | the camera flies in to the UK, with Oxford Ionics marked |
 
 ## Run it
 
@@ -167,7 +168,7 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 63 things,
+Drives the production bundle in headless Chromium and asserts 69 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the
@@ -180,7 +181,9 @@ become a copy of the single market; the four IonQ QKD networks sit inside
 EuroQCI signatory states, so the slide can never quietly start making the
 opposite argument; the closing engagement scene lights exactly its six states
 and no EU or EEA member leaks into it, so a selection can never drift into
-looking like a bloc; the hovered outline is
+looking like a bloc; a zoomed scene arrives at its camera and gives it back on
+the way out, and no marker label runs off the frame while it is there; the
+hovered outline is
 unanimated and at full opacity while the ambient pulse is running; and the
 frame rate at 2560×1440. Screenshots land in `screenshots/`, with
 close-ups of Luxembourg, Slovenia, Lesotho, Gambia, the Gulf, Cyprus, Crimea

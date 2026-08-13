@@ -141,6 +141,27 @@ While the menu is open it owns arrow keys and the deck does not step
 underneath it. `Space` is ignored when focus is on a button, so one press never
 fires two actions.
 
+## 3b. Zooming is a scene property, not a feature
+
+**There is no "zoom mode" to build and there never was.** A scene carries an
+optional `camera: { lon, lat, k }`; `gotoScene` hands it to `applySceneCamera`,
+which calls the same `focusOn` that `window.__focus` and the reset key already
+use. `k` runs 1–8 (`ZOOM_EXTENT`), the move is a 700ms d3 transition, and d3
+stays authoritative for the transform throughout. Scene 7 (the UK close-up) is
+the first user of it and added **five lines of data and no code** — which is
+the payoff for `Scene` having carried `camera` since State 1 rather than
+starting life as a bare layer toggle.
+
+Two consequences worth keeping in mind when adding a zoomed scene:
+
+- **Omitting `camera` actively resets.** It does not mean "leave it here". A
+  zoomed scene therefore cannot leak its camera onto its neighbours, which is
+  what lets you zoom freely during questions and step out cleanly.
+  `verify.mjs` asserts both directions on the UK scene.
+- **Pick `k` on the real build, not by arithmetic.** Frame it at 2560×1440 and
+  look; the equal-area projection and the `translateExtent` clamp make paper
+  estimates unreliable near the edges of the fitted frame.
+
 **The camera is the one imperative escape hatch.** `render/cameraControl.ts` is
 a module-level registry that `Map` writes to on mount. The alternative — lifting
 the zoom transform into the store — would re-render the map on every wheel tick
@@ -270,7 +291,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 63 assertions
+npm run verify         # drive the real build in Chromium; 69 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -409,6 +430,16 @@ Labels carry `labelSide` and `labelDy` because six markers in Europe collide
 and the real list will be longer. When they clash, flip a label — never move a
 dot. The dot is where the deployment is.
 
+**The frame edge is a collision too, and it obeys the same rule.** Once scenes
+carry cameras (§3b), a marker can sit inside the viewport with its label
+hanging over the edge, which reads as a rendering fault rather than as a marker
+at the border — it happened to Slovakia the moment the UK scene landed.
+`Deployments.tsx` therefore takes the viewport size, flips a label to whichever
+side has room, and drops a marker only when the *dot* is off-frame. So
+`labelSide` is a preference, honoured whenever it fits; at the fitted frame it
+always fits, so the region-scale scenes are untouched. `verify.mjs` asserts no
+label crosses the frame edge at the UK camera.
+
 The deployment list is **partly supplied by IonQ Government Affairs and partly
 reconstructed from public announcements**, and it says so at the top of the
 file. Anything unannounced or under NDA is absent by definition. Treat it as a
@@ -424,12 +455,15 @@ identical code, single samples ranged 19–60 while the best was consistently
 random before a talk teaches you to ignore it, which is worse than not having
 one. A real regression still fails, because it lowers all three samples.
 
-**The gate must measure the heaviest scene, which is not the last one.**
-EuroQCI is the worst case — two hatch patterns, 31 tints and six markers — and
-it stopped being the end of the deck when scene 6 arrived, so `verify.mjs`
-presses `End` and then `PageUp` to reach it. If you append another scene, check
-that line still lands where it means to; a gate quietly measuring a light scene
-passes forever and tells you nothing.
+**The gate must measure the heaviest scene, and it reaches it by name.**
+EuroQCI is the worst case — two hatch patterns, 31 tints and six markers. It
+stopped being the last scene when scene 6 arrived, and stopped again when
+scene 7 did, so the gate no longer counts steps from either end of the deck:
+it opens the menu and clicks `.scene-item[data-scene="euroqci"]`. Counting
+steps meant the gate silently drifted onto a lighter scene every time the deck
+grew, and a gate measuring the wrong scene passes forever and tells you
+nothing. If a heavier scene than EuroQCI ever lands, change the id on that
+line — it is the only thing that decides what is measured.
 
 **Measure early, and in isolation when diagnosing.** The gate now runs before
 the screenshot-heavy part of the suite. It previously sat near the end, after

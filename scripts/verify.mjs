@@ -285,13 +285,17 @@ check('holds 60fps while hovering', hovering.best >= 55, fmt(hovering));
 
 // The heaviest scene, and the one most likely to be on screen during a talk:
 // two hatch patterns, 31 tinted countries and six markers with stroked labels.
+// Reach EuroQCI BY NAME, through the scene menu.
+//
+// This used to press End, on the assumption that the heaviest scene was the
+// last one. It stopped being the last one twice — first when the engagement
+// scene was appended, then again when the UK close-up was. Counting steps from
+// either end of a deck that grows is a gate that silently drifts onto a
+// lighter scene and passes forever. Addressing the scene by id cannot drift.
+await page.keyboard.press('m');
+await sleep(300);
+await page.click('.scene-item[data-scene="euroqci"]');
 await page.mouse.move(1280, 1435);
-// End lands on the LAST scene, which is no longer the heaviest one — the
-// engagement scene that now closes the deck is a single solid layer with no
-// patterns and no markers. Step back one to measure EuroQCI, which is still
-// the worst case and still the scene most likely to be up during questions.
-await page.keyboard.press('End');
-await page.keyboard.press('PageUp');
 // Generous settle: the scene change runs a 700ms camera transition, mounts
 // six markers, and starts two scene-in fades. Measuring into that tail says
 // more about the transition than about the steady state a presenter looks at.
@@ -334,7 +338,7 @@ await page.keyboard.press('Escape');
 await sleep(200);
 
 let st = await sceneState();
-check('deck starts on scene 1 of 6', st.index === 0 && st.total === 6, JSON.stringify(st.title));
+check('deck starts on scene 1 of 7', st.index === 0 && st.total === 7, JSON.stringify(st.title));
 
 await page.keyboard.press('PageDown');
 await sleep(700);
@@ -690,6 +694,76 @@ check(
 
 await page.screenshot({ path: `${SHOTS}/scene-engagement.png` });
 
+/* ------------------------------------------------------------------ *
+ * Scene 7: the United Kingdom close-up — the first scene that moves the
+ * camera.
+ *
+ * The assertions here are about the camera being SCENE STATE rather than
+ * something the presenter did. A zoom that arrives with the scene must
+ * also leave with it: stepping back has to restore the fitted frame, or
+ * the deck stops being absolute and the next question leaves the talk
+ * somewhere nobody rehearsed.
+ * ------------------------------------------------------------------ */
+await page.keyboard.press('PageDown');
+// The camera transition is 700ms; give it room to finish before reading.
+await sleep(1400);
+st = await sceneState();
+const ukScale = await page.evaluate(() => window.__scene?.scale ?? null);
+check(
+  'scene 7 is the UK close-up',
+  st.index === 6 && st.title === 'United Kingdom',
+  `index ${st.index}, title "${st.title}"`,
+);
+check(
+  'stepping to it zooms the camera in, with no input but the clicker',
+  Math.abs(ukScale - 7) < 0.05,
+  `scale ${ukScale?.toFixed(2)}x`,
+);
+// The layer is unchanged from scene 6 on purpose — this is a move, not a
+// change of subject — so the UK must still be lit after the camera settles.
+const uk = await page.evaluate(() => ({
+  gbr: document.querySelector('path.country[data-iso="GBR"]')?.getAttribute('fill') ?? null,
+  oxford: [...document.querySelectorAll('.deployment-label')].some((el) =>
+    el.textContent?.includes('Oxford'),
+  ),
+}));
+check(
+  'the UK is still lit — the camera moved, the layer did not',
+  uk.gbr?.startsWith('rgba(255,'),
+  `GBR fill ${uk.gbr}`,
+);
+check('the Oxford Ionics marker is in frame', uk.oxford);
+
+// A camera makes the frame edge a label collision, and §7e's rule for those
+// is to flip the label rather than move the dot. Before that rule existed,
+// Slovakia's dot sat inside the UK frame with its label hanging over the right
+// edge, which reads as a rendering fault rather than as a marker at the border.
+const overflow = await page.evaluate(() =>
+  [...document.querySelectorAll('.deployment-label, .deployment-detail')]
+    .map((el) => ({ text: el.textContent, box: el.getBoundingClientRect() }))
+    .filter((o) => o.box.left < 0 || o.box.right > window.innerWidth)
+    .map((o) => o.text),
+);
+check(
+  'no marker label runs off the frame at a zoomed camera',
+  overflow.length === 0,
+  overflow.length ? `overflowing: ${overflow.join(', ')}` : 'all labels inside the frame',
+);
+
+await page.screenshot({ path: `${SHOTS}/scene-uk.png` });
+
+// A scene's camera must leave with the scene. If a zoomed scene could leak
+// its camera backwards, every scene before it would be one step away from
+// being wrong, which is the whole property `gotoScene` exists to guarantee.
+await page.keyboard.press('PageUp');
+await sleep(1400);
+const backOut = await page.evaluate(() => window.__scene?.scale ?? null);
+check(
+  'stepping back out of a zoomed scene restores the fitted frame',
+  Math.abs(backOut - 1) < 0.02,
+  `scale ${backOut?.toFixed(2)}x`,
+);
+
 // Markers are scene-driven, not global.
 await page.keyboard.press('Home');
 await sleep(900);
@@ -702,7 +776,7 @@ await page.keyboard.press('End');
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
-check('stepping past the last scene is a no-op', st.index === 5);
+check('stepping past the last scene is a no-op', st.index === 6);
 
 /* ---- the menu, for questions ---- */
 check('menu is closed by default', !st.menuOpen);
