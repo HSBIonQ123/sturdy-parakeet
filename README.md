@@ -4,9 +4,18 @@ An offline, browser-based interactive map of Europe, the Middle East and Africa,
 built to be presented live to policymakers. It replaces PowerPoint for
 government-affairs briefings and it never touches the network.
 
-**The base region map, a scene sequencer, and membership layers for the EU 27
-and for the EEA, EFTA and the UK.** Capital deep-dives come next. See
+**The base region map, a scene sequencer, and membership layers for the EU 27,
+the EEA/EFTA/UK, and Horizon Europe.** Capital deep-dives come next. See
 `CLAUDE.md` for the conventions that keep each addition additive.
+
+The deck as it stands:
+
+| # | Scene | Shows |
+| --- | --- | --- |
+| 01 | Base region | 124 EMEA countries, nothing highlighted |
+| 02 | European Union | the 27, solid |
+| 03 | EEA, EFTA and the UK | the 27, plus five states hatched |
+| 04 | Horizon Europe | the 27, plus 19 associated states hatched |
 
 ## Run it
 
@@ -137,14 +146,16 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 39 things,
+Drives the production bundle in headless Chromium and asserts 46 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the
 talk cannot be driven from anywhere but the laptop); the menu does not let the
 deck step underneath it; a scene restores the camera after improvised zooming;
-the two membership tiers separate on shape and the legend matches the map; no
-border segment is stroked by two layer circuits; the hovered outline is
+the membership tiers separate on shape and the legend matches the map; no
+border segment is stroked by two layer circuits; Liechtenstein and the Faroes
+swap sides between scenes 3 and 4, so the research area can never quietly
+become a copy of the single market; the hovered outline is
 unanimated and at full opacity while the ambient pulse is running; and the
 frame rate at 2560×1440. Screenshots land in `screenshots/`, with
 close-ups of Luxembourg, Slovenia, Lesotho, Gambia, the Gulf, Cyprus, Crimea

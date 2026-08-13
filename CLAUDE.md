@@ -6,7 +6,7 @@ anything; if you change a decision recorded here, change it here too.
 
 ```
 State 1  base EMEA region map                    <- BUILT
-State 2  membership layers over the base map     <- EU 27, and EEA/EFTA/UK
+State 2  membership layers over the base map     <- EU 27, EEA/EFTA/UK, Horizon Europe
 State 4  scene sequencer                         <- BUILT EARLY, see §3a
 State 3  capital deep-dives with a data panel
 ```
@@ -267,7 +267,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 39 assertions
+npm run verify         # drive the real build in Chromium; 46 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -349,6 +349,49 @@ precedence order and lets each layer claim only arcs no higher-precedence layer
 already took. Two circuits over one border would stroke it twice and the pulses
 would drift out of phase — the exact fault the whole border architecture exists
 to prevent. `verify.mjs` asserts zero shared segments between circuits.
+
+## 7c. Programme data must be verified, not remembered
+
+`horizonEurope.ts` is the first layer whose membership is **volatile**. EU
+membership changes once a decade; association to a framework programme changes
+every year and in both directions — the UK associated from 2024 after three
+years out, Switzerland from the 2025 calls after being excluded from 2021.
+
+So the rule for any programme layer:
+
+1. **Check the list against current sources before writing it**, and again
+   before any talk where the detail carries weight. The authoritative source is
+   the Commission's "List of Participating Countries in Horizon Europe" on the
+   Funding and Tenders portal.
+2. **Record what is deliberately absent, with the reason.** Half the value of
+   these files is answering "why isn't X lit" without hedging.
+3. **Do not assume one bloc is a subset of another.** Horizon Europe is the
+   worked example: Liechtenstein is in the EEA and declined to associate, and
+   the Faroes are outside the EU and the EEA and are associated. Both swap
+   sides between scenes 3 and 4, and `verify.mjs` asserts both swaps — if a
+   future edit quietly makes the research area a copy of the single market,
+   the suite fails.
+
+Not yet shown, and a real gap if the talk goes near African research
+partnerships: entities from low- and middle-income countries are
+**automatically eligible** for Horizon Europe funding without any association
+agreement, which covers most of the continent. That is a much larger story
+than the association list and deserves its own scene rather than being merged
+into this one — the two tiers mean different things.
+
+## 7d. The frame-rate gate measures capability, not contention
+
+`verify.mjs` takes the **best of three** samples rather than one. This is a
+capability gate: the question is whether the map can hold 60fps, not whether
+the container happened to be contended during one two-second window. On
+identical code, single samples ranged 19–60 while the best was consistently
+60, and an isolated warm page measured 60.3 every time. A gate that fails at
+random before a talk teaches you to ignore it, which is worse than not having
+one. A real regression still fails, because it lowers all three samples.
+
+If you suspect a genuine perf regression, reproduce it on a warm page in
+isolation before believing a single suite number — pattern fills were the
+obvious suspect here and turned out to cost nothing at all.
 
 ## 8. Known limitations
 

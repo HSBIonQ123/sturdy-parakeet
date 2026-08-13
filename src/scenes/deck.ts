@@ -41,6 +41,17 @@ export const DECK: readonly Scene[] = [
     // what was added.
     layers: ['eu', 'eea-efta-uk'],
   },
+  {
+    id: 'horizon-europe',
+    title: 'Horizon Europe',
+    caption: '27 members · 22 associated states',
+    // The same solid/hatched grammar as the previous scene, so no explaining
+    // is needed — but a visibly different set. Watch Liechtenstein go dark
+    // (it declined to associate) and the Faroes light up (associated despite
+    // being outside both the EU and the EEA). Those two are the argument that
+    // the research area is not simply the single market.
+    layers: ['eu', 'horizon-associated'],
+  },
 ];
 
 /** Index bounds helper, so nothing off-by-ones its way past the end mid-talk. */
