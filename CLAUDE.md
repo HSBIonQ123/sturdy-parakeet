@@ -6,7 +6,7 @@ anything; if you change a decision recorded here, change it here too.
 
 ```
 State 1  base EMEA region map                    <- BUILT
-State 2  membership layers over the base map     <- STARTED: EU is the first
+State 2  membership layers over the base map     <- EU 27, and EEA/EFTA/UK
 State 4  scene sequencer                         <- BUILT EARLY, see §3a
 State 3  capital deep-dives with a data panel
 ```
@@ -267,7 +267,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 29 assertions
+npm run verify         # drive the real build in Chromium; 39 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -300,6 +300,55 @@ it would misstate where the boundary of the thing actually is.
 The EU file records what is deliberately absent — the UK, Northern Cyprus (de
 jure EU territory, acquis suspended), Greenland, the Faroes, the Crown
 Dependencies, EFTA — because each is a question somebody may ask.
+
+## 7b. Tiering, and why colour alone could not do it
+
+Scene 3 builds on scene 2: the EU 27 stay exactly as they were and five more
+states arrive in a second treatment. That treatment is **amber and hatched**,
+and the hatch is not decoration.
+
+**The measurement.** The IonQ gradient (`#FF5000 → #FF8300 → #FFB700`) is a
+pure hue rotation inside the orange band. Composited at the 15% alpha a
+membership fill needs, over `#141A21`:
+
+| | rendered | distance from EU |
+| --- | --- | --- |
+| unlit land | `rgb(20,26,33)` | 38.8 |
+| EU, `#FF8300` @15% | `rgb(55,42,28)` | — |
+| amber, `#FFB700` @15% | `rgb(55,50,28)` | **8.0** |
+| red, `#FF5000` @15% | `rgb(55,34,28)` | **8.0** |
+
+Both ends of the brand gradient differ from the middle by 8 units of green and
+nothing else, against a distance of 39 from lit to unlit. **Tier-to-tier
+separation would be a fifth of tier-to-unlit** — fine on a monitor, invisible
+on a projector, which crushes exactly that part of the range.
+
+So the tier is carried by **shape**: solid for members, hatched for associated.
+That holds at any brightness, and it is the convention this audience already
+reads. The accent still steps along the brand gradient, so the tiers remain two
+states of one thing rather than two categories in a chart, and the palette
+discipline is intact.
+
+`fillPattern: 'hatch'` on a layer is all it takes. `resolveCountryStyle` returns
+a pattern reference — still a fill string, so it remains the only place
+appearance is decided — and `Map.tsx` generates one `<pattern>` per hatched
+layer from whatever `LAYERS` declares. The pattern counter-scales the camera
+(`patternTransform: scale(1/k)`) so the hatch stays constant on screen at any
+zoom. The legend draws its hatch explicitly rather than reusing the pattern: a
+key should be *clearer* than the map, and the map's low-opacity hatch reads as
+a tone shift at swatch size.
+
+**`circuitWith`.** A layer defined by its relationship to another one lights
+almost nothing on its own — the only border between two EEA/EFTA/UK members is
+Liechtenstein–Switzerland. `circuitWith: ['eu']` lets the circuit extend across
+the borders that carry the relationship: Norway–Sweden and –Finland,
+Switzerland's four Alpine neighbours, and the UK–Ireland land border.
+
+**Cross-layer dedupe is mandatory.** `MemberCircuit` walks `LAYERS` in
+precedence order and lets each layer claim only arcs no higher-precedence layer
+already took. Two circuits over one border would stroke it twice and the pulses
+would drift out of phase — the exact fault the whole border architecture exists
+to prevent. `verify.mjs` asserts zero shared segments between circuits.
 
 ## 8. Known limitations
 

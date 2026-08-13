@@ -385,10 +385,16 @@ body {
   gap: 0.55em;
 }
 
+/* Large enough that a hatched swatch actually reads as hatched. At 24x6 the
+   pattern showed about four stripes and looked like a slightly different
+   colour, which defeats the point of using shape to carry the tier. */
 .legend-swatch {
-  width: 24px;
-  height: 6px;
-  overflow: visible;
+  width: 26px;
+  height: 10px;
+  flex: none;
+  /* Hidden, so the hatch lines are cropped to the swatch instead of bleeding
+     into the label beside it. */
+  overflow: hidden;
 }
 
 .legend-line {
@@ -411,12 +417,13 @@ body {
 }
 
 .legend-fill {
-  stroke: var(--border-pulse);
+  stroke: var(--swatch, var(--ionq));
   stroke-width: 0.8;
+  stroke-opacity: 0.9;
 }
 
 .legend-member {
-  fill: color-mix(in srgb, var(--ionq) 15%, transparent);
+  fill: color-mix(in srgb, var(--swatch, var(--ionq)) 22%, transparent);
 }
 
 /* ---- telemetry strip ---- */
@@ -652,11 +659,17 @@ body {
    Borders internal to an active membership layer, run brighter and heavier
    than the ambient network so the bloc reads as an energised region of the
    same chip rather than a shape coloured in on top of the map. */
+/* --member-colour is set per layer group in BorderMesh, so a second tier reads
+   in its own accent without any layer-specific CSS. */
 .member-base {
-  stroke: var(--border-pulse);
+  stroke: var(--member-colour, var(--border-pulse));
   stroke-width: var(--member-base-width);
   stroke-opacity: var(--member-base-opacity);
   pointer-events: none;
+}
+
+.member-pulse {
+  stroke: var(--member-colour, var(--border-pulse));
 }
 
 .member-circuit {

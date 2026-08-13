@@ -42,7 +42,8 @@ import type { CSSProperties } from 'react';
 import { BORDERS, NETWORK_ARCS, arcsWithinMembers, meshOfArcs, outlineOf } from '../data/atlas';
 import { borderConfig } from './borderConfig';
 import { useViewState } from '../state/viewState';
-import { LAYER_BY_ID } from '../data/layers';
+import { LAYERS, LAYER_BY_ID } from '../data/layers';
+import { palette } from './palette';
 import type { Alpha3 } from '../data/iso';
 
 export const GLOW_FILTER_ID = 'border-glow';
@@ -144,32 +145,52 @@ function MemberCircuit({ path }: Props) {
   const activeLayers = useViewState((s) => s.activeLayers);
   const reducedMotion = useViewState((s) => s.reducedMotion);
 
-  const layers = useMemo(
-    () => activeLayers.map((id) => LAYER_BY_ID[id]).filter(Boolean),
-    [activeLayers],
-  );
+  /**
+   * Walk LAYERS in precedence order — NOT the order the scene listed them —
+   * and let each layer claim only the arcs no higher-precedence layer already
+   * took. Two circuits over one border would stroke it twice and the pulses
+   * would drift visibly out of phase, which is the exact fault the border
+   * architecture exists to prevent. Dedupe here is what keeps the invariant
+   * true once layers can overlap.
+   */
+  const circuits = useMemo(() => {
+    const active = LAYERS.filter((l) => activeLayers.includes(l.id));
+    const claimed = new Set<number>();
+    const out: { id: string; colour: string; d: string }[] = [];
 
-  const paths = useMemo(
-    () =>
-      layers.map((layer) => ({
+    for (const layer of active) {
+      // `circuitWith` lets a layer defined by its relationship to another —
+      // the EEA states share almost no borders with each other, but each
+      // touches the EU — light the borders that carry that relationship.
+      const connected = [
+        ...layer.members,
+        ...(layer.circuitWith ?? []).flatMap((id) => LAYER_BY_ID[id]?.members ?? []),
+      ];
+      const cacheKey = `${layer.id}+${(layer.circuitWith ?? []).join(',')}`;
+      const fresh = arcsWithinMembers(cacheKey, connected).filter((a) => !claimed.has(a));
+      fresh.forEach((a) => claimed.add(a));
+      if (fresh.length === 0) continue;
+      out.push({
         id: layer.id,
-        d: path(meshOfArcs(arcsWithinMembers(layer.id, layer.members))) ?? '',
-      })),
-    [layers, path],
-  );
+        colour: layer.accent ?? palette.borderPulse,
+        d: path(meshOfArcs(fresh)) ?? '',
+      });
+    }
+    return out;
+  }, [activeLayers, path]);
 
-  if (paths.length === 0) return null;
+  if (circuits.length === 0) return null;
 
   return (
     <g className={`member-circuit${reducedMotion ? ' is-static' : ''}`}>
-      {paths.map((p) => (
-        <g key={p.id}>
-          <path className="member-base" d={p.d} />
+      {circuits.map((circuit) => (
+        <g key={circuit.id} style={{ '--member-colour': circuit.colour } as CSSProperties}>
+          <path className="member-base" d={circuit.d} />
           {borderConfig.pulseProfile.map((layer, i) => (
             <path
               key={i}
               className="pulse member-pulse"
-              d={p.d}
+              d={circuit.d}
               style={
                 {
                   '--w': layer.width * borderConfig.member.pulseWidthScale,

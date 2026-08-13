@@ -30,6 +30,17 @@ export const DECK: readonly Scene[] = [
     // so it reads at the full frame; zooming to Europe here would lose the
     // contrast against the rest of EMEA, which is the point of the slide.
   },
+  {
+    id: 'eea-efta-uk',
+    title: 'EEA, EFTA and the UK',
+    caption: 'Five states beyond the 27',
+    // A build, not a replacement: the 27 stay exactly as they were on the
+    // previous scene and five more arrive in the second accent. Keeping `eu`
+    // first also keeps it first in precedence, so nothing about the EU's
+    // appearance shifts between the two scenes — the eye only has to track
+    // what was added.
+    layers: ['eu', 'eea-efta-uk'],
+  },
 ];
 
 /** Index bounds helper, so nothing off-by-ones its way past the end mid-talk. */

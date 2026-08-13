@@ -65,9 +65,40 @@ export function Legend() {
   return (
     <div className="legend" aria-label="Key">
       {active.map((layer) => (
-        <span className="legend-item" key={layer.id}>
-          <svg className="legend-swatch" viewBox="0 0 24 6" aria-hidden>
-            <rect x="1" y="0" width="22" height="6" className="legend-fill legend-member" />
+        <span
+          className="legend-item"
+          key={layer.id}
+          // The swatch takes the layer's own accent, so a second tier needs no
+          // legend-specific CSS — it inherits whatever the layer declares.
+          style={{ '--swatch': layer.accent ?? 'var(--ionq)' } as React.CSSProperties}
+        >
+          <svg className="legend-swatch" viewBox="0 0 26 10" aria-hidden>
+            <rect x="1" y="1" width="24" height="8" className="legend-fill legend-member" />
+            {/*
+              The hatch is drawn explicitly rather than by referencing the map's
+              pattern. A key should be CLEARER than the thing it explains: the
+              map's hatch runs at low opacity across whole countries, and at
+              swatch size that reads as a slightly different colour, which
+              defeats the point of using shape to carry the tier.
+
+              It cannot drift into saying the wrong thing — it is driven by the
+              same `fillPattern` flag and the same accent as the map. Only the
+              weight differs, deliberately.
+            */}
+            {layer.fillPattern === 'hatch'
+              ? [-8, -2, 4, 10, 16, 22].map((x) => (
+                  <line
+                    key={x}
+                    x1={x}
+                    y1={10}
+                    x2={x + 10}
+                    y2={0}
+                    stroke={layer.accent ?? 'var(--ionq)'}
+                    strokeWidth={1.8}
+                    strokeOpacity={0.85}
+                  />
+                ))
+              : null}
           </svg>
           <span className="label">
             {layer.label} · {layer.description}
@@ -75,20 +106,20 @@ export function Legend() {
         </span>
       ))}
       <span className="legend-item">
-        <svg className="legend-swatch" viewBox="0 0 24 6" aria-hidden>
-          <line x1="1" y1="3" x2="23" y2="3" className="legend-line legend-network" />
+        <svg className="legend-swatch" viewBox="0 0 26 10" aria-hidden>
+          <line x1="1" y1="5" x2="25" y2="5" className="legend-line legend-network" />
         </svg>
         <span className="label">In scope</span>
       </span>
       <span className="legend-item">
-        <svg className="legend-swatch" viewBox="0 0 24 6" aria-hidden>
-          <line x1="1" y1="3" x2="23" y2="3" className="legend-line legend-defacto" />
+        <svg className="legend-swatch" viewBox="0 0 26 10" aria-hidden>
+          <line x1="1" y1="5" x2="25" y2="5" className="legend-line legend-defacto" />
         </svg>
         <span className="label">De facto line</span>
       </span>
       <span className="legend-item">
-        <svg className="legend-swatch" viewBox="0 0 24 6" aria-hidden>
-          <line x1="1" y1="3" x2="23" y2="3" className="legend-line legend-oos" />
+        <svg className="legend-swatch" viewBox="0 0 26 10" aria-hidden>
+          <line x1="1" y1="5" x2="25" y2="5" className="legend-line legend-oos" />
         </svg>
         <span className="label">Out of scope</span>
       </span>

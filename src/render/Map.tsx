@@ -28,6 +28,9 @@ import { useViewState } from '../state/viewState';
 import { buildOptics, ZOOM_EXTENT } from './projection';
 import { borderConfig } from './borderConfig';
 import { BorderMesh, ActiveOutlines, GLOW_FILTER_ID } from './BorderMesh';
+import { layerPatternId } from './resolveCountryStyle';
+import { LAYERS } from '../data/layers';
+import { palette, withAlpha } from './palette';
 import { CountryPath } from './CountryPath';
 import { Graticule } from './Graticule';
 import { KeyHints } from './Chrome';
@@ -42,6 +45,9 @@ declare global {
 }
 
 const VIGNETTE_ID = 'centre-vignette';
+/** Hatch tile size and stroke, in screen pixels. */
+const HATCH_TILE = 6;
+const HATCH_STROKE = 1.7;
 const VIEWPORT_CLIP_ID = 'viewport-clip';
 
 export function Map() {
@@ -325,6 +331,46 @@ export function Map() {
           <clipPath id={VIEWPORT_CLIP_ID}>
             <rect x={0} y={0} width={size.width} height={size.height} />
           </clipPath>
+
+          {/*
+            One <pattern> per hatched layer, generated from whatever LAYERS
+            declares. Generic infrastructure, not layer-specific code: a future
+            hatched layer gets its pattern here without an edit.
+
+            patternTransform counter-scales the camera so the hatch stays a
+            constant size on screen. Without it the stripes would grow with the
+            map and read as wide bands at 8x.
+          */}
+          {LAYERS.filter((l) => l.fillPattern === 'hatch').map((layer) => {
+            const accent = layer.accent ?? palette.ionq;
+            return (
+              <pattern
+                key={layer.id}
+                id={layerPatternId(layer.id)}
+                width={HATCH_TILE}
+                height={HATCH_TILE}
+                patternUnits="userSpaceOnUse"
+                patternTransform={`scale(${1 / camera.k}) rotate(45)`}
+              >
+                {/* A faint solid ground under the stripes, so a hatched country
+                    still reads as lit rather than as a striped hole. */}
+                <rect
+                  width={HATCH_TILE}
+                  height={HATCH_TILE}
+                  fill={withAlpha(accent, 0.07)}
+                />
+                <line
+                  x1={0}
+                  y1={0}
+                  x2={0}
+                  y2={HATCH_TILE}
+                  stroke={accent}
+                  strokeOpacity={0.55}
+                  strokeWidth={HATCH_STROKE}
+                />
+              </pattern>
+            );
+          })}
 
           <radialGradient id={VIGNETTE_ID} cx="50%" cy="48%" r="78%">
             <stop offset="0%" stopColor="#000" stopOpacity="0" />

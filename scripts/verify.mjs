@@ -234,6 +234,9 @@ const sceneState = () =>
     members: [...document.querySelectorAll('path.country')].filter(
       (el) => el.getAttribute('fill')?.startsWith('rgba(255, 131, 0'),
     ).length,
+    tier2: [...document.querySelectorAll('path.country')].filter(
+      (el) => el.getAttribute('fill')?.includes('layer-hatch-eea-efta-uk'),
+    ).length,
   }));
 
 await page.mouse.move(20, 700);
@@ -241,7 +244,7 @@ await page.keyboard.press('Escape');
 await sleep(200);
 
 let st = await sceneState();
-check('deck starts on scene 1 of 2', st.index === 0 && st.total === 2, JSON.stringify(st.title));
+check('deck starts on scene 1 of 3', st.index === 0 && st.total === 3, JSON.stringify(st.title));
 
 await page.keyboard.press('PageDown');
 await sleep(700);
@@ -272,11 +275,130 @@ await sleep(400);
 st = await sceneState();
 check('stepping back past the first scene is a no-op', st.index === 0);
 
+/* ---- scene 3: the second tier builds on the first ---- */
+await page.keyboard.press('PageDown');
+await page.keyboard.press('PageDown');
+await sleep(900);
+st = await sceneState();
+check(
+  'scene 3 shows both tiers',
+  st.index === 2 && st.layers?.join() === 'eu,eea-efta-uk',
+  `index ${st.index}, layers ${st.layers}`,
+);
+check(
+  'the EU 27 keep their tier-1 tint unchanged from scene 2',
+  st.members === 28,
+  `${st.members} in tier 1`,
+);
+check(
+  'five states take the tier-2 accent',
+  st.tier2 === 5,
+  `${st.tier2} in tier 2`,
+);
+
+const tiers = await page.evaluate(() => {
+  const fill = (iso) =>
+    document.querySelector(`path.country[data-iso="${iso}"]`)?.getAttribute('fill') ?? null;
+  return {
+    deu: fill('DEU'),
+    nor: fill('NOR'),
+    che: fill('CHE'),
+    gbr: fill('GBR'),
+    isl: fill('ISL'),
+    lie: fill('LIE'),
+    // Correctly excluded, and each is a question somebody may ask.
+    fro: fill('FRO'),
+    imn: fill('IMN'),
+    tur: fill('TUR'),
+  };
+});
+check(
+  'the tiers separate on shape, not only on tone',
+  tiers.deu?.startsWith('rgba(255, 131') && tiers.nor?.includes('layer-hatch'),
+  `EU ${tiers.deu} vs tier 2 ${tiers.nor}`,
+);
+const hatch = await page.evaluate(() => {
+  const pat = document.querySelector('#layer-hatch-eea-efta-uk');
+  if (!pat) return null;
+  return {
+    stroke: pat.querySelector('line')?.getAttribute('stroke'),
+    transform: pat.getAttribute('patternTransform'),
+  };
+});
+check(
+  'the hatch is generated from what the layer declares, in its own accent',
+  hatch?.stroke === '#FFB700' && Boolean(hatch?.transform),
+  JSON.stringify(hatch),
+);
+check(
+  'Switzerland, the UK, Iceland and Liechtenstein are all tier 2',
+  [tiers.che, tiers.gbr, tiers.isl, tiers.lie].every((f) => f === tiers.nor),
+  JSON.stringify(tiers),
+);
+check(
+  'Faroes, Isle of Man and Türkiye are correctly excluded from both tiers',
+  [tiers.fro, tiers.imn, tiers.tur].every((f) => !f?.startsWith('rgba(255,')),
+  `FRO ${tiers.fro}, IMN ${tiers.imn}, TUR ${tiers.tur}`,
+);
+
+// The dedupe invariant: two overlapping circuits over one border would stroke
+// it twice and the pulses would drift out of phase.
+//
+// Compare whole subpaths, not their start points. Adjacent arcs legitimately
+// share a start vertex wherever borders meet at a tri-point, so counting
+// repeated start points measures topology, not double-drawing.
+const circuit = await page.evaluate(() => {
+  const groups = [...document.querySelectorAll('.member-circuit > g')];
+  const subpaths = groups.map((g) => {
+    const d = g.querySelector('.member-base')?.getAttribute('d') ?? '';
+    return d.split('M').filter(Boolean).map((x) => `M${x}`);
+  });
+  const all = subpaths.flat();
+  return {
+    groups: groups.length,
+    counts: subpaths.map((s) => s.length),
+    duplicates: all.length - new Set(all).size,
+    crossOverlap:
+      subpaths.length === 2 ? subpaths[0].filter((x) => subpaths[1].includes(x)).length : -1,
+  };
+});
+// A key that does not match the map is worse than no key.
+const legend = await page.evaluate(() => {
+  const items = [...document.querySelectorAll('.legend-item')];
+  return items.slice(0, 2).map((el) => ({
+    text: el.querySelector('.label')?.textContent?.trim() ?? '',
+    hatchLines: el.querySelectorAll('svg line').length,
+  }));
+});
+check(
+  'the legend shows tier 1 solid and tier 2 hatched, matching the map',
+  legend[0]?.hatchLines === 0 && legend[1]?.hatchLines >= 4,
+  JSON.stringify(legend),
+);
+
+check(
+  'no border segment is stroked by two circuits',
+  circuit.groups === 2 && circuit.duplicates === 0 && circuit.crossOverlap === 0,
+  `${circuit.groups} circuits ${JSON.stringify(circuit.counts)}, ` +
+    `${circuit.duplicates} duplicate segments, ${circuit.crossOverlap} shared`,
+);
+// Without `circuitWith`, the tier-2 circuit would be the single
+// Liechtenstein-Switzerland border. With it, it should carry roughly nine
+// country pairs: Norway-Sweden and -Finland, Switzerland's four Alpine
+// neighbours, Liechtenstein's two, and the UK-Ireland land border.
+check(
+  'the tier-2 circuit reaches the EU rather than lighting one Alpine border',
+  circuit.counts[1] >= 8,
+  `${circuit.counts[1]} tier-2 segments`,
+);
+
+await page.screenshot({ path: `${SHOTS}/scene-eea.png` });
+
 await page.keyboard.press('End');
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
-check('stepping past the last scene is a no-op', st.index === 1);
+check('stepping past the last scene is a no-op', st.index === 2);
 
 /* ---- the menu, for questions ---- */
 check('menu is closed by default', !st.menuOpen);

@@ -21,6 +21,7 @@
  */
 import type { Alpha3 } from '../iso';
 import { EU } from './eu';
+import { EEA_EFTA_UK } from './eeaEftaUk';
 
 export interface MembershipLayer {
   /** Stable machine id, used in scene definitions in State 4. */
@@ -37,11 +38,44 @@ export interface MembershipLayer {
    * layers competing in different hues will read as a chart, not an instrument.
    */
   readonly accent?: string;
+  /**
+   * Other layer ids whose members also count as connected when energising THIS
+   * layer's borders.
+   *
+   * Without it a layer only lights borders between two of its own members,
+   * which is right for a self-contained bloc and useless for one that is
+   * defined by its relationship to another — the EEA states share almost no
+   * borders with each other, but every one of them touches the EU.
+   *
+   * Arcs already claimed by a higher-precedence active layer are not redrawn.
+   * MemberCircuit deduplicates in LAYERS order, so a border is stroked exactly
+   * once no matter how many layers could claim it.
+   */
+  readonly circuitWith?: readonly string[];
+  /**
+   * How members are filled. Defaults to `solid`.
+   *
+   * `hatch` exists because colour alone cannot carry a second tier here. The
+   * IonQ gradient (#FF5000 -> #FF8300 -> #FFB700) is a pure hue rotation
+   * inside the orange band, so at the 15% alpha a fill needs, any two stops
+   * differ by about 8 units of green — against a distance of 39 from a lit
+   * country to an unlit one. Tier-to-tier separation would be a fifth of
+   * tier-to-unlit, which does not survive a projector.
+   *
+   * A hatch separates on shape rather than tone, so it holds at any brightness,
+   * and solid-versus-hatched is the convention this audience already reads as
+   * member-versus-associated. The accent still shifts along the brand gradient,
+   * so the tiers remain two states of one thing rather than two categories.
+   */
+  readonly fillPattern?: 'solid' | 'hatch';
 }
 
 /** Ordered layer registry. Precedence is array order. */
 export const LAYERS: readonly MembershipLayer[] = [
+  // EU first: where a country or a border could belong to both tiers, the
+  // stricter membership wins. Precedence is this array's order.
   EU,
+  EEA_EFTA_UK,
   // Still to come: NATO, EuroQCI, EU Quantum Flagship, Commonwealth, GCC,
   // Council of Europe. Each is one file here plus one entry in this array.
 ];

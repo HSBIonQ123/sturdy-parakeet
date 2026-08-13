@@ -93,17 +93,29 @@ const IN_SCOPE_DIMMED: CountryStyle = { ...IN_SCOPE, opacity: NON_MEMBER_DIM };
  */
 const layerStyleCache = new Map<string, CountryStyle>();
 
-function layerStyle(accent: string): CountryStyle {
-  let cached = layerStyleCache.get(accent);
+/**
+ * A hatched layer resolves to a pattern reference rather than a colour. That is
+ * still a fill string, so this function remains the only place a country's
+ * appearance is decided — the pattern itself is generated generically in
+ * Map.tsx from whatever LAYERS declare, so a future hatched layer needs no
+ * render change either.
+ */
+export function layerPatternId(layerId: string): string {
+  return `layer-hatch-${layerId}`;
+}
+
+function layerStyle(layerId: string, accent: string, hatched: boolean): CountryStyle {
+  const key = `${layerId}|${accent}|${hatched}`;
+  let cached = layerStyleCache.get(key);
   if (!cached) {
     cached = {
-      fill: withAlpha(accent, tint.layer),
+      fill: hatched ? `url(#${layerPatternId(layerId)})` : withAlpha(accent, tint.layer),
       fillOpacity: 1,
       stroke: 'none',
       opacity: 1,
       state: 'layer',
     };
-    layerStyleCache.set(accent, cached);
+    layerStyleCache.set(key, cached);
   }
   return cached;
 }
@@ -127,7 +139,11 @@ export function resolveCountryStyle(
     for (const layer of LAYERS) {
       if (!ctx.activeLayers.includes(layer.id)) continue;
       if (!layer.members.includes(iso)) continue;
-      return layerStyle(layer.accent ?? palette.ionq);
+      return layerStyle(
+        layer.id,
+        layer.accent ?? palette.ionq,
+        layer.fillPattern === 'hatch',
+      );
     }
     if (inScope) return IN_SCOPE_DIMMED;
   }

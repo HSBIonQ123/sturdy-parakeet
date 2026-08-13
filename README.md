@@ -4,9 +4,9 @@ An offline, browser-based interactive map of Europe, the Middle East and Africa,
 built to be presented live to policymakers. It replaces PowerPoint for
 government-affairs briefings and it never touches the network.
 
-**The base region map, plus a scene sequencer and the first membership layer
-(EU member states).** Capital deep-dives come next. See `CLAUDE.md` for the
-conventions that keep each addition additive.
+**The base region map, a scene sequencer, and membership layers for the EU 27
+and for the EEA, EFTA and the UK.** Capital deep-dives come next. See
+`CLAUDE.md` for the conventions that keep each addition additive.
 
 ## Run it
 
@@ -82,6 +82,14 @@ tint, everything else in EMEA recedes, and the **borders between members
 energise** — the bloc reads as a powered region of the same chip rather than a
 shape coloured in on top of the map.
 
+Layers stack. Scene 3 runs `['eu', 'eea-efta-uk']`: the 27 stay exactly as they
+were on scene 2, and five more states arrive **hatched in amber**. Solid means
+member, hatched means associated. That is not decoration — the IonQ gradient is
+a hue rotation inside the orange band, so at the alpha a fill needs, two stops
+differ by about a fifth of the distance between a lit country and an unlit one.
+Colour alone would vanish on a projector; shape does not. `CLAUDE.md` §7b has
+the numbers.
+
 ## What you are looking at
 
 National borders inside EMEA are live electrode traces: every boundary glows in
@@ -129,14 +137,16 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 29 things,
+Drives the production bundle in headless Chromium and asserts 39 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the
 talk cannot be driven from anywhere but the laptop); the menu does not let the
 deck step underneath it; a scene restores the camera after improvised zooming;
-the hovered outline is unanimated and at full opacity while the ambient pulse
-is running; and the frame rate at 2560×1440. Screenshots land in `screenshots/`, with
+the two membership tiers separate on shape and the legend matches the map; no
+border segment is stroked by two layer circuits; the hovered outline is
+unanimated and at full opacity while the ambient pulse is running; and the
+frame rate at 2560×1440. Screenshots land in `screenshots/`, with
 close-ups of Luxembourg, Slovenia, Lesotho, Gambia, the Gulf, Cyprus, Crimea
 and the Horn — where double-drawing would show first.
 
