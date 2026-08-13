@@ -1,5 +1,10 @@
 /**
- * Deployments.tsx — IonQ sites, drawn as ions held in the trap.
+ * Markers.tsx — sited points, drawn as ions held in the trap.
+ *
+ * ONE MARKER SYSTEM, MANY SOURCES. It draws whatever data/markers.ts holds —
+ * IonQ deployments today, institutions alongside them, capitals in State 3 —
+ * and a scene chooses by listing ids. §7e is explicit that a second marker
+ * component must never be written; this is the component it means.
  *
  * This is the metaphor's next step, not a new idea bolted on. The borders are
  * a powered ion-trap chip; a site is an ion sitting on it. The dot is built
@@ -28,18 +33,20 @@
 import { memo } from 'react';
 import type { GeoProjection } from 'd3-geo';
 
-import { DEPLOYMENTS } from '../data/deployments';
+import { resolveMarkers } from '../data/markers';
 import { useViewState } from '../state/viewState';
 
 interface Props {
   readonly projection: GeoProjection;
   readonly width: number;
   readonly height: number;
+  /** Marker ids the active scene asked for, resolved against data/markers.ts. */
+  readonly ids: readonly string[];
 }
 
 /**
  * Room a label needs on its side of the dot, in screen px — a little over the
- * longest string in deployments.ts ("ARLESHEIM · FORTE ENTERPRISE") at the
+ * longest string in the registry ("ARLESHEIM · FORTE ENTERPRISE") at the
  * `micro` size. Approximate on purpose: measuring text per frame would mean a
  * DOM read inside render, and the only decision it feeds is which side to put
  * the label on, where being 20px pessimistic costs nothing.
@@ -49,10 +56,10 @@ const LABEL_CLEARANCE = 260;
 /** A dot closer than this to the edge is not worth drawing. */
 const EDGE_MARGIN = 12;
 
-function DeploymentsImpl({ projection, width, height }: Props) {
+function MarkersImpl({ projection, width, height, ids }: Props) {
   const camera = useViewState((s) => s.camera);
 
-  const sites = DEPLOYMENTS.map((site) => {
+  const sites = resolveMarkers(ids).map((site) => {
     const projected = projection([site.lon, site.lat]);
     if (!projected) return null;
     // Apply the camera by hand so the marker stays in screen space.
@@ -94,31 +101,43 @@ function DeploymentsImpl({ projection, width, height }: Props) {
   if (sites.length === 0) return null;
 
   return (
-    <g className="deployments" aria-label="IonQ sites">
+    <g className="markers" aria-label="Marked sites">
       {sites.map(({ site, x, y, left }) => {
         const side = left ? -1 : 1;
         return (
         <g
           key={site.id}
-          className="deployment"
+          className={`marker marker-${site.kind}`}
           transform={`translate(${x},${y + (site.labelDy ?? 0)})`}
         >
           {/* Halo, ring, core — the ion, from the outside in. */}
-          <circle className="deployment-halo" r={11} />
-          <circle className="deployment-ring" r={5.5} />
-          <circle className="deployment-core" r={2} />
+          <circle className="marker-halo" r={11} />
+          <circle className="marker-ring" r={5.5} />
+          {/*
+            THE CORE IS THE IonQ CLAIM, so an institution does not get one.
+            A seat of government is a place the talk points at, not a place
+            IonQ occupies, and with every marker drawn identically a dot on
+            Westminster beside a dot on Oxford would say otherwise. Ring and
+            halo without the bright core reads as a trap site with no ion in
+            it, which is exactly what it is — and it separates on shape rather
+            than on a second hue, the same reasoning as the hatched layer tier
+            in §7b.
+          */}
+          {site.kind === 'institution' ? null : (
+            <circle className="marker-core" r={2} />
+          )}
 
           {/* A short leader out to the label, so the text never sits on the
               dot and obscures the thing it is pointing at. */}
           <line
-            className="deployment-leader"
+            className="marker-leader"
             x1={7 * side}
             y1={-7}
             x2={15 * side}
             y2={-15}
           />
           <text
-            className="deployment-label"
+            className="marker-label"
             x={18 * side}
             y={-16}
             textAnchor={left ? 'end' : 'start'}
@@ -133,7 +152,7 @@ function DeploymentsImpl({ projection, width, height }: Props) {
             what they are asserting.
           */}
           <text
-            className="deployment-detail"
+            className="marker-detail"
             x={18 * side}
             y={-5}
             textAnchor={left ? 'end' : 'start'}
@@ -149,4 +168,4 @@ function DeploymentsImpl({ projection, width, height }: Props) {
   );
 }
 
-export const Deployments = memo(DeploymentsImpl);
+export const Markers = memo(MarkersImpl);

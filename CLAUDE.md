@@ -291,7 +291,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 69 assertions
+npm run verify         # drive the real build in Chromium; 70 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -405,11 +405,31 @@ into this one — the two tiers mean different things.
 
 ## 7e. Markers — the first ions on the trap
 
-`src/data/deployments.ts` holds IonQ sites; `render/Deployments.tsx` draws
-them. This is the ion metaphor from the original brief arriving for real: a
+`src/data/markers.ts` is the registry; `render/Markers.tsx` draws everything in
+it. This is the ion metaphor from the original brief arriving for real: a
 bright core inside a containing ring inside a soft halo, sitting on the
-conductor network the borders form. **State 3's capital markers should be this
-component with a different data source** — do not write a second marker system.
+conductor network the borders form. **State 3's capital markers are this
+component with a third data source** — do not write a second marker system.
+
+**A scene lists marker ids** (`markers: ['westminster', 'oxford']`), resolved
+against the registry, and an unknown id throws rather than quietly drawing
+nothing. `DEPLOYMENT_IDS` covers a scene that wants the whole IonQ set without
+spelling it out. This replaced `deployments: boolean` when the second source
+arrived, which is exactly the trigger `scenes/types.ts` had recorded for it.
+
+**The sources are separate files because they make different claims.**
+`deployments.ts` asserts, entry by entry, that IonQ has something somewhere,
+and carries provenance per site. `institutions.ts` asserts only that a place
+matters — Westminster is where the decision is taken, not somewhere IonQ sits.
+Merging them would make the claim the deck must never make.
+
+**That distinction is carried on screen, not just in the data.** The bright
+core is the IonQ claim, so `kind: 'institution'` is drawn without one: ring and
+halo, dashed and quieter — a trap site with no ion in it. It separates on shape
+rather than on a second hue, the same reasoning as the hatched layer tier in
+§7b, and `verify.mjs` asserts Westminster has no core while Oxford has one. If
+every marker ever gets the same glyph again, a dot on Parliament starts making
+a claim nobody checked.
 
 Three rules it establishes:
 
@@ -434,7 +454,7 @@ dot. The dot is where the deployment is.
 carry cameras (§3b), a marker can sit inside the viewport with its label
 hanging over the edge, which reads as a rendering fault rather than as a marker
 at the border — it happened to Slovakia the moment the UK scene landed.
-`Deployments.tsx` therefore takes the viewport size, flips a label to whichever
+`Markers.tsx` therefore takes the viewport size, flips a label to whichever
 side has room, and drops a marker only when the *dot* is off-frame. So
 `labelSide` is a preference, honoured whenever it fits; at the fitted frame it
 always fits, so the region-scale scenes are untouched. `verify.mjs` asserts no
@@ -484,6 +504,22 @@ regressions:
 If you suspect a genuine perf regression, reproduce it on a warm page in
 isolation before believing a suite number, and check `ps aux | grep vite`
 first.
+
+**Compare against the previous commit, not against the number written here.**
+The gate failed once at 53fps on the marker-registry change, which looked like
+a regression and was not: building the parent commit and measuring it with the
+identical script gave 60.3, the change gave 59.2, and then a *lighter* scene on
+the *old* build gave 58.8 — which is what proved the container, not the code,
+was moving the number. Three interleaved runs each way overlapped completely
+(old 60.3/60.3/60.1, new 59.2/59.4/60.4). Stash, rebuild, measure, unstash;
+it takes two minutes and it is the only way to tell the two apart.
+
+**The three samples are not equivalent — they climb.** Every run looks like
+19/41/59: the first two are warm-up and only the last is steady state, which is
+why best-of-three is the statistic and why a loaded container lands the gate
+near its threshold rather than comfortably above it. A gate reading in the
+mid-50s is a busy machine; a real regression shows up as a *ceiling* that has
+moved, which is what the previous-commit comparison measures.
 
 ## 7f. A selection is not a membership, and must say so
 

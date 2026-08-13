@@ -656,7 +656,7 @@ body {
 }
 
 /* =====================================================================
-   Deployment markers — ions held in the trap
+   Markers — ions held in the trap
 
    A tight bright core inside a containing ring inside a soft halo. Static:
    the pulsing borders are the only ambient motion on this map, and a blinking
@@ -664,36 +664,50 @@ body {
    fades in when its scene opens, which is a transition, not ambient motion.
    ===================================================================== */
 
-.deployments {
+.markers {
   pointer-events: none;
   animation: scene-in 420ms ease-out;
 }
 
-.deployment-halo {
+.marker-halo {
   fill: var(--ionq);
   fill-opacity: 0.1;
 }
 
-.deployment-ring {
+.marker-ring {
   fill: none;
   stroke: var(--ionq);
   stroke-width: 1.1;
   stroke-opacity: 0.9;
 }
 
-.deployment-core {
+.marker-core {
   /* The hottest point on the map. Deliberately: this is the payload of the
      slide, and it should out-read every border on screen. */
   fill: #fff3e0;
 }
 
-.deployment-leader {
+.marker-leader {
   stroke: var(--ionq);
   stroke-width: 0.8;
   stroke-opacity: 0.7;
 }
 
-.deployment-label {
+/* An institution is not an IonQ site and must not read as one. It keeps the
+   ring and the halo — it is still a point on the trap — but has no core, and
+   its ring is drawn a touch quieter so the two never compete for the eye on a
+   slide showing both. Shape, not a second hue: the palette stays monochrome
+   plus one. */
+.marker-institution .marker-ring {
+  stroke-opacity: 0.65;
+  stroke-dasharray: 2.6 2.2;
+}
+
+.marker-institution .marker-halo {
+  fill-opacity: 0.05;
+}
+
+.marker-label {
   font-family: var(--sans);
   font-weight: 500;
   font-size: var(--t-value);
@@ -707,7 +721,7 @@ body {
   stroke-opacity: 0.85;
 }
 
-.deployment-detail {
+.marker-detail {
   font-family: var(--mono);
   font-weight: 400;
   font-size: var(--t-label);

@@ -33,7 +33,7 @@ import { LAYERS } from '../data/layers';
 import { palette, withAlpha } from './palette';
 import { CountryPath } from './CountryPath';
 import { Graticule } from './Graticule';
-import { Deployments } from './Deployments';
+import { Markers } from './Markers';
 import { KeyHints } from './Chrome';
 import { registerCamera } from './cameraControl';
 import { DECK } from '../scenes/deck';
@@ -63,7 +63,7 @@ export function Map() {
   const select_ = useViewState((s) => s.select);
   const setHovered = useViewState((s) => s.setHovered);
   const finishBoot = useViewState((s) => s.finishBoot);
-  const showDeployments = useViewState((s) => s.showDeployments);
+  const markerIds = useViewState((s) => s.markerIds);
   const nextScene = useViewState((s) => s.nextScene);
   const prevScene = useViewState((s) => s.prevScene);
   const gotoScene = useViewState((s) => s.gotoScene);
@@ -420,14 +420,15 @@ export function Map() {
         {/* Also outside the camera group, and for the same reason as the
             vignette: a site marker must hold a constant size on screen. It
             takes the projection and applies the camera itself. */}
-        {optics && showDeployments ? (
+        {optics && markerIds.length > 0 ? (
           // The viewport goes with it so a marker can tell where the frame
           // edge is: once scenes carry cameras, a label near the edge has to
           // flip rather than run off the screen.
-          <Deployments
+          <Markers
             projection={optics.projection}
             width={size.width}
             height={size.height}
+            ids={markerIds}
           />
         ) : null}
 

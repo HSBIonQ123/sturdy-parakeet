@@ -19,7 +19,7 @@ The deck as it stands:
 | 04 | Horizon Europe | the 27, plus 19 associated states hatched |
 | 05 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
 | 06 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
-| 07 | United Kingdom | the camera flies in to the UK, with Oxford Ionics marked |
+| 07 | United Kingdom | the camera flies in to the UK; Westminster and Oxford marked |
 
 ## Run it
 
@@ -89,11 +89,18 @@ Omitting `camera` is meaningful: it means "return to the fitted frame", not
 "leave the camera alone". Scenes are absolute so that a rehearsed picture is
 reproducible after any amount of improvisation.
 
-**Deployment markers** live in `src/data/deployments.ts` and are switched on
-per scene with `deployments: true`. Each is drawn as an ion held in the trap —
-a bright core, a containing ring, a soft halo — sitting on the same conductor
-network the borders form. That list is partly supplied and partly
-reconstructed from public announcements; **confirm it before presenting.**
+**Markers** are listed per scene by id — `markers: ['westminster', 'oxford']` —
+and resolved against the registry in `src/data/markers.ts`. Each is drawn as an
+ion held in the trap: a bright core, a containing ring, a soft halo, sitting on
+the same conductor network the borders form.
+
+There are two sources, kept apart because they claim different things.
+`deployments.ts` says IonQ has something at a place, entry by entry, with
+provenance; that list is partly supplied and partly reconstructed from public
+announcements, so **confirm it before presenting.** `institutions.ts` says only
+that a place matters — Westminster is where the decision is taken, not somewhere
+IonQ sits. An institution is drawn **without the bright core**, since the core is
+what says "IonQ is here". Shape carries the distinction, not a second colour.
 
 A membership layer is a file in `src/data/layers/` containing an array of
 alpha-3 codes and nothing else. When one is active, its members take the orange
@@ -168,7 +175,7 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 69 things,
+Drives the production bundle in headless Chromium and asserts 70 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the
@@ -182,8 +189,10 @@ EuroQCI signatory states, so the slide can never quietly start making the
 opposite argument; the closing engagement scene lights exactly its six states
 and no EU or EEA member leaks into it, so a selection can never drift into
 looking like a bloc; a zoomed scene arrives at its camera and gives it back on
-the way out, and no marker label runs off the frame while it is there; the
-hovered outline is
+the way out, and no marker label runs off the frame while it is there;
+Westminster is drawn without the IonQ core that Oxford has, so a seat of
+government can never start reading as a site IonQ occupies; the hovered outline
+is
 unanimated and at full opacity while the ambient pulse is running; and the
 frame rate at 2560×1440. Screenshots land in `screenshots/`, with
 close-ups of Luxembourg, Slovenia, Lesotho, Gambia, the Gulf, Cyprus, Crimea

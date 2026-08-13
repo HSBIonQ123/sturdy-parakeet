@@ -54,13 +54,20 @@ export interface Scene {
   /** A country held selected when the scene opens. Rarely wanted. */
   readonly selectedIso?: Alpha3;
   /**
-   * Show IonQ site markers (src/data/deployments.ts).
+   * Markers to show, by id, resolved against src/data/markers.ts. Omit for
+   * none.
    *
-   * A boolean rather than a marker-set name, deliberately: there is exactly
-   * one marker set today and inventing a registry for it would be scaffolding
-   * with nothing to hold up. State 3 introduces capital markers, and that is
-   * the point to widen this into `markers?: string[]` — one field, one
-   * migration, with a real second case to design against.
+   * This was `deployments: boolean` while there was exactly one marker source,
+   * with a note that it should widen to `markers?: string[]` once a real
+   * second case existed to design against. The UK close-up is that case:
+   * Westminster is a place the talk points at and explicitly NOT an IonQ site,
+   * so it cannot live in deployments.ts, and the scene wants two markers
+   * rather than all of them.
+   *
+   * Ids rather than set names. A scene saying `['westminster', 'oxford']` is
+   * the honest description of that slide, and `DEPLOYMENT_IDS` covers the case
+   * where a scene does want a whole set without spelling it out. An unknown id
+   * throws at resolve time rather than quietly drawing nothing.
    */
-  readonly deployments?: boolean;
+  readonly markers?: readonly string[];
 }

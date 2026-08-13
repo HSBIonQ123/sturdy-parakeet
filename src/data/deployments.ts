@@ -16,7 +16,7 @@
  * engineering campus are three different claims and a policymaker will hear
  * them differently. All three currently render the same dot; if you want the
  * QKD networks to out-read the rest on the EuroQCI scene, that is one clause
- * in Deployments.tsx.
+ * in Markers.tsx.
  *
  * ON POSITIONS. `precision` says whether the coordinate is the actual site or
  * just the country. QuantumBasel is at Arlesheim, which is where the machine
@@ -28,49 +28,20 @@
  * markers are drawn as ions held in the trap, on the same conductor network
  * the borders form. State 3's capitals use the same component.
  */
-import type { Alpha3 } from './iso';
+import type { Marker } from './markers';
 
-export type SiteKind =
-  /** A national or metropolitan quantum key distribution network. */
-  | 'network'
-  /** An IonQ quantum computer installed and operating on site. */
-  | 'system'
-  /** Engineering, research or manufacturing presence. */
-  | 'engineering';
-
-export interface Deployment {
-  readonly id: string;
-  /** Host, partner or programme, as it should appear on screen. */
-  readonly label: string;
-  /** Place the marker sits on. */
-  readonly place: string;
-  readonly iso: Alpha3;
-  readonly lat: number;
-  readonly lon: number;
-  readonly kind: SiteKind;
-  /** Whether the coordinate is the real site or a country-level stand-in. */
-  readonly precision: 'site' | 'country';
-  /** One line for the map label. Keep it short — it is read at a glance. */
-  readonly detail?: string;
-  /**
-   * Which side the label sits on. Defaults to the right.
-   *
-   * With six markers clustered in Europe this is load-bearing, not cosmetic.
-   * When you add sites, expect to flip a label rather than move a dot — the
-   * dot is where the deployment is, and the label is the only part with any
-   * freedom.
-   */
-  readonly labelSide?: 'left' | 'right';
-  /** Vertical nudge in px, for when flipping the side is not enough. */
-  readonly labelDy?: number;
-  /** Where this came from. Every entry must have one. */
-  readonly source: string;
-}
+/*
+ * The shape lives in markers.ts now, shared with institutions.ts and, in
+ * State 3, with capitals. `SiteKind` was folded into `MarkerKind` there when
+ * the second source arrived — the kinds in this file are unchanged, and the
+ * new `institution` kind deliberately cannot appear in this array, because
+ * every entry here asserts an IonQ presence.
+ */
 
 const IDQ =
   'IonQ via ID Quantique, acquired 2025. Supplied by IonQ Government Affairs (EMEA).';
 
-export const DEPLOYMENTS: readonly Deployment[] = [
+export const DEPLOYMENTS: readonly Marker[] = [
   /* ---- National QKD networks, inside EuroQCI ---------------------- */
   {
     id: 'poland',
@@ -185,13 +156,20 @@ export const DEPLOYMENTS: readonly Deployment[] = [
  * scene is a one-line change and loses nothing from the EuroQCI argument.
  */
 
-export const DEPLOYMENTS_BY_ISO: Readonly<Record<string, readonly Deployment[]>> =
-  DEPLOYMENTS.reduce<Record<string, Deployment[]>>((acc, d) => {
+export const DEPLOYMENTS_BY_ISO: Readonly<Record<string, readonly Marker[]>> =
+  DEPLOYMENTS.reduce<Record<string, Marker[]>>((acc, d) => {
     (acc[d.iso] ??= []).push(d);
     return acc;
   }, {});
 
 /** Countries with at least one site. Ready to become a membership layer. */
-export const DEPLOYMENT_COUNTRIES: readonly Alpha3[] = [
+export const DEPLOYMENT_COUNTRIES: readonly string[] = [
   ...new Set(DEPLOYMENTS.map((d) => d.iso)),
 ];
+
+/**
+ * Every IonQ site, by id — what a scene lists when it wants the full set.
+ * Derived rather than written out, so adding a site to the array above puts it
+ * on the EuroQCI scene automatically and cannot leave the two disagreeing.
+ */
+export const DEPLOYMENT_IDS: readonly string[] = DEPLOYMENTS.map((d) => d.id);

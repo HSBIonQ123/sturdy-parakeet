@@ -13,6 +13,7 @@
  * a dozen files would make the running order the one thing you cannot see.
  */
 import type { Scene } from './types';
+import { DEPLOYMENT_IDS } from '../data/deployments';
 
 export const DECK: readonly Scene[] = [
   {
@@ -67,7 +68,9 @@ export const DECK: readonly Scene[] = [
     // the UK, fall outside a perimeter drawn by EEA membership. See the note
     // at the foot of data/deployments.ts.
     layers: ['euroqci', 'euroqci-eligible'],
-    deployments: true,
+    // The whole IonQ site list, derived rather than spelled out, so adding a
+    // deployment puts it on this scene without touching the deck.
+    markers: DEPLOYMENT_IDS,
   },
   {
     id: 'political-engagement',
@@ -94,12 +97,12 @@ export const DECK: readonly Scene[] = [
     // and Italy, so it composes at the fitted frame — and holding the frame is
     // what keeps the eye on which countries changed rather than on the map
     // moving. Markers stay off: the deployment story belongs to EuroQCI, and
-    // `deployments: true` is a one-word change if a rehearsal disagrees.
+    // adding a `markers` line is all it takes if a rehearsal disagrees.
   },
   {
     id: 'uk',
     title: 'United Kingdom',
-    caption: 'Oxford Ionics · ion-trap engineering',
+    caption: 'Westminster and Oxford · government and engineering',
     // The first scene in the deck to move the camera, and it needed no new
     // code to do it: `camera` has been on the Scene type since State 1 and
     // cameraControl.ts has been wired to it since the sequencer was built.
@@ -118,13 +121,16 @@ export const DECK: readonly Scene[] = [
     // still legible as context rather than replaced outright. Checked on the
     // real build at 2560x1440, not estimated.
     camera: { lon: -2.8, lat: 54.3, k: 7 },
-    // Oxford Ionics is the point of standing here. Two others stay in frame at
-    // this camera — QuantumBasel in Switzerland and, at the right edge,
-    // Slovakia — which is true and not misleading: the caption names the UK
-    // site, and the layer tint is what says who the scene is about. If a
-    // rehearsal wants Oxford alone, that is the `markers?: string[]` migration
-    // sketched in scenes/types.ts, not a camera nudge to hide them.
-    deployments: true,
+    // TWO MARKERS, NAMED. This is the slide's whole content: where the
+    // decision is taken and where the engineering is done.
+    // Listing ids rather than showing the deployment set keeps QuantumBasel
+    // and Slovakia — true, but neither British nor the subject — off a slide
+    // titled United Kingdom.
+    //
+    // They are drawn differently on purpose. Oxford gets the bright core of an
+    // IonQ site; Westminster does not, because it is a place the talk points
+    // at rather than a place IonQ occupies. See data/institutions.ts.
+    markers: ['westminster', 'oxford'],
   },
 ];
 

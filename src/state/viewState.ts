@@ -43,8 +43,8 @@ export interface ViewState {
   selectedIso: Alpha3 | null;
   hoveredIso: Alpha3 | null;
   camera: Camera;
-  /** Whether the active scene shows IonQ site markers. */
-  showDeployments: boolean;
+  /** Marker ids the active scene shows, resolved against data/markers.ts. */
+  markerIds: readonly string[];
 
   /** Position in the deck. The only thing the presenter moves. */
   sceneIndex: number;
@@ -86,7 +86,7 @@ function sceneState(scene: Scene) {
     activeLayers: [...(scene.layers ?? [])],
     selectedIso: scene.selectedIso ?? null,
     hoveredIso: null,
-    showDeployments: scene.deployments ?? false,
+    markerIds: scene.markers ?? [],
   };
 }
 

@@ -590,8 +590,8 @@ const qci = await page.evaluate(() => {
     gbr: fill('GBR'),
     lie: fill('LIE'),
     wronglyLit: ['CHE', 'GBR', 'TUR', 'UKR', 'ISR'].filter(lit),
-    markers: [...document.querySelectorAll('.deployment')].length,
-    labels: [...document.querySelectorAll('.deployment-label')].map((el) => el.textContent),
+    markers: [...document.querySelectorAll('.marker')].length,
+    labels: [...document.querySelectorAll('.marker-label')].map((el) => el.textContent),
     litDeploymentCountries: ['POL', 'SVK', 'ROU', 'GRC', 'CHE', 'GBR'].filter(lit),
   };
 });
@@ -721,25 +721,56 @@ check(
 );
 // The layer is unchanged from scene 6 on purpose — this is a move, not a
 // change of subject — so the UK must still be lit after the camera settles.
-const uk = await page.evaluate(() => ({
-  gbr: document.querySelector('path.country[data-iso="GBR"]')?.getAttribute('fill') ?? null,
-  oxford: [...document.querySelectorAll('.deployment-label')].some((el) =>
-    el.textContent?.includes('Oxford'),
-  ),
-}));
+const uk = await page.evaluate(() => {
+  const markers = [...document.querySelectorAll('.marker')];
+  const labelOf = (m) => m.querySelector('.marker-label')?.textContent ?? '';
+  const find = (text) => markers.find((m) => labelOf(m).includes(text)) ?? null;
+  const westminster = find('Westminster');
+  const oxford = find('Oxford');
+  return {
+    gbr: document.querySelector('path.country[data-iso="GBR"]')?.getAttribute('fill') ?? null,
+    labels: markers.map(labelOf),
+    count: markers.length,
+    // The core is the IonQ claim. Westminster must not have one.
+    westminsterCore: westminster ? westminster.querySelectorAll('.marker-core').length : -1,
+    oxfordCore: oxford ? oxford.querySelectorAll('.marker-core').length : -1,
+  };
+});
 check(
   'the UK is still lit — the camera moved, the layer did not',
   uk.gbr?.startsWith('rgba(255,'),
   `GBR fill ${uk.gbr}`,
 );
-check('the Oxford Ionics marker is in frame', uk.oxford);
+// The scene names two markers, so exactly two must be on screen. Showing the
+// whole deployment set here would put QuantumBasel and Slovakia on a slide
+// titled United Kingdom — true, but neither British nor the subject.
+check(
+  'exactly the two markers the scene names are drawn',
+  uk.count === 2 &&
+    uk.labels.some((l) => l.includes('Westminster')) &&
+    uk.labels.some((l) => l.includes('Oxford')),
+  `${uk.count} markers: ${uk.labels.join(', ')}`,
+);
+/*
+ * THE ASSERTION THAT MATTERS MOST ON THIS SLIDE.
+ *
+ * Westminster is a seat of government, not an IonQ site, and the deck must
+ * never imply otherwise. The bright core is what says "IonQ is here", so an
+ * institution is drawn without one. If a future edit gives every marker the
+ * same glyph again, a dot on Parliament starts making a claim nobody checked.
+ */
+check(
+  'Westminster is drawn without the IonQ core — it is a place, not a presence',
+  uk.westminsterCore === 0 && uk.oxfordCore === 1,
+  `Westminster cores ${uk.westminsterCore}, Oxford cores ${uk.oxfordCore}`,
+);
 
 // A camera makes the frame edge a label collision, and §7e's rule for those
 // is to flip the label rather than move the dot. Before that rule existed,
 // Slovakia's dot sat inside the UK frame with its label hanging over the right
 // edge, which reads as a rendering fault rather than as a marker at the border.
 const overflow = await page.evaluate(() =>
-  [...document.querySelectorAll('.deployment-label, .deployment-detail')]
+  [...document.querySelectorAll('.marker-label, .marker-detail')]
     .map((el) => ({ text: el.textContent, box: el.getBoundingClientRect() }))
     .filter((o) => o.box.left < 0 || o.box.right > window.innerWidth)
     .map((o) => o.text),
@@ -767,7 +798,7 @@ check(
 // Markers are scene-driven, not global.
 await page.keyboard.press('Home');
 await sleep(900);
-const noMarkers = await page.evaluate(() => document.querySelectorAll('.deployment').length);
+const noMarkers = await page.evaluate(() => document.querySelectorAll('.marker').length);
 check('markers are absent on scenes that do not ask for them', noMarkers === 0, `${noMarkers} on scene 1`);
 await page.keyboard.press('End');
 await sleep(900);
