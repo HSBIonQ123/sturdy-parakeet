@@ -41,8 +41,9 @@ literal. Do not add a hex to a component or to `styles.css`.
 | `typePrimary` | `#C9D3DD` | type |
 | `typeMuted` | `#5E6B79` | labels |
 
-**On the orange.** `#FF8300` was sampled from `../assets/ionq-logo.webp`, the
-official wordmark in this repository. The mark is a three-stop gradient
+**On the orange.** `#FF8300` was sampled from `assets/ionq-logo.webp`, the
+official wordmark, vendored here so the provenance of the brand colour travels
+with the project rather than pointing at a path in another repository. The mark is a three-stop gradient
 `#FF5000 → #FF8300 → #FFB700`; `#FF8300` is the mid stop. The original brief
 specified `#FF8200`, one unit of green away and visually identical — the
 sampled value wins. Note that the sibling tool `redesigned-octo-memory` uses
