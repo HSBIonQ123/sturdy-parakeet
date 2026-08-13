@@ -20,6 +20,28 @@ The deck as it stands:
 | 05 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
 | 06 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
 | 07 | United Kingdom | the camera flies in to the UK; Westminster and Oxford marked |
+| 08 | Priority European Political Engagement | back out to the six |
+| 09 | Belgium | close up, held selected |
+| 10 | Priority European Political Engagement | back out to the six |
+| 11 | Italy | close up, held selected |
+| 12 | Priority European Political Engagement | back out to the six |
+| 13 | Germany | close up, held selected |
+| 14 | Priority European Political Engagement | back out to the six |
+| 15 | Poland | close up, with its IonQ QKD network marked |
+| 16 | Priority European Political Engagement | back out to the six |
+| 17 | Lithuania | close up, held selected |
+
+Scenes 6 to 17 are **hub and spoke**: the six priority states at region scale,
+then one of them close up, then back out to the six, then the next. Every
+country is introduced against the whole selection rather than in isolation, and
+stepping out is what makes the next zoom mean something. It needed no new
+machinery — a hub is just the engagement scene with no `camera`, and because
+scenes are absolute, omitting the camera *actively returns* to the fitted frame.
+
+Each spoke holds its country **selected**, which draws the bright motionless
+outline that separates the subject from its neighbours — at Lithuania's camera,
+Poland fills a third of the frame in the same orange — and fills the readout
+with that country's name, code, capital and region.
 
 ## Run it
 
@@ -62,7 +84,7 @@ camera and all. Zoom wherever you like while answering a question; the next
 | Inspect | Hover a country. The readout shows name, ISO code, capital and region. |
 | Hold | Click to pin a selection; it survives the pointer moving away. |
 | Clear selection / close menu | `Esc` |
-| Camera | Drag to pan, wheel to zoom, 1× to 8×. The map cannot be lost off-frame. |
+| Camera | Drag to pan, wheel to zoom, 1× to 24×. The map cannot be lost off-frame. |
 | Reset camera | `R` |
 | Fullscreen | `F` |
 
@@ -175,7 +197,7 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 70 things,
+Drives the production bundle in headless Chromium and asserts 72 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the
@@ -191,8 +213,10 @@ and no EU or EEA member leaks into it, so a selection can never drift into
 looking like a bloc; a zoomed scene arrives at its camera and gives it back on
 the way out, and no marker label runs off the frame while it is there;
 Westminster is drawn without the IonQ core that Oxford has, so a seat of
-government can never start reading as a site IonQ occupies; the hovered outline
-is
+government can never start reading as a site IonQ occupies; the whole
+hub-and-spoke tail is walked with the clicker and every hub must give the camera
+and the selection back while every spoke must zoom and say which country it is
+about; the hovered outline is
 unanimated and at full opacity while the ambient pulse is running; and the
 frame rate at 2560×1440. Screenshots land in `screenshots/`, with
 close-ups of Luxembourg, Slovenia, Lesotho, Gambia, the Gulf, Cyprus, Crimea

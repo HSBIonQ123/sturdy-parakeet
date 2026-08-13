@@ -321,6 +321,8 @@ const sceneState = () =>
     index: window.__scene?.index ?? null,
     total: window.__scene?.total ?? null,
     layers: window.__scene?.layers ?? null,
+    scale: window.__scene?.scale ?? null,
+    selected: window.__scene?.selected ?? null,
     title: document.querySelector('.plate-scene-title')?.textContent ?? null,
     menuOpen: Boolean(document.querySelector('.scene-menu')),
     members: [...document.querySelectorAll('path.country')].filter(
@@ -338,7 +340,7 @@ await page.keyboard.press('Escape');
 await sleep(200);
 
 let st = await sceneState();
-check('deck starts on scene 1 of 7', st.index === 0 && st.total === 7, JSON.stringify(st.title));
+check('deck starts on scene 1 of 17', st.index === 0 && st.total === 17, JSON.stringify(st.title));
 
 await page.keyboard.press('PageDown');
 await sleep(700);
@@ -795,6 +797,86 @@ check(
   `scale ${backOut?.toFixed(2)}x`,
 );
 
+/* ------------------------------------------------------------------ *
+ * The hub-and-spoke walk — asserted as a PATTERN, not scene by scene.
+ *
+ * The second half of the deck alternates: the six priority states at
+ * region scale, then one of them close up, then back out, then the next.
+ * Walking the whole tail with the clicker and checking the alternation is
+ * the assertion that matters, because the failure mode is not one wrong
+ * camera — it is a hub that quietly keeps a zoom, or a spoke that stops
+ * saying which country it is about. Either would leave the presenter
+ * looking at a picture nobody rehearsed, mid-talk, with no way back but
+ * the menu.
+ *
+ * It also pins the running order the user asked for, so a future edit
+ * cannot drop a hub and leave two country scenes back to back.
+ * ------------------------------------------------------------------ */
+const WALK = [
+  { hub: true },
+  { title: 'United Kingdom', iso: 'GBR' },
+  { hub: true },
+  { title: 'Belgium', iso: 'BEL' },
+  { hub: true },
+  { title: 'Italy', iso: 'ITA' },
+  { hub: true },
+  { title: 'Germany', iso: 'DEU' },
+  { hub: true },
+  { title: 'Poland', iso: 'POL' },
+  { hub: true },
+  { title: 'Lithuania', iso: 'LTU' },
+];
+
+// Start at the first hub (index 5) and step forward through the tail.
+await page.keyboard.press('Home');
+await sleep(700);
+await page.keyboard.press('m');
+await sleep(300);
+await page.click('.scene-item[data-scene="political-engagement"]');
+await sleep(1200);
+
+const walkProblems = [];
+for (let i = 0; i < WALK.length; i += 1) {
+  if (i > 0) {
+    await page.keyboard.press('PageDown');
+    await sleep(1300);
+  }
+  const at = await sceneState();
+  const want = WALK[i];
+  const index = 5 + i;
+  if (at.index !== index) {
+    walkProblems.push(`step ${i}: index ${at.index}, wanted ${index}`);
+    continue;
+  }
+  if (want.hub) {
+    // A hub must give the camera back and drop the selection. Both come free
+    // from scenes being absolute — which is exactly why they are worth testing.
+    if (Math.abs(at.scale - 1) > 0.02) walkProblems.push(`hub at ${index} kept ${at.scale?.toFixed(2)}x`);
+    if (at.selected !== null) walkProblems.push(`hub at ${index} held ${at.selected}`);
+    if (at.title !== 'Priority European Political Engagement') {
+      walkProblems.push(`hub at ${index} titled "${at.title}"`);
+    }
+  } else {
+    if (at.title !== want.title) walkProblems.push(`spoke at ${index}: "${at.title}" not "${want.title}"`);
+    if (at.scale <= 1.01) walkProblems.push(`spoke ${want.title} did not zoom (${at.scale?.toFixed(2)}x)`);
+    if (at.selected !== want.iso) walkProblems.push(`spoke ${want.title} selected ${at.selected}`);
+  }
+}
+check(
+  'the hub-and-spoke tail alternates region / country all the way to Lithuania',
+  walkProblems.length === 0,
+  walkProblems.length ? walkProblems.join(' | ') : '6 hubs and 6 spokes, in order',
+);
+// Every hub is generated from one definition, so they cannot drift apart — and
+// the layer must be identical on both sides of a zoom or the spoke would be
+// changing the subject rather than moving the camera.
+const hubLayers = await page.evaluate(() => window.__scene?.layers?.join() ?? null);
+check(
+  'the spokes never change the layer, only the camera',
+  hubLayers === 'political-engagement',
+  `layers on the last spoke: ${hubLayers}`,
+);
+
 // Markers are scene-driven, not global.
 await page.keyboard.press('Home');
 await sleep(900);
@@ -807,7 +889,7 @@ await page.keyboard.press('End');
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
-check('stepping past the last scene is a no-op', st.index === 6);
+check('stepping past the last scene is a no-op', st.index === 16);
 
 /* ---- the menu, for questions ---- */
 check('menu is closed by default', !st.menuOpen);

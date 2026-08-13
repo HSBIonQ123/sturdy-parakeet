@@ -15,6 +15,37 @@
 import type { Scene } from './types';
 import { DEPLOYMENT_IDS } from '../data/deployments';
 
+/**
+ * THE HUB, AND WHY IT REPEATS.
+ *
+ * The second half of the deck is hub and spoke: the six priority states at
+ * region scale, then one of them close up, then back out to the six, then the
+ * next. The presenter walks the set without ever losing the picture that says
+ * what the set IS — every country is introduced against the whole selection
+ * rather than in isolation, and stepping out is what makes the next zoom mean
+ * something.
+ *
+ * It costs nothing architecturally, and that is the point: because scenes are
+ * absolute (§3a) and an omitted `camera` actively RESETS rather than meaning
+ * "leave it where it is", a hub scene is simply the engagement scene with no
+ * camera. Returning to the region is not a special "zoom out" action, it is
+ * the ordinary act of stepping into a scene that has no camera. The pattern
+ * needed no new field, no new state and no new code.
+ *
+ * Each occurrence needs its OWN id even though the picture is identical:
+ * SceneMenu keys on `scene.id` and targets `data-scene`, so duplicates would
+ * collide in React's reconciliation and make a menu entry ambiguous. The
+ * content is written once here so six hubs cannot drift apart — change the
+ * caption and every hub changes with it.
+ */
+const hub = (id: string): Scene => ({
+  id,
+  title: 'Priority European Political Engagement',
+  caption: 'Six states · a selection, not a bloc',
+  layers: ['political-engagement'],
+  // No camera: this is what returns the talk to the region. See above.
+});
+
 export const DECK: readonly Scene[] = [
   {
     id: 'emea',
@@ -72,33 +103,12 @@ export const DECK: readonly Scene[] = [
     // deployment puts it on this scene without touching the deck.
     markers: DEPLOYMENT_IDS,
   },
-  {
-    id: 'political-engagement',
-    title: 'Priority European Political Engagement',
-    caption: 'Six states · a selection, not a bloc',
-    // The first scene in the deck that shows a set nobody published. Every
-    // preceding one draws a perimeter you could look up — the 27, the EEA,
-    // Horizon association, the EuroQCI Declaration — and this one draws a
-    // choice. The caption says so on screen, and the layer file says why at
-    // length; see data/layers/politicalEngagement.ts.
-    //
-    // It ends the deck deliberately. The four programme scenes establish that
-    // every instrument draws a different map of Europe, which is exactly the
-    // ground needed to say where the effort goes — and it is the point at
-    // which the UK lights up for the first time, having been outside all four
-    // perimeters, with the Oxford engineering base sitting on it.
-    //
-    // Only this layer is active. That is what makes the five EU members and
-    // the UK read on the same footing: with `eu` also on, the EU precedence
-    // rule would tint five of the six as member states and the set would come
-    // apart on screen into the very distinction the scene is not making.
-    layers: ['political-engagement'],
-    // No camera, like every scene before it. The set spans the UK to Lithuania
-    // and Italy, so it composes at the fitted frame — and holding the frame is
-    // what keeps the eye on which countries changed rather than on the map
-    // moving. Markers stay off: the deployment story belongs to EuroQCI, and
-    // adding a `markers` line is all it takes if a rehearsal disagrees.
-  },
+  // ---- The six, then each of them in turn. -------------------------
+  //
+  // The hub is defined by `hub()` above; the spokes each carry a camera and
+  // nothing else new. Reordering the walk means moving a spoke, which is one
+  // block — the property §3a exists to protect.
+  hub('political-engagement'),
   {
     id: 'uk',
     title: 'United Kingdom',
@@ -131,6 +141,91 @@ export const DECK: readonly Scene[] = [
     // IonQ site; Westminster does not, because it is a place the talk points
     // at rather than a place IonQ occupies. See data/institutions.ts.
     markers: ['westminster', 'oxford'],
+    /*
+     * THE SUBJECT, HELD SELECTED — and this is why `selectedIso` was on the
+     * Scene type from State 1 without a user.
+     *
+     * Every spoke zooms into a country that is one of six lit in the same
+     * orange, and several of them are neighbours: at Lithuania's camera, Poland
+     * fills a third of the frame in exactly the same tint. Without this the
+     * title plate is the only thing on screen saying which country the slide is
+     * about, which is not good enough at the back of a room.
+     *
+     * Selecting it costs no new code and does two things at once. The outline
+     * is drawn on top with the dark under-stroke that occludes the travelling
+     * pulse (§6), so the subject is the brightest and the only MOTIONLESS
+     * boundary in frame. And the readout fills with its name, ISO code, capital
+     * and region — a data panel on the spoke, which is State 3 arriving early
+     * through a field that was already there.
+     *
+     * Scenes are absolute, so the hubs clear it without saying anything:
+     * `gotoScene` writes `selectedIso` every time and a hub omits it.
+     */
+    selectedIso: 'GBR',
+  },
+  hub('engagement-after-uk'),
+  {
+    id: 'belgium',
+    title: 'Belgium',
+    // No caption. types.ts says omit rather than pad, and there is nothing on
+    // this slide to name — the UK scene's caption earns its place by naming
+    // the two markers on screen. A caption here would be decoration, and the
+    // presenter is the one with the Brussels content.
+    layers: ['political-engagement'],
+    // k=22. Belgium is about 280km across, so matching the apparent size the
+    // UK gets at k=7 needs roughly three times the scale — which is why the
+    // camera ceiling moved; see projection.ts. Framed on the real build.
+    camera: { lon: 4.6, lat: 50.6, k: 22 },
+    // The subject, held selected — see the note on the UK scene.
+    selectedIso: 'BEL',
+  },
+  hub('engagement-after-belgium'),
+  {
+    id: 'italy',
+    title: 'Italy',
+    layers: ['political-engagement'],
+    // Italy is height-limited rather than width-limited — about 1150km from
+    // the Alps to Sicily against a frame that is 16:9 — so it takes the
+    // SMALLEST k of the five spokes despite not being the largest country.
+    camera: { lon: 12.6, lat: 42.6, k: 7 },
+    // The subject, held selected — see the note on the UK scene.
+    selectedIso: 'ITA',
+  },
+  hub('engagement-after-italy'),
+  {
+    id: 'germany',
+    title: 'Germany',
+    layers: ['political-engagement'],
+    camera: { lon: 10.3, lat: 51.2, k: 9 },
+    // The subject, held selected — see the note on the UK scene.
+    selectedIso: 'DEU',
+  },
+  hub('engagement-after-germany'),
+  {
+    id: 'poland',
+    title: 'Poland',
+    caption: 'National QKD network · ID Quantique',
+    layers: ['political-engagement'],
+    camera: { lon: 19.2, lat: 52.1, k: 11 },
+    // The one spoke with a marker, because it is the one spoke where IonQ has
+    // something on the ground. The asymmetry is the data telling the truth, not
+    // an oversight — and the dot is country-level by `precision`, so it prints
+    // the network rather than claiming an address in Warsaw.
+    markers: ['poland'],
+    // The subject, held selected — see the note on the UK scene.
+    selectedIso: 'POL',
+  },
+  hub('engagement-after-poland'),
+  {
+    id: 'lithuania',
+    title: 'Lithuania',
+    layers: ['political-engagement'],
+    // k=20. Smaller than Belgium's 22 despite being a smaller country: at this
+    // scale Lithuania sits near the top of the fitted frame, and the
+    // translateExtent clamp starts to bite before the country fills the height.
+    camera: { lon: 23.9, lat: 55.3, k: 20 },
+    // The subject, held selected — see the note on the UK scene.
+    selectedIso: 'LTU',
   },
 ];
 

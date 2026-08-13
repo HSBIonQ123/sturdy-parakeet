@@ -144,6 +144,8 @@ declare global {
       total: number;
       layers: string[];
       scale: number;
+      /** Held selection, so verify.mjs can assert which country a spoke is about. */
+      selected: string | null;
     };
   }
 }
@@ -155,6 +157,7 @@ if (typeof window !== 'undefined') {
       total: DECK.length,
       layers: s.activeLayers,
       scale: s.camera.k,
+      selected: s.selectedIso,
     };
   };
   publish(useViewState.getState());

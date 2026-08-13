@@ -111,5 +111,24 @@ export function graticule(stepDegrees: number) {
   return geoGraticule().step([stepDegrees, stepDegrees]);
 }
 
-/** Camera limits. Clamped ~1x to 8x per the brief. */
-export const ZOOM_EXTENT: [number, number] = [1, 8];
+/**
+ * Camera limits.
+ *
+ * The brief said 1x to 8x, and that held for as long as the deck's only close-up
+ * was the United Kingdom. It does not survive a country scene on a small state:
+ * at 8x the frame still spans Ireland to Hungary, so Belgium occupies about a
+ * sixth of the width and a slide titled "Belgium" does not actually show
+ * Belgium. Matching the apparent size the UK gets at k=7 needs about 22x.
+ *
+ * Raised to 24x on evidence rather than by preference — Belgium was framed on
+ * the real build at 8, 12, 18 and 24, and the 1:50m geometry holds at every
+ * step: coastlines stay smooth at this latitude and the borders are hairlines
+ * with `vector-effect: non-scaling-stroke`, so they do not thicken or lose
+ * definition. The failure mode to watch for if this is pushed further is
+ * polygonal coastline, not blurring; check on the real build before raising it
+ * again, and remember that 1:50m generalises features to roughly a kilometre.
+ *
+ * The lower bound stays at 1: the fitted EMEA frame is the composition, and
+ * `translateExtent` pins the camera entirely there.
+ */
+export const ZOOM_EXTENT: [number, number] = [1, 24];

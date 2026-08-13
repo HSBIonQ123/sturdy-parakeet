@@ -146,7 +146,7 @@ fires two actions.
 **There is no "zoom mode" to build and there never was.** A scene carries an
 optional `camera: { lon, lat, k }`; `gotoScene` hands it to `applySceneCamera`,
 which calls the same `focusOn` that `window.__focus` and the reset key already
-use. `k` runs 1–8 (`ZOOM_EXTENT`), the move is a 700ms d3 transition, and d3
+use. `k` runs 1–24 (`ZOOM_EXTENT`), the move is a 700ms d3 transition, and d3
 stays authoritative for the transform throughout. Scene 7 (the UK close-up) is
 the first user of it and added **five lines of data and no code** — which is
 the payoff for `Scene` having carried `camera` since State 1 rather than
@@ -166,6 +166,46 @@ Two consequences worth keeping in mind when adding a zoomed scene:
 a module-level registry that `Map` writes to on mount. The alternative — lifting
 the zoom transform into the store — would re-render the map on every wheel tick
 and leave d3 and the store arguing about which transform is authoritative.
+
+## 3c. Hub and spoke, and the two fields that made it free
+
+Scenes 6–17 alternate: the six priority states at region scale, then one of
+them close up, then **back out to the six**, then the next. Every country is
+introduced against the whole selection rather than in isolation, and stepping
+out is what gives the next zoom something to mean.
+
+**It required no new machinery, and that is the whole argument for how scenes
+were defined.** A hub is the engagement scene with no `camera`; because scenes
+are absolute (§3a) and an omitted camera *actively resets*, "return to the
+region" is not a zoom-out action to implement — it is the ordinary act of
+entering a scene that has no camera. Had the deck been a list of layer toggles
+with a separate zoom mode, this pattern would have needed both a new field and
+new state.
+
+Two details that are load-bearing:
+
+- **`hub()` in `deck.ts` generates every hub from one definition.** Six
+  hand-copied hubs would drift — someone edits a caption on one of them and the
+  talk develops a flicker nobody can find.
+- **Each occurrence still needs its own `id`.** `SceneMenu` keys on `scene.id`
+  and targets `data-scene`, so duplicates would collide in reconciliation and
+  make a menu entry ambiguous.
+
+**The spokes hold their country selected**, which is what `selectedIso` was on
+the Scene type for since State 1. It earns its place twice over: the selection
+outline is drawn on top with the dark under-stroke that occludes the pulse
+(§6), so the subject is the brightest and only *motionless* boundary in frame —
+necessary because at Lithuania's camera, Poland fills a third of the screen in
+the identical member tint, and the title plate should not be the only thing
+distinguishing them. And the readout fills with that country's name, code,
+capital and region, marked `HELD`. That is State 3's data panel arriving through
+a field that already existed.
+
+`verify.mjs` walks the entire tail with the clicker and asserts the
+alternation — every hub gives the camera *and* the selection back, every spoke
+zooms and names its country. The failure mode worth guarding against is not one
+wrong camera; it is a hub that quietly keeps a zoom, which would leave the
+presenter mid-talk looking at a picture nobody rehearsed.
 
 ## 4. Disputed-territory policy
 
@@ -291,7 +331,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 70 assertions
+npm run verify         # drive the real build in Chromium; 72 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
