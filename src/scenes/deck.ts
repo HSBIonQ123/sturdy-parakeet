@@ -52,6 +52,23 @@ export const DECK: readonly Scene[] = [
     // the research area is not simply the single market.
     layers: ['eu', 'horizon-associated'],
   },
+  {
+    id: 'euroqci',
+    title: 'EuroQCI',
+    caption: '27 signatories · 3 eligible · IonQ deployments marked',
+    // This scene uses the `euroqci` layer rather than `eu`, even though the
+    // membership is identical — the legend should say "signatories", not
+    // "member states". The list is not duplicated; euroQci.ts takes it from
+    // the EU layer.
+    //
+    // Four of the six markers land INSIDE the highlighted area — Poland,
+    // Slovakia, Romania and Greece run IonQ QKD networks through ID Quantique
+    // as their national EuroQCI contributions. The other two, Switzerland and
+    // the UK, fall outside a perimeter drawn by EEA membership. See the note
+    // at the foot of data/deployments.ts.
+    layers: ['euroqci', 'euroqci-eligible'],
+    deployments: true,
+  },
 ];
 
 /** Index bounds helper, so nothing off-by-ones its way past the end mid-talk. */

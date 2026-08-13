@@ -655,6 +655,71 @@ body {
   }
 }
 
+/* =====================================================================
+   Deployment markers — ions held in the trap
+
+   A tight bright core inside a containing ring inside a soft halo. Static:
+   the pulsing borders are the only ambient motion on this map, and a blinking
+   marker would compete with the one thing meant to carry the room. The group
+   fades in when its scene opens, which is a transition, not ambient motion.
+   ===================================================================== */
+
+.deployments {
+  pointer-events: none;
+  animation: scene-in 420ms ease-out;
+}
+
+.deployment-halo {
+  fill: var(--ionq);
+  fill-opacity: 0.1;
+}
+
+.deployment-ring {
+  fill: none;
+  stroke: var(--ionq);
+  stroke-width: 1.1;
+  stroke-opacity: 0.9;
+}
+
+.deployment-core {
+  /* The hottest point on the map. Deliberately: this is the payload of the
+     slide, and it should out-read every border on screen. */
+  fill: #fff3e0;
+}
+
+.deployment-leader {
+  stroke: var(--ionq);
+  stroke-width: 0.8;
+  stroke-opacity: 0.7;
+}
+
+.deployment-label {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-value);
+  letter-spacing: 0.02em;
+  fill: var(--type);
+  /* A dark rim, so a label crossing a lit country stays readable without a
+     panel behind it. */
+  paint-order: stroke;
+  stroke: var(--base);
+  stroke-width: 3.5;
+  stroke-opacity: 0.85;
+}
+
+.deployment-detail {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--t-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--ionq);
+  paint-order: stroke;
+  stroke: var(--base);
+  stroke-width: 3;
+  stroke-opacity: 0.85;
+}
+
 /* ---- the member circuit ----
    Borders internal to an active membership layer, run brighter and heavier
    than the ambient network so the bloc reads as an energised region of the

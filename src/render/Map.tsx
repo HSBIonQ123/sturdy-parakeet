@@ -33,6 +33,7 @@ import { LAYERS } from '../data/layers';
 import { palette, withAlpha } from './palette';
 import { CountryPath } from './CountryPath';
 import { Graticule } from './Graticule';
+import { Deployments } from './Deployments';
 import { KeyHints } from './Chrome';
 import { registerCamera } from './cameraControl';
 import { DECK } from '../scenes/deck';
@@ -62,6 +63,7 @@ export function Map() {
   const select_ = useViewState((s) => s.select);
   const setHovered = useViewState((s) => s.setHovered);
   const finishBoot = useViewState((s) => s.finishBoot);
+  const showDeployments = useViewState((s) => s.showDeployments);
   const nextScene = useViewState((s) => s.nextScene);
   const prevScene = useViewState((s) => s.prevScene);
   const gotoScene = useViewState((s) => s.gotoScene);
@@ -414,6 +416,11 @@ export function Map() {
             </g>
           </g>
         ) : null}
+
+        {/* Also outside the camera group, and for the same reason as the
+            vignette: a site marker must hold a constant size on screen. It
+            takes the projection and applies the camera itself. */}
+        {optics && showDeployments ? <Deployments projection={optics.projection} /> : null}
 
         {/* Outside the camera group: the vignette is a property of the frame,
             not of the map, so it must not pan or scale. */}

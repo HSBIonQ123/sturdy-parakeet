@@ -23,6 +23,7 @@ import type { Alpha3 } from '../iso';
 import { EU } from './eu';
 import { EEA_EFTA_UK } from './eeaEftaUk';
 import { HORIZON_EUROPE } from './horizonEurope';
+import { EUROQCI, EUROQCI_ELIGIBLE } from './euroQci';
 
 export interface MembershipLayer {
   /** Stable machine id, used in scene definitions in State 4. */
@@ -78,6 +79,8 @@ export const LAYERS: readonly MembershipLayer[] = [
   EU,
   EEA_EFTA_UK,
   HORIZON_EUROPE,
+  EUROQCI,
+  EUROQCI_ELIGIBLE,
   // Still to come: NATO, EuroQCI, EU Quantum Flagship, Commonwealth, GCC,
   // Council of Europe. Each is one file here plus one entry in this array.
 ];

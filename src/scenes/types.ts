@@ -53,4 +53,14 @@ export interface Scene {
   readonly camera?: SceneCamera;
   /** A country held selected when the scene opens. Rarely wanted. */
   readonly selectedIso?: Alpha3;
+  /**
+   * Show IonQ site markers (src/data/deployments.ts).
+   *
+   * A boolean rather than a marker-set name, deliberately: there is exactly
+   * one marker set today and inventing a registry for it would be scaffolding
+   * with nothing to hold up. State 3 introduces capital markers, and that is
+   * the point to widen this into `markers?: string[]` — one field, one
+   * migration, with a real second case to design against.
+   */
+  readonly deployments?: boolean;
 }

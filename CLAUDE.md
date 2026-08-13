@@ -6,7 +6,8 @@ anything; if you change a decision recorded here, change it here too.
 
 ```
 State 1  base EMEA region map                    <- BUILT
-State 2  membership layers over the base map     <- EU 27, EEA/EFTA/UK, Horizon Europe
+State 2  membership layers over the base map     <- EU 27, EEA/EFTA/UK, Horizon Europe, EuroQCI
+State 3  capital deep-dives with a data panel    <- STARTED: markers, see §7e
 State 4  scene sequencer                         <- BUILT EARLY, see §3a
 State 3  capital deep-dives with a data panel
 ```
@@ -267,7 +268,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 46 assertions
+npm run verify         # drive the real build in Chromium; 57 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -379,6 +380,38 @@ agreement, which covers most of the continent. That is a much larger story
 than the association list and deserves its own scene rather than being merged
 into this one — the two tiers mean different things.
 
+## 7e. Markers — the first ions on the trap
+
+`src/data/deployments.ts` holds IonQ sites; `render/Deployments.tsx` draws
+them. This is the ion metaphor from the original brief arriving for real: a
+bright core inside a containing ring inside a soft halo, sitting on the
+conductor network the borders form. **State 3's capital markers should be this
+component with a different data source** — do not write a second marker system.
+
+Three rules it establishes:
+
+1. **Markers live outside the camera group.** The projected point is put
+   through the camera by hand (`x * k + tx`) and drawn in screen space, so a
+   marker holds constant size and its label never scales. An ion that swells
+   to a saucer at 8× looks like a bug.
+2. **Nothing about a marker animates ambiently.** The pulsing borders remain
+   the only ambient motion on the map. Markers fade in when their scene opens
+   — a transition, not ambient motion — and then hold still.
+3. **`precision` is honest about what a coordinate means.** A site-level
+   marker names its place, because that is what it is asserting. A
+   country-level marker does not: printing "WARSAW" under a dot that means
+   "Poland" claims a precision the data does not have. National QKD networks
+   have no single point.
+
+Labels carry `labelSide` and `labelDy` because six markers in Europe collide
+and the real list will be longer. When they clash, flip a label — never move a
+dot. The dot is where the deployment is.
+
+The deployment list is **partly supplied by IonQ Government Affairs and partly
+reconstructed from public announcements**, and it says so at the top of the
+file. Anything unannounced or under NDA is absent by definition. Treat it as a
+starting point and confirm before presenting.
+
 ## 7d. The frame-rate gate measures capability, not contention
 
 `verify.mjs` takes the **best of three** samples rather than one. This is a
@@ -389,9 +422,25 @@ identical code, single samples ranged 19–60 while the best was consistently
 random before a talk teaches you to ignore it, which is worse than not having
 one. A real regression still fails, because it lowers all three samples.
 
+**Measure early, and in isolation when diagnosing.** The gate now runs before
+the screenshot-heavy part of the suite. It previously sat near the end, after
+a dozen 2560×1440 PNG encodes and a second browser context, and failed at
+41fps on code that measures a clean 60 on every scene in isolation — it was
+reporting the suite's own CPU appetite, not the map's.
+
+Two false alarms are worth remembering, because both looked exactly like real
+regressions:
+
+- **Pattern fills.** The obvious suspect when the EuroQCI scene dipped.
+  Swapping every pattern for a flat colour in the live page changed nothing:
+  60.3 either way.
+- **Leaked preview servers.** `npx` forks vite as a child, so killing the npx
+  pid left the real server running. Six accumulated across runs and quietly
+  ate the CPU. The suite now spawns detached and kills by process group.
+
 If you suspect a genuine perf regression, reproduce it on a warm page in
-isolation before believing a single suite number — pattern fills were the
-obvious suspect here and turned out to cost nothing at all.
+isolation before believing a suite number, and check `ps aux | grep vite`
+first.
 
 ## 8. Known limitations
 
