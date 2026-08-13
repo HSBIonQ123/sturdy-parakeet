@@ -6,7 +6,8 @@ anything; if you change a decision recorded here, change it here too.
 
 ```
 State 1  base EMEA region map                    <- BUILT
-State 2  membership layers over the base map     <- EU 27, EEA/EFTA/UK, Horizon Europe, EuroQCI
+State 2  membership layers over the base map     <- EU 27, EEA/EFTA/UK, Horizon Europe, EuroQCI,
+                                                    priority political engagement (a selection, §7f)
 State 3  capital deep-dives with a data panel    <- STARTED: markers, see §7e
 State 4  scene sequencer                         <- BUILT EARLY, see §3a
 State 3  capital deep-dives with a data panel
@@ -269,7 +270,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 57 assertions
+npm run verify         # drive the real build in Chromium; 63 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -423,6 +424,13 @@ identical code, single samples ranged 19–60 while the best was consistently
 random before a talk teaches you to ignore it, which is worse than not having
 one. A real regression still fails, because it lowers all three samples.
 
+**The gate must measure the heaviest scene, which is not the last one.**
+EuroQCI is the worst case — two hatch patterns, 31 tints and six markers — and
+it stopped being the end of the deck when scene 6 arrived, so `verify.mjs`
+presses `End` and then `PageUp` to reach it. If you append another scene, check
+that line still lands where it means to; a gate quietly measuring a light scene
+passes forever and tells you nothing.
+
 **Measure early, and in isolation when diagnosing.** The gate now runs before
 the screenshot-heavy part of the suite. It previously sat near the end, after
 a dozen 2560×1440 PNG encodes and a second browser context, and failed at
@@ -442,6 +450,36 @@ regressions:
 If you suspect a genuine perf regression, reproduce it on a warm page in
 isolation before believing a suite number, and check `ps aux | grep vite`
 first.
+
+## 7f. A selection is not a membership, and must say so
+
+Every layer through EuroQCI states a fact with a published list behind it. The
+priority engagement layer (`politicalEngagement.ts`, scene 6) states an IonQ
+choice: six states — UK, Belgium, Lithuania, Poland, Italy, Germany — who are
+members of nothing in common. The map must not imply otherwise, and three
+things carry that:
+
+1. **The label names the thing honestly.** "Priority political engagement" —
+   no acronym, no bloc name, nothing an audience could mistake for an
+   institution they are meant to recognise.
+2. **The caption states the negative, on screen.** "A selection, not a bloc"
+   sits on the title plate for as long as the scene is up.
+3. **The absences carry no reasons.** Elsewhere in `layers/` the footer notes
+   explain why a near-miss is dark, because a rule exists to cite. Here there
+   is none, so the file records nothing rather than inventing a rationale for
+   why France or Switzerland is unlit. This is the disputed.ts policy applied
+   to commercial geography: state what is, and stop.
+
+**It is the one layer where being out of date is invisible.** A stale EU layer
+puts a country in the wrong colour and somebody notices; a stale priority list
+looks exactly like a current one. Confirm it before presenting, on the same
+footing as `deployments.ts`.
+
+It also runs **alone** in its scene. With `eu` co-active the precedence rule
+would tint five of the six as member states and split the set on screen into
+the very distinction the scene is not making. A future second tier — engaged
+versus watching — is a second file and a hatched layer, exactly as scenes 3
+and 4 do it.
 
 ## 8. Known limitations
 

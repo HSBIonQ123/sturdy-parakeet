@@ -24,6 +24,7 @@ import { EU } from './eu';
 import { EEA_EFTA_UK } from './eeaEftaUk';
 import { HORIZON_EUROPE } from './horizonEurope';
 import { EUROQCI, EUROQCI_ELIGIBLE } from './euroQci';
+import { POLITICAL_ENGAGEMENT } from './politicalEngagement';
 
 export interface MembershipLayer {
   /** Stable machine id, used in scene definitions in State 4. */
@@ -81,6 +82,11 @@ export const LAYERS: readonly MembershipLayer[] = [
   HORIZON_EUROPE,
   EUROQCI,
   EUROQCI_ELIGIBLE,
+  // Last, and it costs nothing either way: this layer is never co-active with
+  // another, so no precedence question arises. Placed at the end so that if it
+  // ever IS combined with a programme layer, the legal fact wins the colour
+  // and the priority list reads as an overlay on it — the right way round.
+  POLITICAL_ENGAGEMENT,
   // Still to come: NATO, EuroQCI, EU Quantum Flagship, Commonwealth, GCC,
   // Council of Europe. Each is one file here plus one entry in this array.
 ];

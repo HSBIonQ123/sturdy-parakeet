@@ -69,6 +69,33 @@ export const DECK: readonly Scene[] = [
     layers: ['euroqci', 'euroqci-eligible'],
     deployments: true,
   },
+  {
+    id: 'political-engagement',
+    title: 'Priority European Political Engagement',
+    caption: 'Six states · a selection, not a bloc',
+    // The first scene in the deck that shows a set nobody published. Every
+    // preceding one draws a perimeter you could look up — the 27, the EEA,
+    // Horizon association, the EuroQCI Declaration — and this one draws a
+    // choice. The caption says so on screen, and the layer file says why at
+    // length; see data/layers/politicalEngagement.ts.
+    //
+    // It ends the deck deliberately. The four programme scenes establish that
+    // every instrument draws a different map of Europe, which is exactly the
+    // ground needed to say where the effort goes — and it is the point at
+    // which the UK lights up for the first time, having been outside all four
+    // perimeters, with the Oxford engineering base sitting on it.
+    //
+    // Only this layer is active. That is what makes the five EU members and
+    // the UK read on the same footing: with `eu` also on, the EU precedence
+    // rule would tint five of the six as member states and the set would come
+    // apart on screen into the very distinction the scene is not making.
+    layers: ['political-engagement'],
+    // No camera, like every scene before it. The set spans the UK to Lithuania
+    // and Italy, so it composes at the fitted frame — and holding the frame is
+    // what keeps the eye on which countries changed rather than on the map
+    // moving. Markers stay off: the deployment story belongs to EuroQCI, and
+    // `deployments: true` is a one-word change if a rehearsal disagrees.
+  },
 ];
 
 /** Index bounds helper, so nothing off-by-ones its way past the end mid-talk. */

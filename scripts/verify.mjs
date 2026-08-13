@@ -286,7 +286,12 @@ check('holds 60fps while hovering', hovering.best >= 55, fmt(hovering));
 // The heaviest scene, and the one most likely to be on screen during a talk:
 // two hatch patterns, 31 tinted countries and six markers with stroked labels.
 await page.mouse.move(1280, 1435);
+// End lands on the LAST scene, which is no longer the heaviest one — the
+// engagement scene that now closes the deck is a single solid layer with no
+// patterns and no markers. Step back one to measure EuroQCI, which is still
+// the worst case and still the scene most likely to be up during questions.
 await page.keyboard.press('End');
+await page.keyboard.press('PageUp');
 // Generous settle: the scene change runs a 700ms camera transition, mounts
 // six markers, and starts two scene-in fades. Measuring into that tail says
 // more about the transition than about the steady state a presenter looks at.
@@ -329,7 +334,7 @@ await page.keyboard.press('Escape');
 await sleep(200);
 
 let st = await sceneState();
-check('deck starts on scene 1 of 5', st.index === 0 && st.total === 5, JSON.stringify(st.title));
+check('deck starts on scene 1 of 6', st.index === 0 && st.total === 6, JSON.stringify(st.title));
 
 await page.keyboard.press('PageDown');
 await sleep(700);
@@ -622,6 +627,69 @@ check(
 
 await page.screenshot({ path: `${SHOTS}/scene-euroqci.png` });
 
+/* ------------------------------------------------------------------ *
+ * Scene 6: priority political engagement.
+ *
+ * The first scene whose set nobody published, so the assertions are about
+ * it NOT looking like the ones that came before: one tier, no hatch, and
+ * countries that were lit on every programme scene going dark. The UK is
+ * the check that matters — dark on all four preceding scenes and lit here,
+ * which is the argument the scene exists to make.
+ * ------------------------------------------------------------------ */
+await page.keyboard.press('PageDown');
+await sleep(1000);
+st = await sceneState();
+check(
+  'scene 6 is priority political engagement, and it is the only active layer',
+  st.index === 5 && st.layers?.join() === 'political-engagement',
+  `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
+);
+check(
+  'exactly six polygons take the member tint',
+  st.members === 6,
+  `${st.members} tinted`,
+);
+// One tier, so nothing may be hatched. If a future edit gives this layer an
+// accent or a pattern it stops reading as a single assertion about six equal
+// states, which is the one thing the scene is claiming.
+check(
+  'the engagement scene has a single tier — nothing is hatched',
+  st.tier2 === 0,
+  `${st.tier2} hatched`,
+);
+
+const eng = await page.evaluate(() => {
+  const fill = (iso) =>
+    document.querySelector(`path.country[data-iso="${iso}"]`)?.getAttribute('fill') ?? null;
+  const lit = (iso) =>
+    Boolean(fill(iso)?.startsWith('rgba(255,') || fill(iso)?.includes('layer-hatch'));
+  return {
+    gbr: fill('GBR'),
+    members: ['BEL', 'DEU', 'GBR', 'ITA', 'LTU', 'POL'].filter(lit),
+    // EU members and EEA states that were lit earlier in the deck and are not
+    // on this list. A selection layer that quietly kept lighting the Union
+    // would be making a membership claim by accident.
+    wronglyLit: ['FRA', 'NLD', 'ESP', 'SWE', 'IRL', 'CHE', 'NOR'].filter(lit),
+  };
+});
+check(
+  'all six are lit and none is missing',
+  eng.members.length === 6,
+  `lit: ${eng.members.join(', ') || 'none'}`,
+);
+check(
+  'the UK is lit here, having been dark on all four programme scenes',
+  eng.gbr?.startsWith('rgba(255,'),
+  `GBR fill ${eng.gbr}`,
+);
+check(
+  'no EU or EEA state leaks in — this is a selection, not a bloc',
+  eng.wronglyLit.length === 0,
+  `wrongly lit: ${eng.wronglyLit.join(', ') || 'none'}`,
+);
+
+await page.screenshot({ path: `${SHOTS}/scene-engagement.png` });
+
 // Markers are scene-driven, not global.
 await page.keyboard.press('Home');
 await sleep(900);
@@ -634,7 +702,7 @@ await page.keyboard.press('End');
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
-check('stepping past the last scene is a no-op', st.index === 4);
+check('stepping past the last scene is a no-op', st.index === 5);
 
 /* ---- the menu, for questions ---- */
 check('menu is closed by default', !st.menuOpen);

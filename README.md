@@ -5,8 +5,9 @@ built to be presented live to policymakers. It replaces PowerPoint for
 government-affairs briefings and it never touches the network.
 
 **The base region map, a scene sequencer, membership layers for the EU 27, the
-EEA/EFTA/UK, Horizon Europe and EuroQCI, and IonQ deployment markers.** See
-`CLAUDE.md` for the conventions that keep each addition additive.
+EEA/EFTA/UK, Horizon Europe and EuroQCI, IonQ deployment markers, and a closing
+priority-engagement scene.** See `CLAUDE.md` for the conventions that keep each
+addition additive.
 
 The deck as it stands:
 
@@ -17,6 +18,7 @@ The deck as it stands:
 | 03 | EEA, EFTA and the UK | the 27, plus five states hatched |
 | 04 | Horizon Europe | the 27, plus 19 associated states hatched |
 | 05 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
+| 06 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
 
 ## Run it
 
@@ -106,6 +108,18 @@ differ by about a fifth of the distance between a lit country and an unlit one.
 Colour alone would vanish on a projector; shape does not. `CLAUDE.md` §7b has
 the numbers.
 
+Scene 6 is a different kind of layer and is labelled as one. The first five
+scenes draw perimeters you can look up — the 27, the EEA, Horizon association,
+the EuroQCI Declaration. The last draws a **selection**: six states where
+engagement is focused, who are not members of anything in common. So the layer
+is called "Priority political engagement", the caption on screen reads "a
+selection, not a bloc", and the file records no reasons for the countries that
+are absent, because there is no published rule to point at. It is also the
+scene where the UK lights up for the first time, having sat outside all four
+perimeters before it. Treat the list like `deployments.ts` and confirm it
+before presenting — a stale priority list is the one thing on this map that
+looks exactly like a current one.
+
 ## What you are looking at
 
 National borders inside EMEA are live electrode traces: every boundary glows in
@@ -153,7 +167,7 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 57 things,
+Drives the production bundle in headless Chromium and asserts 63 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the
@@ -164,7 +178,9 @@ border segment is stroked by two layer circuits; Liechtenstein and the Faroes
 swap sides between scenes 3 and 4, so the research area can never quietly
 become a copy of the single market; the four IonQ QKD networks sit inside
 EuroQCI signatory states, so the slide can never quietly start making the
-opposite argument; the hovered outline is
+opposite argument; the closing engagement scene lights exactly its six states
+and no EU or EEA member leaks into it, so a selection can never drift into
+looking like a bloc; the hovered outline is
 unanimated and at full opacity while the ambient pulse is running; and the
 frame rate at 2560×1440. Screenshots land in `screenshots/`, with
 close-ups of Luxembourg, Slovenia, Lesotho, Gambia, the Gulf, Cyprus, Crimea
