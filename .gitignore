@@ -1,0 +1,11 @@
+node_modules
+dist
+screenshots/
+*.tsbuildinfo
+.DS_Store
+*.local
+
+# The repo root ignores package-lock.json, which suits the no-build tools there.
+# This project has a build, and a pinned lockfile is what makes the offline
+# bundle reproducible — that is the whole premise. Re-include it here.
+!package-lock.json

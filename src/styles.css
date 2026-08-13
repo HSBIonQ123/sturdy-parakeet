@@ -1,0 +1,655 @@
+/* =====================================================================
+   styles.css — IonQ EMEA Atlas
+
+   Colour tokens are NOT defined here. They are pushed onto :root by
+   render/palette.ts at mount, so there is one source of truth and no drift
+   between the TypeScript and the stylesheet. Border geometry and timing come
+   from render/borderConfig.ts the same way. If you want to change a number,
+   change it there.
+
+   Fonts are vendored woff2 in src/assets/fonts. Nothing here reaches the
+   network, ever.
+   ===================================================================== */
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('./assets/fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('./assets/fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('./assets/fonts/space-grotesk-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('./assets/fonts/space-grotesk-latin-600-normal.woff2') format('woff2');
+  font-weight: 600;
+  font-display: block;
+}
+
+:root {
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sans: 'Space Grotesk', system-ui, sans-serif;
+
+  /* Type scale. Sized against viewport height so it holds on a projector
+     rather than being tuned to whatever laptop it was built on. */
+  --t-plate: clamp(15px, 1.55vh, 24px);
+  --t-title: clamp(18px, 2.05vh, 30px);
+  --t-label: clamp(8px, 0.86vh, 11px);
+  --t-value: clamp(10px, 1.12vh, 14px);
+  --t-micro: clamp(7px, 0.76vh, 10px);
+
+  --rail: clamp(200px, 17vw, 280px);
+  --inset: clamp(16px, 2.4vh, 34px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* no scrollbars anywhere, at any ratio */
+  background: var(--base);
+}
+
+body {
+  font-family: var(--mono);
+  color: var(--type);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Data type reads as instrument output: small, tracked wide, uppercase. */
+.label {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: var(--t-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--type-muted);
+}
+
+.value {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--t-value);
+  letter-spacing: 0.06em;
+  color: var(--type);
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--type-muted);
+}
+
+/* =====================================================================
+   Layout
+   ===================================================================== */
+
+.app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.map-host {
+  position: absolute;
+  inset: 0;
+}
+
+.map-host.cursor-hidden {
+  cursor: none;
+}
+
+.map {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.canvas {
+  fill: var(--base);
+}
+
+.vignette {
+  pointer-events: none;
+}
+
+/* ---- title plate ---- */
+.plate {
+  position: absolute;
+  top: var(--inset);
+  left: var(--inset);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.plate-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: var(--t-plate);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--type);
+}
+
+.plate-rule {
+  width: 100%;
+  height: 1px;
+  margin: 0.6em 0 0.5em;
+  background: var(--ionq);
+  opacity: 0.85;
+}
+
+.plate-sub {
+  margin: 0;
+}
+
+/* ---- readout rail ----
+   Always present, even when empty, so nothing reflows as the pointer moves. */
+.readout {
+  position: absolute;
+  top: var(--inset);
+  right: var(--inset);
+  width: var(--rail);
+  min-height: 8.5em;
+  padding: 0.9em 1em 1.1em;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neutral-line) 55%, transparent);
+  backdrop-filter: blur(2px);
+  z-index: 2;
+}
+
+.readout-rule {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 34%;
+  height: 2px;
+  background: var(--ionq);
+}
+
+.readout-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.readout-pin {
+  color: var(--ionq);
+}
+
+.readout-title {
+  margin: 0.5em 0 0.7em;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-title);
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  color: var(--type);
+}
+
+.readout-fields {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 4.6em 1fr;
+  gap: 0.42em 0.8em;
+}
+
+.field {
+  display: contents;
+}
+
+.field dt {
+  margin: 0;
+  align-self: baseline;
+}
+
+.field dd {
+  margin: 0;
+}
+
+.readout-empty {
+  margin: 1.4em 0 0;
+}
+
+/* ---- legend ---- */
+.legend {
+  position: absolute;
+  left: var(--inset);
+  bottom: calc(var(--inset) + 2.4em);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+}
+
+.legend-swatch {
+  width: 24px;
+  height: 6px;
+  overflow: visible;
+}
+
+.legend-line {
+  stroke-width: 1.1;
+  fill: none;
+}
+
+.legend-network {
+  stroke: var(--border-pulse);
+}
+
+.legend-defacto {
+  stroke: var(--border-base);
+  stroke-dasharray: var(--defacto-dash, 2.5 3);
+}
+
+.legend-oos {
+  stroke: var(--border-base);
+  opacity: 0.3;
+}
+
+/* ---- telemetry strip ---- */
+.telemetry {
+  position: absolute;
+  left: var(--inset);
+  right: var(--inset);
+  bottom: calc(var(--inset) * 0.55);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.6em;
+  align-items: baseline;
+  padding-top: 0.5em;
+  border-top: 1px solid color-mix(in srgb, var(--neutral-line) 45%, transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.telemetry-item {
+  display: flex;
+  gap: 0.5em;
+  align-items: baseline;
+}
+
+.telemetry-item.is-fault .value {
+  color: var(--border-pulse);
+}
+
+/* ---- keyboard hints ---- */
+.hints {
+  position: absolute;
+  right: var(--inset);
+  bottom: calc(var(--inset) + 2.4em);
+  display: flex;
+  gap: 1.1em;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 600ms ease;
+}
+
+.hints.is-hidden {
+  opacity: 0;
+}
+
+.hints kbd {
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.1em;
+  border: 1px solid color-mix(in srgb, var(--neutral-line) 70%, transparent);
+  padding: 0.15em 0.4em;
+  margin-right: 0.4em;
+  color: var(--type);
+}
+
+/* ---- corner brackets: a chamber viewport ---- */
+.brackets {
+  position: absolute;
+  inset: calc(var(--inset) * 0.55);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bracket {
+  position: absolute;
+  width: clamp(18px, 2.2vh, 34px);
+  height: clamp(18px, 2.2vh, 34px);
+  border: 1px solid var(--ionq);
+  opacity: 0.55;
+}
+
+.bracket-tl {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.bracket-tr {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+.bracket-bl {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+}
+.bracket-br {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* =====================================================================
+   Map layers
+   ===================================================================== */
+
+.graticule {
+  fill: none;
+  stroke: var(--neutral-line);
+  stroke-width: var(--graticule-width);
+  stroke-opacity: var(--graticule-opacity);
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.country {
+  stroke: none; /* borders are drawn once, by BorderMesh. Never stroke here. */
+  outline: none;
+  transition: fill 140ms ease, opacity 220ms ease;
+}
+
+.country:focus-visible {
+  stroke: var(--ionq);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+
+/* =====================================================================
+   The border network
+   ===================================================================== */
+
+.borders path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Stroke geometry resolves in screen space. Hairlines stay hairlines at 8x,
+     and — the reason it really matters — dash lengths stop scaling, so the
+     pulse keeps a constant apparent length and speed at every zoom level. */
+  vector-effect: non-scaling-stroke;
+}
+
+.border-oos-coast {
+  stroke: var(--neutral-line);
+  stroke-width: var(--coast-width);
+  stroke-opacity: var(--oos-coast-opacity);
+  pointer-events: none;
+}
+
+.border-oos {
+  stroke: var(--border-base);
+  stroke-width: var(--oos-width);
+  stroke-opacity: var(--oos-opacity);
+  pointer-events: none;
+}
+
+.border-coast {
+  stroke: var(--neutral-line);
+  stroke-width: var(--coast-width);
+  stroke-opacity: var(--coast-opacity);
+  pointer-events: none;
+}
+
+.border-glow {
+  stroke: var(--border-base);
+  stroke-width: var(--glow-width);
+  stroke-opacity: var(--glow-opacity);
+  pointer-events: none;
+}
+
+.border-base {
+  stroke: var(--border-base);
+  stroke-width: var(--base-width);
+  stroke-opacity: var(--base-opacity);
+  pointer-events: none;
+}
+
+.border-defacto {
+  stroke: var(--border-base);
+  stroke-width: var(--defacto-width);
+  stroke-opacity: var(--defacto-opacity);
+  stroke-dasharray: var(--defacto-dash);
+  pointer-events: none;
+}
+
+/* ---- the travelling charge ----
+   Three stacked strokes sharing one speed and one phase, leading edges
+   aligned, so a short bright core sits at the front of a longer dim tail.
+   No filter: a blur on an animated element re-rasterises every frame. */
+.pulse {
+  stroke: var(--border-pulse);
+  stroke-width: var(--w);
+  stroke-opacity: var(--o);
+  stroke-dasharray: var(--dash);
+  stroke-dashoffset: var(--phase);
+  pointer-events: none; /* all hit-testing stays on the fills underneath */
+  will-change: stroke-dashoffset;
+  animation: pulse-travel var(--pulse-period) linear infinite;
+}
+
+@keyframes pulse-travel {
+  from {
+    stroke-dashoffset: var(--phase);
+  }
+  to {
+    stroke-dashoffset: var(--end);
+  }
+}
+
+/* Slow global oscillation. Should be felt, not seen. */
+.pulse-breathe {
+  animation: breathe var(--breathe-period) ease-in-out infinite alternate;
+}
+
+@keyframes breathe {
+  from {
+    opacity: var(--breathe-max);
+  }
+  to {
+    opacity: var(--breathe-min);
+  }
+}
+
+/* Bright on load, then settles once you start speaking. One-shot.
+   The hold is an animation-delay and `both` keeps the bright value during it,
+   because a @keyframes percentage stop cannot be driven by a custom property. */
+.pulse-attenuate {
+  animation: attenuate var(--attenuate-ramp) ease-out var(--attenuate-hold) both;
+}
+
+@keyframes attenuate {
+  from {
+    opacity: var(--attenuate-from);
+  }
+  to {
+    opacity: var(--attenuate-to);
+  }
+}
+
+/* ---- boot sequence ----
+   The network energises from dark: the base trace fades up while the pulse
+   runs fast and long, so light floods the mesh rather than dotting it. */
+.borders.is-booting .border-base,
+.borders.is-booting .border-glow,
+.borders.is-booting .border-coast,
+.borders.is-booting .border-oos,
+.borders.is-booting .border-oos-coast,
+.borders.is-booting .border-defacto {
+  animation: energise var(--boot-duration) ease-out both;
+}
+
+.borders.is-booting .pulse {
+  stroke-dasharray: var(--boot-dash);
+  animation: pulse-travel var(--boot-period) linear infinite;
+}
+
+@keyframes energise {
+  from {
+    stroke-opacity: 0;
+  }
+}
+
+/* ---- arc flash: one segment discharges, never more ---- */
+.border-flash {
+  stroke: var(--flash-colour);
+  stroke-width: var(--flash-width);
+  pointer-events: none;
+  animation: flash var(--flash-duration) ease-out forwards;
+}
+
+@keyframes flash {
+  from {
+    stroke-opacity: 1;
+  }
+  to {
+    stroke-opacity: 0;
+  }
+}
+
+/* =====================================================================
+   Hover and selection
+
+   With every border already orange, hue has no contrast left to spend. The
+   hovered outline wins on luminance AND stillness: `outline-under` is a wider
+   stroke in the canvas colour that occludes the travelling pulse along exactly
+   these segments, so the hovered country's boundary is the only motionless
+   border on screen.
+   ===================================================================== */
+
+.outline path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.outline-under {
+  stroke: var(--base);
+}
+
+.outline-hover .outline-under {
+  stroke-width: var(--hover-under-width);
+  stroke-opacity: var(--hover-under-opacity);
+}
+
+.outline-hover .outline-line {
+  stroke: var(--border-pulse);
+  stroke-width: var(--hover-width);
+  stroke-opacity: 1;
+}
+
+.outline-select .outline-under {
+  stroke-width: var(--select-under-width);
+  stroke-opacity: var(--select-under-opacity);
+}
+
+.outline-select .outline-line {
+  stroke: var(--ionq);
+  stroke-width: var(--select-width);
+  stroke-opacity: 1;
+}
+
+/* =====================================================================
+   Reduced motion
+
+   Fallback is a STATIC LIT BORDER at mid brightness — the network reads as
+   powered, it simply is not travelling. Nothing on screen moves.
+   ===================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse,
+  .pulse-breathe,
+  .pulse-attenuate,
+  .borders.is-booting .pulse,
+  .border-flash,
+  .hints {
+    animation: none !important;
+  }
+  .pulse {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: calc(var(--o) * 0.55);
+  }
+  .country {
+    transition: none;
+  }
+}
+
+/* The store mirrors the media query, so a runtime toggle behaves identically. */
+.borders.is-static .pulse,
+.borders.is-static .pulse-breathe,
+.borders.is-static .pulse-attenuate {
+  animation: none !important;
+}
+
+.borders.is-static .pulse {
+  stroke-dasharray: none;
+  stroke-dashoffset: 0;
+  stroke-opacity: calc(var(--o) * 0.55);
+}
+
+/* =====================================================================
+   Focus visibility — required, and must survive a dark palette
+   ===================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--ionq);
+  outline-offset: 2px;
+}
+
+/* =====================================================================
+   Aspect-ratio degradation
+
+   The layout is composed for 16:9. Below roughly 4:3 the rail would start to
+   crowd the landmass, so it narrows; on very short viewports the legend and
+   hints drop out before anything overlaps.
+   ===================================================================== */
+
+@media (max-aspect-ratio: 4 / 3) {
+  .readout {
+    width: clamp(170px, 30vw, 240px);
+  }
+}
+
+@media (max-height: 520px) {
+  .legend,
+  .hints {
+    display: none;
+  }
+}
