@@ -56,6 +56,19 @@ const LABEL_CLEARANCE = 260;
 /** A dot closer than this to the edge is not worth drawing. */
 const EDGE_MARGIN = 12;
 
+/**
+ * The kinds that assert an IonQ presence, and therefore the kinds that get the
+ * bright core. Everything else — an institution, a capital, a bare place — is
+ * ring and halo only.
+ *
+ * A SET RATHER THAN A LIST OF `!==` CHECKS, because this is the line the whole
+ * marker system exists to hold: the core is the claim. Adding a kind means
+ * deciding, once and in one place, whether a dot of that kind says IonQ is
+ * there. Get it wrong and a dot on Parliament or on a capital city starts
+ * making a claim nobody checked.
+ */
+const IONQ_PRESENCE: ReadonlySet<string> = new Set(['network', 'system', 'engineering']);
+
 function MarkersImpl({ projection, width, height, ids }: Props) {
   const camera = useViewState((s) => s.camera);
 
@@ -104,6 +117,20 @@ function MarkersImpl({ projection, width, height, ids }: Props) {
     <g className="markers" aria-label="Marked sites">
       {sites.map(({ site, x, y, left }) => {
         const side = left ? -1 : 1;
+        /*
+         * The second line, and the two ways it can be empty.
+         *
+         * A site-level marker names its place because that is what it is
+         * asserting — but a capital's label IS its place, and "Rome · Capital"
+         * under a label reading "Rome" is the map talking to itself. So the
+         * place is dropped when the label already carries it, and the line is
+         * not rendered at all when nothing is left to say, which is the case
+         * for a bare place like Salisbury.
+         */
+        const detail =
+          site.precision === 'site' && site.detail && site.place !== site.label
+            ? `${site.place} · ${site.detail}`
+            : (site.detail ?? (site.place === site.label ? '' : site.place));
         return (
         <g
           key={site.id}
@@ -114,18 +141,16 @@ function MarkersImpl({ projection, width, height, ids }: Props) {
           <circle className="marker-halo" r={11} />
           <circle className="marker-ring" r={5.5} />
           {/*
-            THE CORE IS THE IonQ CLAIM, so an institution does not get one.
-            A seat of government is a place the talk points at, not a place
-            IonQ occupies, and with every marker drawn identically a dot on
-            Westminster beside a dot on Oxford would say otherwise. Ring and
-            halo without the bright core reads as a trap site with no ion in
-            it, which is exactly what it is — and it separates on shape rather
-            than on a second hue, the same reasoning as the hatched layer tier
-            in §7b.
+            THE CORE IS THE IonQ CLAIM, so only an IonQ site gets one. A seat
+            of government, a capital city and a bare place are all places the
+            talk points at rather than places IonQ occupies, and with every
+            marker drawn identically a dot on Westminster beside a dot on
+            Oxford would say otherwise. Ring and halo without the bright core
+            reads as a trap site with no ion in it, which is exactly what it
+            is — and it separates on shape rather than on a second hue, the
+            same reasoning as the hatched layer tier in §7b.
           */}
-          {site.kind === 'institution' ? null : (
-            <circle className="marker-core" r={2} />
-          )}
+          {IONQ_PRESENCE.has(site.kind) ? <circle className="marker-core" r={2} /> : null}
 
           {/* A short leader out to the label, so the text never sits on the
               dot and obscures the thing it is pointing at. */}
@@ -151,16 +176,16 @@ function MarkersImpl({ projection, width, height, ids }: Props) {
             Site-level markers do name their place, because that is exactly
             what they are asserting.
           */}
-          <text
-            className="marker-detail"
-            x={18 * side}
-            y={-5}
-            textAnchor={left ? 'end' : 'start'}
-          >
-            {site.precision === 'site' && site.detail
-              ? `${site.place} · ${site.detail}`
-              : (site.detail ?? site.place)}
-          </text>
+          {detail ? (
+            <text
+              className="marker-detail"
+              x={18 * side}
+              y={-5}
+              textAnchor={left ? 'end' : 'start'}
+            >
+              {detail}
+            </text>
+          ) : null}
         </g>
         );
       })}

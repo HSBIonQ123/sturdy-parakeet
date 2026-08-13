@@ -17,13 +17,16 @@
  *
  * ONE COMPONENT, MANY SOURCES. render/Markers.tsx draws everything here.
  * CLAUDE.md §7e is explicit that State 3's capital markers must be that same
- * component with a different data source rather than a second marker system,
- * and this registry is what makes that a one-line addition: capitals.ts
- * becomes a third entry below.
+ * component with a different data source rather than a second marker system.
+ * That is now proven rather than promised: capitals arrived as one import and
+ * one spread below, with no change to the component, the styles or the scene
+ * contract.
  */
 import type { Alpha3 } from './iso';
 import { DEPLOYMENTS } from './deployments';
 import { INSTITUTIONS } from './institutions';
+import { CAPITAL_MARKERS } from './capitalMarkers';
+import { PLACES } from './places';
 
 export type MarkerKind =
   /** A national or metropolitan quantum key distribution network. */
@@ -38,7 +41,18 @@ export type MarkerKind =
    * mistaken for a place IonQ occupies. Drawn differently for the same reason;
    * see render/Markers.tsx.
    */
-  | 'institution';
+  | 'institution'
+  /**
+   * An EMEA capital, projected from capitals.ts. A fact from a gazetteer, not
+   * a claim about IonQ — drawn without the core, like an institution.
+   */
+  | 'capital'
+  /**
+   * A place the deck points at while asserting nothing about it. See places.ts;
+   * if you find yourself wanting to write a claim under one of these, it
+   * belongs in a different file.
+   */
+  | 'place';
 
 export interface Marker {
   /** Stable id. This is what a scene lists. */
@@ -71,7 +85,15 @@ export interface Marker {
  * order a scene lists its markers in — so two scenes showing the same pair
  * cannot stack them differently.
  */
-export const MARKERS: readonly Marker[] = [...DEPLOYMENTS, ...INSTITUTIONS];
+export const MARKERS: readonly Marker[] = [
+  ...DEPLOYMENTS,
+  ...INSTITUTIONS,
+  ...PLACES,
+  // Last, and by far the longest: all 125 EMEA capitals. They are inert until
+  // a scene names one — resolveMarkers filters by id — so the cost of having
+  // every capital ready is a few bytes rather than a DOM node.
+  ...CAPITAL_MARKERS,
+];
 
 export const MARKER_BY_ID: Readonly<Record<string, Marker>> = Object.fromEntries(
   MARKERS.map((m) => [m.id, m]),

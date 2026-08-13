@@ -35,7 +35,7 @@ import { CountryPath } from './CountryPath';
 import { Graticule } from './Graticule';
 import { Markers } from './Markers';
 import { KeyHints } from './Chrome';
-import { registerCamera } from './cameraControl';
+import { registerCamera, applySceneCamera } from './cameraControl';
 import { DECK } from '../scenes/deck';
 
 declare global {
@@ -177,6 +177,31 @@ export function Map() {
     () => registerCamera({ focus: focusOn, reset: resetCamera }),
     [focusOn, resetCamera],
   );
+
+  /**
+   * Apply the OPENING scene's camera, once.
+   *
+   * `gotoScene` applies a camera on every step, but nothing ever steps into the
+   * first scene: the store is seeded from `DECK[0]` at module load, before this
+   * component exists and before the camera has anywhere to register. That was
+   * invisible for as long as scene 1 was the fitted EMEA frame, because the
+   * fitted frame is exactly what an unapplied camera already shows. The moment
+   * the deck opens on a zoomed scene it stops being invisible — the app would
+   * load showing the whole region under a title plate naming a town in
+   * Wiltshire.
+   *
+   * Guarded with a ref rather than an empty dependency array, because it has to
+   * wait for `optics` and a measured viewport, which arrive after mount — while
+   * a later resize must NOT re-run it and yank the camera back from wherever
+   * the presenter has since driven it.
+   */
+  const openingCameraApplied = useRef(false);
+  useEffect(() => {
+    if (openingCameraApplied.current) return;
+    if (!optics || size.width === 0) return;
+    openingCameraApplied.current = true;
+    applySceneCamera(DECK[useViewState.getState().sceneIndex]?.camera);
+  }, [optics, size.width]);
 
   /* ---- boot sequence ------------------------------------------------ */
   useEffect(() => {

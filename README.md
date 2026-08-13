@@ -4,34 +4,41 @@ An offline, browser-based interactive map of Europe, the Middle East and Africa,
 built to be presented live to policymakers. It replaces PowerPoint for
 government-affairs briefings and it never touches the network.
 
-**The base region map, a scene sequencer, membership layers for the EU 27, the
-EEA/EFTA/UK, Horizon Europe and EuroQCI, IonQ deployment markers, and a closing
-priority-engagement scene.** See `CLAUDE.md` for the conventions that keep each
-addition additive.
+**An opening screen, the base region map, a scene sequencer, membership layers
+for the EU 27, the EEA/EFTA/UK, Horizon Europe and EuroQCI, IonQ deployment
+markers, and a hub-and-spoke walk through the six priority states with their
+capitals.** See `CLAUDE.md` for the conventions that keep each addition
+additive.
 
 The deck as it stands:
 
 | # | Scene | Shows |
 | --- | --- | --- |
-| 01 | Base region | 124 EMEA countries, nothing highlighted |
-| 02 | European Union | the 27, solid |
-| 03 | EEA, EFTA and the UK | the 27, plus five states hatched |
-| 04 | Horizon Europe | the 27, plus 19 associated states hatched |
-| 05 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
-| 06 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
-| 07 | United Kingdom | the camera flies in to the UK; Westminster and Oxford marked |
-| 08 | Priority European Political Engagement | back out to the six |
-| 09 | Belgium | close up, held selected |
-| 10 | Priority European Political Engagement | back out to the six |
-| 11 | Italy | close up, held selected |
-| 12 | Priority European Political Engagement | back out to the six |
-| 13 | Germany | close up, held selected |
-| 14 | Priority European Political Engagement | back out to the six |
-| 15 | Poland | close up, with its IonQ QKD network marked |
-| 16 | Priority European Political Engagement | back out to the six |
-| 17 | Lithuania | close up, held selected |
+| 01 | Salisbury | the opening screen — the UK held, Salisbury marked |
+| 02 | Base region | 124 EMEA countries, nothing highlighted |
+| 03 | European Union | the 27, solid |
+| 04 | EEA, EFTA and the UK | the 27, plus five states hatched |
+| 05 | Horizon Europe | the 27, plus 19 associated states hatched |
+| 06 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
+| 07 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
+| 08 | United Kingdom | the camera flies in; Westminster and Oxford marked |
+| 09 | Priority European Political Engagement | back out to the six |
+| 10 | Belgium | close up, held selected, Brussels marked |
+| 11 | Priority European Political Engagement | back out to the six |
+| 12 | Italy | close up, held selected, Rome marked |
+| 13 | Priority European Political Engagement | back out to the six |
+| 14 | Germany | close up, held selected, Berlin marked |
+| 15 | Priority European Political Engagement | back out to the six |
+| 16 | Poland | close up, held selected, Warsaw marked |
+| 17 | Priority European Political Engagement | back out to the six |
+| 18 | Lithuania | close up, held selected, Vilnius marked |
 
-Scenes 6 to 17 are **hub and spoke**: the six priority states at region scale,
+**Scene 1 is the opening screen**: the map of the UK with Salisbury marked, and
+the next click pulls out to the region. It is the only scene in the deck that
+opens zoomed, which is why `Map.tsx` applies the first scene's camera on mount —
+nothing ever *steps into* scene 1, so `gotoScene` never runs for it.
+
+Scenes 7 to 18 are **hub and spoke**: the six priority states at region scale,
 then one of them close up, then back out to the six, then the next. Every
 country is introduced against the whole selection rather than in isolation, and
 stepping out is what makes the next zoom mean something. It needed no new
@@ -116,13 +123,18 @@ and resolved against the registry in `src/data/markers.ts`. Each is drawn as an
 ion held in the trap: a bright core, a containing ring, a soft halo, sitting on
 the same conductor network the borders form.
 
-There are two sources, kept apart because they claim different things.
+There are four sources, kept apart because they claim different things.
 `deployments.ts` says IonQ has something at a place, entry by entry, with
 provenance; that list is partly supplied and partly reconstructed from public
 announcements, so **confirm it before presenting.** `institutions.ts` says only
 that a place matters — Westminster is where the decision is taken, not somewhere
-IonQ sits. An institution is drawn **without the bright core**, since the core is
-what says "IonQ is here". Shape carries the distinction, not a second colour.
+IonQ sits. `capitals.ts` is a gazetteer — all 125 EMEA capitals, projected into
+markers, so a country close-up names its capital with no new data. `places.ts`
+says only "here", for a location the deck points at without a claim.
+
+Everything except an IonQ site is drawn **without the bright core**, since the
+core is what says "IonQ is here". Shape carries the distinction, not a second
+colour.
 
 A membership layer is a file in `src/data/layers/` containing an array of
 alpha-3 codes and nothing else. When one is active, its members take the orange
@@ -130,16 +142,16 @@ tint, everything else in EMEA recedes, and the **borders between members
 energise** — the bloc reads as a powered region of the same chip rather than a
 shape coloured in on top of the map.
 
-Layers stack. Scene 3 runs `['eu', 'eea-efta-uk']`: the 27 stay exactly as they
-were on scene 2, and five more states arrive **hatched in amber**. Solid means
+Layers stack. Scene 4 runs `['eu', 'eea-efta-uk']`: the 27 stay exactly as they
+were on scene 3, and five more states arrive **hatched in amber**. Solid means
 member, hatched means associated. That is not decoration — the IonQ gradient is
 a hue rotation inside the orange band, so at the alpha a fill needs, two stops
 differ by about a fifth of the distance between a lit country and an unlit one.
 Colour alone would vanish on a projector; shape does not. `CLAUDE.md` §7b has
 the numbers.
 
-Scene 6 is a different kind of layer and is labelled as one. The first five
-scenes draw perimeters you can look up — the 27, the EEA, Horizon association,
+Scene 7 is a different kind of layer and is labelled as one. The scenes before
+it draw perimeters you can look up — the 27, the EEA, Horizon association,
 the EuroQCI Declaration. The last draws a **selection**: six states where
 engagement is focused, who are not members of anything in common. So the layer
 is called "Priority political engagement", the caption on screen reads "a
@@ -197,7 +209,7 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 72 things,
+Drives the production bundle in headless Chromium and asserts 74 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the

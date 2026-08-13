@@ -88,6 +88,48 @@ check('no external network requests', external.length === 0, external.slice(0, 3
 check('no console errors', consoleErrors.length === 0, consoleErrors.slice(0, 2).join(' | '));
 
 /* ------------------------------------------------------------------ *
+ * The deck opens on Salisbury, zoomed into the UK — so assert that
+ * FIRST, while it is still on screen, and then move to the fitted base
+ * map for everything that follows.
+ *
+ * The opening camera is worth its own check because nothing steps into
+ * scene 1: the store is seeded from DECK[0] before the map mounts, so
+ * the camera has to be applied on mount instead. That was invisible for
+ * as long as scene 1 was the fitted frame and is very visible now.
+ * ------------------------------------------------------------------ */
+const opening = await page.evaluate(() => ({
+  index: window.__scene?.index ?? null,
+  scale: window.__scene?.scale ?? null,
+  selected: window.__scene?.selected ?? null,
+  title: document.querySelector('.plate-scene-title')?.textContent ?? null,
+  labels: [...document.querySelectorAll('.marker-label')].map((el) => el.textContent),
+  cores: document.querySelectorAll('.marker-core').length,
+}));
+check(
+  'the deck opens on the Salisbury screen, already zoomed to the UK',
+  opening.index === 0 && opening.title === 'Salisbury' && Math.abs(opening.scale - 7) < 0.05,
+  `index ${opening.index}, "${opening.title}", ${opening.scale?.toFixed(2)}x`,
+);
+check(
+  'Salisbury is the only marker, and it makes no IonQ claim',
+  opening.labels.join() === 'Salisbury' && opening.cores === 0,
+  `labels ${opening.labels.join(', ') || 'none'}, ${opening.cores} cores`,
+);
+await page.screenshot({ path: `${SHOTS}/scene-salisbury.png` });
+
+// Everything below wants the fitted EMEA frame. Reach it by id, not by Home —
+// Home is the opening screen now.
+const toBaseMap = async () => {
+  await page.keyboard.press('Escape');
+  await sleep(150);
+  await page.keyboard.press('m');
+  await sleep(300);
+  await page.click('.scene-item[data-scene="emea"]');
+  await sleep(900);
+};
+await toBaseMap();
+
+/* ------------------------------------------------------------------ *
  * 2. Rendering completeness.
  * ------------------------------------------------------------------ */
 const counts = await page.evaluate(() => {
@@ -340,14 +382,16 @@ await page.keyboard.press('Escape');
 await sleep(200);
 
 let st = await sceneState();
-check('deck starts on scene 1 of 17', st.index === 0 && st.total === 17, JSON.stringify(st.title));
+check('deck is 18 scenes and Home returns to the first', st.index === 0 && st.total === 18, JSON.stringify(st.title));
 
+// Step from the base map, which is scene 2 now.
+await toBaseMap();
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
 check(
   'Page Down steps to the EU scene (this is what a clicker sends)',
-  st.index === 1 && st.layers?.join() === 'eu',
+  st.index === 2 && st.layers?.join() === 'eu',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
 check(
@@ -361,15 +405,20 @@ await page.screenshot({ path: `${SHOTS}/scene-eu.png` });
 await page.keyboard.press('PageUp');
 await sleep(700);
 st = await sceneState();
-check('Page Up steps back to the base map', st.index === 0 && st.layers?.length === 0);
+check('Page Up steps back to the base map', st.index === 1 && st.layers?.length === 0);
 check('member tint clears on the base map', st.members === 0, `${st.members} tinted`);
 
 // Stepping must not run off either end mid-talk.
 await page.keyboard.press('PageUp');
 await page.keyboard.press('PageUp');
-await sleep(400);
+await sleep(700);
 st = await sceneState();
 check('stepping back past the first scene is a no-op', st.index === 0);
+
+// Back to the base map to continue the walk through the layer scenes. Every
+// index below is one higher than it used to be, because the opening screen now
+// sits in front of the base map.
+await toBaseMap();
 
 /* ---- scene 3: the second tier builds on the first ---- */
 await page.keyboard.press('PageDown');
@@ -378,7 +427,7 @@ await sleep(900);
 st = await sceneState();
 check(
   'scene 3 shows both tiers',
-  st.index === 2 && st.layers?.join() === 'eu,eea-efta-uk',
+  st.index === 3 && st.layers?.join() === 'eu,eea-efta-uk',
   `index ${st.index}, layers ${st.layers}`,
 );
 check(
@@ -506,7 +555,7 @@ await sleep(900);
 st = await sceneState();
 check(
   'scene 4 is Horizon Europe, over the same EU layer',
-  st.index === 3 && st.layers?.join() === 'eu,horizon-associated',
+  st.index === 4 && st.layers?.join() === 'eu,horizon-associated',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
 check(
@@ -569,7 +618,7 @@ await sleep(1000);
 st = await sceneState();
 check(
   'scene 5 is EuroQCI',
-  st.index === 4 && st.layers?.join() === 'euroqci,euroqci-eligible',
+  st.index === 5 && st.layers?.join() === 'euroqci,euroqci-eligible',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
 check(
@@ -647,7 +696,7 @@ await sleep(1000);
 st = await sceneState();
 check(
   'scene 6 is priority political engagement, and it is the only active layer',
-  st.index === 5 && st.layers?.join() === 'political-engagement',
+  st.index === 6 && st.layers?.join() === 'political-engagement',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
 check(
@@ -713,7 +762,7 @@ st = await sceneState();
 const ukScale = await page.evaluate(() => window.__scene?.scale ?? null);
 check(
   'scene 7 is the UK close-up',
-  st.index === 6 && st.title === 'United Kingdom',
+  st.index === 7 && st.title === 'United Kingdom',
   `index ${st.index}, title "${st.title}"`,
 );
 check(
@@ -827,13 +876,16 @@ const WALK = [
   { title: 'Lithuania', iso: 'LTU' },
 ];
 
-// Start at the first hub (index 5) and step forward through the tail.
-await page.keyboard.press('Home');
-await sleep(700);
+// Start at the first hub and step forward through the tail. Its index is read
+// rather than hard-coded, so inserting a scene earlier in the deck cannot make
+// this walk silently test the wrong stretch of the talk.
+await page.keyboard.press('Escape');
+await sleep(150);
 await page.keyboard.press('m');
 await sleep(300);
 await page.click('.scene-item[data-scene="political-engagement"]');
 await sleep(1200);
+const walkBase = (await sceneState()).index;
 
 const walkProblems = [];
 for (let i = 0; i < WALK.length; i += 1) {
@@ -843,7 +895,7 @@ for (let i = 0; i < WALK.length; i += 1) {
   }
   const at = await sceneState();
   const want = WALK[i];
-  const index = 5 + i;
+  const index = walkBase + i;
   if (at.index !== index) {
     walkProblems.push(`step ${i}: index ${at.index}, wanted ${index}`);
     continue;
@@ -877,11 +929,11 @@ check(
   `layers on the last spoke: ${hubLayers}`,
 );
 
-// Markers are scene-driven, not global.
-await page.keyboard.press('Home');
-await sleep(900);
+// Markers are scene-driven, not global. (Checked on the base map, not on
+// Home — the opening screen carries the Salisbury marker.)
+await toBaseMap();
 const noMarkers = await page.evaluate(() => document.querySelectorAll('.marker').length);
-check('markers are absent on scenes that do not ask for them', noMarkers === 0, `${noMarkers} on scene 1`);
+check('markers are absent on scenes that do not ask for them', noMarkers === 0, `${noMarkers} on the base map`);
 await page.keyboard.press('End');
 await sleep(900);
 
@@ -889,7 +941,7 @@ await page.keyboard.press('End');
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
-check('stepping past the last scene is a no-op', st.index === 16);
+check('stepping past the last scene is a no-op', st.index === 17);
 
 /* ---- the menu, for questions ---- */
 check('menu is closed by default', !st.menuOpen);
@@ -916,7 +968,7 @@ await sleep(700);
 st = await sceneState();
 check(
   'clicking a scene in the menu jumps to it and closes the menu',
-  st.index === 0 && !st.menuOpen,
+  st.index === 1 && !st.menuOpen,
   `index ${st.index}, menu ${st.menuOpen}`,
 );
 

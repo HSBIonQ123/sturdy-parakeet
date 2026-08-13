@@ -14,6 +14,7 @@
  */
 import type { Scene } from './types';
 import { DEPLOYMENT_IDS } from '../data/deployments';
+import { capital } from '../data/capitalMarkers';
 
 /**
  * THE HUB, AND WHY IT REPEATS.
@@ -47,6 +48,26 @@ const hub = (id: string): Scene => ({
 });
 
 export const DECK: readonly Scene[] = [
+  {
+    id: 'salisbury',
+    title: 'Salisbury',
+    // THE OPENING SCREEN. The talk starts on home ground and pulls out to the
+    // region on the next click, which is the reverse of the walk the rest of
+    // the deck does and is why it reads as an opening rather than as scene one
+    // of a sequence.
+    //
+    // No layers. Nothing is being argued yet — one country, one dot, and the
+    // border network already alive behind them.
+    camera: { lon: -2.8, lat: 54.3, k: 7 },
+    // The same frame as the UK scene later in the deck, deliberately: the two
+    // rhyme, and coming back to it at scene 9 lands somewhere already seen.
+    selectedIso: 'GBR',
+    markers: ['salisbury'],
+    // ON THE MARKER. Salisbury is drawn WITHOUT the bright core, because this
+    // deck reserves that for places IonQ actually is, and nothing in the repo
+    // establishes a presence there. If the dot is meant to assert something,
+    // see the source line in data/places.ts — it says what to do about it.
+  },
   {
     id: 'emea',
     title: 'Base region',
@@ -140,6 +161,13 @@ export const DECK: readonly Scene[] = [
     // They are drawn differently on purpose. Oxford gets the bright core of an
     // IonQ site; Westminster does not, because it is a place the talk points
     // at rather than a place IonQ occupies. See data/institutions.ts.
+    // NO SEPARATE CAPITAL MARKER HERE, and this is not an omission. London is
+    // 1.2km from the Palace of Westminster, which is roughly one pixel at this
+    // camera and sub-pixel at any zoom this map supports — two dots would
+    // overlap into a smudge. Westminster IS the capital marker on this scene,
+    // and its own second line already reads "LONDON · PARLIAMENT AND
+    // WHITEHALL". Swap it for `capital('GBR')` if a plain London dot is ever
+    // wanted; do not show both.
     markers: ['westminster', 'oxford'],
     /*
      * THE SUBJECT, HELD SELECTED — and this is why `selectedIso` was on the
@@ -178,6 +206,7 @@ export const DECK: readonly Scene[] = [
     camera: { lon: 4.6, lat: 50.6, k: 22 },
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'BEL',
+    markers: [capital('BEL')],
   },
   hub('engagement-after-belgium'),
   {
@@ -190,6 +219,7 @@ export const DECK: readonly Scene[] = [
     camera: { lon: 12.6, lat: 42.6, k: 7 },
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'ITA',
+    markers: [capital('ITA')],
   },
   hub('engagement-after-italy'),
   {
@@ -199,6 +229,7 @@ export const DECK: readonly Scene[] = [
     camera: { lon: 10.3, lat: 51.2, k: 9 },
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'DEU',
+    markers: [capital('DEU')],
   },
   hub('engagement-after-germany'),
   {
@@ -207,11 +238,19 @@ export const DECK: readonly Scene[] = [
     caption: 'National QKD network · ID Quantique',
     layers: ['political-engagement'],
     camera: { lon: 19.2, lat: 52.1, k: 11 },
-    // The one spoke with a marker, because it is the one spoke where IonQ has
-    // something on the ground. The asymmetry is the data telling the truth, not
-    // an oversight — and the dot is country-level by `precision`, so it prints
-    // the network rather than claiming an address in Warsaw.
-    markers: ['poland'],
+    /*
+     * WARSAW, ONCE. The IonQ QKD marker for Poland sits at 52.23, 21.01 —
+     * character for character the coordinate capitals.ts gives for Warsaw,
+     * because a national network has no single point and `precision: 'country'`
+     * parks it on the capital. Showing both would put two dots on exactly the
+     * same pixel, so the scene has to choose which claim that pixel makes.
+     *
+     * It shows the capital, and the QKD network moves to the caption above,
+     * where it was already stated. Nothing is lost and the map stops arguing
+     * with itself. To reverse it, swap this for ['poland'] — but never list
+     * both.
+     */
+    markers: [capital('POL')],
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'POL',
   },
@@ -226,6 +265,7 @@ export const DECK: readonly Scene[] = [
     camera: { lon: 23.9, lat: 55.3, k: 20 },
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'LTU',
+    markers: [capital('LTU')],
   },
 ];
 

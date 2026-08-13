@@ -8,7 +8,8 @@ anything; if you change a decision recorded here, change it here too.
 State 1  base EMEA region map                    <- BUILT
 State 2  membership layers over the base map     <- EU 27, EEA/EFTA/UK, Horizon Europe, EuroQCI,
                                                     priority political engagement (a selection, §7f)
-State 3  capital deep-dives with a data panel    <- STARTED: markers, see §7e
+State 3  capital deep-dives with a data panel    <- STARTED: markers + capitals + the
+                                                    readout as the panel, see §7e
 State 4  scene sequencer                         <- BUILT EARLY, see §3a
 State 3  capital deep-dives with a data panel
 ```
@@ -161,6 +162,13 @@ Two consequences worth keeping in mind when adding a zoomed scene:
 - **Pick `k` on the real build, not by arithmetic.** Frame it at 2560×1440 and
   look; the equal-area projection and the `translateExtent` clamp make paper
   estimates unreliable near the edges of the fitted frame.
+- **Nothing steps into scene 1, so `Map.tsx` applies its camera on mount.**
+  The store is seeded from `DECK[0]` at module load, before the map exists and
+  before the camera has anywhere to register, so `gotoScene` never runs for the
+  opening scene. This was invisible while scene 1 was the fitted frame — an
+  unapplied camera and the fitted frame look identical — and became very
+  visible the moment the deck opened on Salisbury. The effect is ref-guarded so
+  a resize cannot re-run it and yank the camera back mid-talk.
 
 **The camera is the one imperative escape hatch.** `render/cameraControl.ts` is
 a module-level registry that `Map` writes to on mount. The alternative — lifting
@@ -331,7 +339,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 72 assertions
+npm run verify         # drive the real build in Chromium; 74 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -461,11 +469,22 @@ arrived, which is exactly the trigger `scenes/types.ts` had recorded for it.
 `deployments.ts` asserts, entry by entry, that IonQ has something somewhere,
 and carries provenance per site. `institutions.ts` asserts only that a place
 matters — Westminster is where the decision is taken, not somewhere IonQ sits.
-Merging them would make the claim the deck must never make.
+`capitalMarkers.ts` projects `capitals.ts`, a gazetteer, into markers — all 125,
+inert until a scene names one, so a country close-up costs `capital('XXX')` and
+no data work. `places.ts` asserts nothing at all, which is what an opening
+screen sometimes needs and what the other three must never be stretched to
+cover. Merging any of them would make a claim the deck must not make.
+
+**A capital's label IS its place**, so `Markers.tsx` drops the place from the
+second line rather than printing "Rome · Capital" under a label reading "Rome",
+and omits the line entirely when nothing is left — which is the case for a bare
+place. `precision` stays honest either way; it was never the field to fudge.
 
 **That distinction is carried on screen, not just in the data.** The bright
-core is the IonQ claim, so `kind: 'institution'` is drawn without one: ring and
-halo, dashed and quieter — a trap site with no ion in it. It separates on shape
+core is the IonQ claim, so only the IonQ kinds get one — `IONQ_PRESENCE` in
+`Markers.tsx` is the single place that decides. An institution, a capital and a
+bare place are drawn as ring and halo, dashed and quieter: a trap site with no
+ion in it. It separates on shape
 rather than on a second hue, the same reasoning as the hatched layer tier in
 §7b, and `verify.mjs` asserts Westminster has no core while Oxford has one. If
 every marker ever gets the same glyph again, a dot on Parliament starts making
