@@ -994,26 +994,38 @@ body {
 .callout-figures {
   display: flex;
   align-items: flex-end;
-  gap: 22px;
+  justify-content: space-around;
+  gap: 18px;
 }
 
 .callout-figure {
   margin: 0;
-  flex-basis: 0;
+  flex: 1 1 0;
   text-align: center;
 }
 
-.callout-silhouette {
+/* Line icons, at the same weight as the instrument's other hairlines. Sized in
+   em so they track the panel's type rather than the viewport, which keeps the
+   glyph and its name looking like one object at any projector resolution. */
+.figure-icon {
   display: block;
   width: 100%;
+  max-width: 5.4em;
   height: auto;
-  max-height: 26vh;
-  object-fit: contain;
-  /* The artwork is authored as a black silhouette. Recolouring it here keeps
-     the palette discipline intact without editing the asset, so a replacement
-     file needs no preparation beyond being a silhouette. */
-  filter: brightness(0) invert(0.82);
-  opacity: 0.92;
+  margin: 0 auto;
+  fill: none;
+  stroke: var(--type);
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+/* The nose. The only filled thing in the set, and it needs the fill to read at
+   this size — a 0.7-unit circle drawn as a stroke is a smudge. */
+.figure-icon-solid {
+  fill: var(--type);
+  stroke: none;
 }
 
 .callout-name {

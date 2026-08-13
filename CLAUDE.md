@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 78 assertions
+npm run verify         # drive the real build in Chromium; 79 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -650,11 +650,21 @@ within 2px of the marker's halo, and that the panel is wholly inside the frame �
 a line pointing at empty sea, or a last line hidden under the telemetry strip,
 is the kind of fault nobody sees until it is on a projector.
 
-**The silhouettes are placeholders.** `src/assets/silhouettes/` holds
-hand-authored stand-ins; supplied artwork should replace them, which is two
-import lines in `presenter.ts` and nothing else — the component, the styles and
-the deck never name a file. They are recoloured in CSS (`filter: brightness(0)
-invert(...)`), so a replacement needs no preparation beyond being a silhouette.
+**The family glyphs are drawn, not imported, and that was a correction.**
+Imported silhouettes were tried first and looked wrong: everything else here is
+a hairline — the borders, the marker rings, the one-pixel chrome rules — so a
+solid filled bust read as clip-art pasted onto an instrument.
+`render/FigureIcon.tsx` draws them as strokes on a shared 24-unit grid,
+inheriting `currentColor` and the stroke weight from CSS. Data names an icon;
+render owns the shape.
+
+**The dog is a paw, and the note in that file explains why at length.** Three
+drawn heads were tried and all three failed at the ~60px these actually render
+at: front-facing read as a pig twice, profile read as a bird and then as a
+cloud. A dog's head is carried by the stop, the jaw and the set of the ears, and
+none of those survive a 1.15 stroke at that size. It is a lesson about scale
+rather than draughtsmanship — worth reading before anyone tries to "finish the
+set".
 
 **Personal content is confined to one file.** `presenter.ts` names real people,
 including a child. It is kept in one place so that removing it is one file plus

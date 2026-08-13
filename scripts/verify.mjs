@@ -431,6 +431,21 @@ for (const [id, heading] of [
       ? `heading "${panel.heading}", inFrame ${panel.inFrame}, ${panel.offAnchor.toFixed(1)}px off the dot`
       : 'no panel rendered',
   );
+  if (id === 'family') {
+    const fam = await page.evaluate(() => ({
+      names: [...document.querySelectorAll('.callout-name')].map((e) => e.textContent),
+      glyphs: document.querySelectorAll('.figure-icon').length,
+      // Imported silhouette artwork was replaced by drawn glyphs. An <img> back
+      // in this panel means someone reintroduced an asset the styles no longer
+      // account for — and it will be a filled shape in a hairline drawing.
+      images: document.querySelectorAll('.callout img').length,
+    }));
+    check(
+      'the family panel draws three glyphs, one per name, and no imported artwork',
+      fam.glyphs === 3 && fam.images === 0 && fam.names.join() === 'Andrea,Evie,Ziggy',
+      `${fam.glyphs} glyphs, ${fam.images} images, names ${fam.names.join(', ')}`,
+    );
+  }
   if (id === 'career') {
     // The list is supplied content and the two most recently added entries are
     // the ones a stale build would silently drop.

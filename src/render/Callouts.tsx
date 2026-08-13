@@ -32,6 +32,7 @@ import { memo } from 'react';
 import type { GeoProjection } from 'd3-geo';
 
 import { resolveCallouts, type Callout } from '../data/presenter';
+import { FigureIcon } from './FigureIcon';
 import { MARKER_BY_ID } from '../data/markers';
 import { useViewState } from '../state/viewState';
 
@@ -127,13 +128,8 @@ function CalloutBody({ callout }: { readonly callout: Callout }) {
     return (
       <div className="callout-figures">
         {body.figures.map((figure) => (
-          <figure className="callout-figure" key={figure.id} style={{ flexGrow: figure.weight }}>
-            {/*
-              The artwork is a plain <img> at a vendored URL. It is NOT inlined
-              as a component so that replacing it is a file swap rather than a
-              code change — see the note at the top of data/presenter.ts.
-            */}
-            <img className="callout-silhouette" src={figure.src} alt="" />
+          <figure className="callout-figure" key={figure.id}>
+            <FigureIcon icon={figure.icon} />
             <figcaption className="callout-name label">{figure.label}</figcaption>
           </figure>
         ))}

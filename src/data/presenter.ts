@@ -1,18 +1,16 @@
 /**
  * presenter.ts — the three opening callout panels: family, career, why IonQ.
  *
- * ============================================================================
- * THE SILHOUETTES IN src/assets/silhouettes ARE PLACEHOLDERS.
+ * ON THE FAMILY GLYPHS. These were imported silhouettes and are now line icons
+ * drawn in `render/FigureIcon.tsx`. A solid filled bust had no relative
+ * anywhere else on this map — the borders are hairlines, the markers are rings,
+ * the chrome is a one-pixel rule — so it read as clip-art pasted onto an
+ * instrument. Strokes on a shared grid belong to the same drawing.
  *
- * Supplied artwork exists for both and should replace them. To swap: drop the
- * files into `src/assets/silhouettes/` and change the two import lines below.
- * Nothing else in the project refers to them — not the component, not the
- * styles, not the deck — so a replacement is a two-line edit and a rebuild.
- *
- * Vendored rather than fetched, exactly like `assets/ionq-logo.webp`. The whole
- * application is guaranteed to work with the wifi off and an <img> pointing at
- * a URL would break that promise for the sake of two small files.
- * ============================================================================
+ * The consequence for this file is that a figure now names an ICON rather than
+ * an asset, which is also what made per-person labels possible: three separate
+ * glyphs can each carry a name, where one bitmap of a group could not without
+ * hard-coding pixel offsets.
  *
  * ON PERSONAL CONTENT IN A REPOSITORY. These are real people, including a
  * child. Their names are here because the presenter asked for them and
@@ -26,18 +24,15 @@
  * same way a priority list does, and it is on screen in front of the people
  * best placed to notice. Read it before a talk.
  */
-import familySilhouette from '../assets/silhouettes/family.svg';
-import ziggySilhouette from '../assets/silhouettes/ziggy.svg';
+import type { FigureIconId } from '../render/FigureIcon';
 
-/** A figure in the family panel: one image, one name under it. */
+/** A figure in the family panel: one glyph, one name under it. */
 export interface Figure {
   readonly id: string;
-  /** Imported asset URL. */
-  readonly src: string;
-  /** Name printed under the silhouette. */
+  /** Which glyph to draw. The shapes live in render/, this file only names one. */
+  readonly icon: FigureIconId;
+  /** Name printed under the glyph. */
   readonly label: string;
-  /** Relative width within the panel row, so the dog is not adult-sized. */
-  readonly weight: number;
 }
 
 /**
@@ -75,12 +70,9 @@ export const CALLOUTS: readonly Callout[] = [
     body: {
       kind: 'figures',
       figures: [
-        // One image carries the whole family group, so the names sit under the
-        // row rather than under individual figures — labelling one figure
-        // inside a bitmap would mean hard-coding pixel offsets that break the
-        // moment the artwork is replaced.
-        { id: 'family', src: familySilhouette, label: 'Andrea · Evie', weight: 1.35 },
-        { id: 'ziggy', src: ziggySilhouette, label: 'Ziggy', weight: 1 },
+        { id: 'andrea', icon: 'adult', label: 'Andrea' },
+        { id: 'evie', icon: 'child', label: 'Evie' },
+        { id: 'ziggy', icon: 'dog', label: 'Ziggy' },
       ],
     },
   },

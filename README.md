@@ -127,8 +127,9 @@ reproducible after any amount of improvisation.
 **Callout panels** are listed per scene by id — `callouts: ['career']` — and
 resolved against `src/data/presenter.ts`. A panel is HTML so the browser wraps
 its text; its leader line is SVG, drawn from the panel to the dot of the marker
-it names. **The silhouettes in `src/assets/silhouettes/` are placeholders** —
-replacing them is two import lines in `presenter.ts` and no other change.
+it names. The family glyphs are line icons drawn in `render/FigureIcon.tsx` —
+strokes on a shared grid, at the same weight as every other hairline on the map,
+because a filled silhouette reads as clip-art pasted onto an instrument.
 
 **Markers** are listed per scene by id — `markers: ['westminster', 'oxford']` —
 and resolved against the registry in `src/data/markers.ts`. Each is drawn as an
@@ -221,7 +222,7 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 78 things,
+Drives the production bundle in headless Chromium and asserts 79 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the
