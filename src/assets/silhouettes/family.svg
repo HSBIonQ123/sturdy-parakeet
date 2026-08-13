@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 250" fill="currentColor" role="img" aria-label="Family silhouette">
+  <!-- PLACEHOLDER. See src/data/presenter.ts — replace with the supplied artwork. -->
+  <!-- adult, left -->
+  <path d="M52 46a17 17 0 1 1 34 0a17 17 0 1 1-34 0"/>
+  <path d="M45 78c-9 4-13 13-13 24v46c0 5 3 8 7 8s7-3 7-8v-8h2v96c0 6 4 10 9 10s9-4 9-10v-56h4v56c0 6 4 10 9 10s9-4 9-10v-96h2v8c0 5 3 8 7 8s7-3 7-8v-46c0-11-4-20-13-24-6-3-11-4-19-4s-13 1-19 4Z"/>
+  <!-- arm to child -->
+  <path d="M89 118c8 4 16 9 24 14 4 3 5 7 3 10s-6 4-10 2c-8-5-16-10-24-14Z"/>
+  <!-- child, centre -->
+  <path d="M117 132a13 13 0 1 1 26 0a13 13 0 1 1-26 0"/>
+  <path d="M112 156c-6 3-9 9-9 17v30c0 4 2 6 5 6s5-2 5-6v-5h1v52c0 5 3 8 7 8s7-3 7-8v-30h3v30c0 5 3 8 7 8s7-3 7-8v-52h1v5c0 4 2 6 5 6s5-2 5-6v-30c0-8-3-14-9-17-4-2-8-3-13-3s-9 1-13 3Z"/>
+  <!-- arm to adult right -->
+  <path d="M147 146c8-4 16-9 24-13l7 11c-8 4-16 9-24 13Z"/>
+  <!-- adult, right -->
+  <path d="M168 52a16 16 0 1 1 32 0a16 16 0 1 1-32 0"/>
+  <path d="M186 36c7-2 12 1 12 6 0 4-3 6-8 6Z"/>
+  <path d="M162 82c-8 4-12 12-12 22v44c0 5 3 8 7 8s7-3 7-8v-7h2v91c0 6 4 10 9 10s9-4 9-10v-53h3v53c0 6 4 10 9 10s9-4 9-10v-91h2v7c0 5 3 8 7 8s7-3 7-8v-44c0-10-4-18-12-22-6-3-11-4-18-4s-12 1-18 4Z"/>
+</svg>

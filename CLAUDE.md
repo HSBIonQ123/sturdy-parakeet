@@ -142,6 +142,13 @@ While the menu is open it owns arrow keys and the deck does not step
 underneath it. `Space` is ignored when focus is on a button, so one press never
 fires two actions.
 
+**The menu is capped against the viewport and scrolls inside.** It is anchored
+to the bottom of the frame and grows upward, so a long deck pushes its earliest
+entries off the top of the screen — and those are exactly the scenes a question
+sends you back to. Found at 21 scenes, where the opening screens had become
+unreachable. `.scene-menu-list` scrolls; the head and foot stay pinned. If you
+add scenes, check the menu still reaches scene 1.
+
 ## 3b. Zooming is a scene property, not a feature
 
 **There is no "zoom mode" to build and there never was.** A scene carries an
@@ -339,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 74 assertions
+npm run verify         # drive the real build in Chromium; 78 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -544,8 +551,13 @@ grew, and a gate measuring the wrong scene passes forever and tells you
 nothing. If a heavier scene than EuroQCI ever lands, change the id on that
 line — it is the only thing that decides what is measured.
 
-**Measure early, and in isolation when diagnosing.** The gate now runs before
-the screenshot-heavy part of the suite. It previously sat near the end, after
+**Measure early, and in isolation when diagnosing.** The gate runs before the
+screenshot-heavy part of the suite, and **new sections must go after it** —
+this trap has now been walked into twice. Adding three 2560×1440 screenshots
+ahead of the gate dropped it to 49fps with the samples INVERTED (49/19/26
+instead of the usual climb), which is the tell: a climbing sample set is
+warm-up, a falling one is the suite eating the CPU it is trying to measure.
+Originally it sat near the end, after
 a dozen 2560×1440 PNG encodes and a second browser context, and failed at
 41fps on code that measures a clean 60 on every scene in isolation — it was
 reporting the suite's own CPU appetite, not the map's.
@@ -609,6 +621,44 @@ would tint five of the six as member states and split the set on screen into
 the very distinction the scene is not making. A future second tier — engaged
 versus watching — is a second file and a hatched layer, exactly as scenes 3
 and 4 do it.
+
+## 7g. Callouts — content tethered to a point
+
+The opening scenes put a panel of content beside Salisbury with a line drawn
+back to the dot. `src/data/presenter.ts` holds the content, `render/Callouts.tsx`
+draws it, and a scene lists panel ids exactly as it lists marker ids.
+
+**The panel is HTML and the leader is SVG, and that split is deliberate.** SVG
+has no text wrapping: an all-SVG panel would mean hand-breaking every line of
+the career list into `<tspan>`s in the data file and re-breaking them whenever a
+word or the viewport changed — brittle in precisely the place the content gets
+edited, the night before a talk. The leader has the opposite nature, being pure
+geometry, so it is drawn in an SVG overlay above the map.
+
+**The geometry is computed, never measured.** The line has to end *on* the
+panel, so something must know where the panel is. Reading it back from the DOM
+would put a layout measurement inside render and a second pass on every camera
+move. Instead the panel position is decided in `Callouts.tsx` in screen pixels
+and the div is placed at it, so the box and the line come from the same numbers
+in one pass. The leader meets the panel at a fixed inset from its top edge — a
+point that exists without knowing the panel's height, so content can grow
+without the anchor drifting.
+
+**A panel is tethered to a MARKER, not to a coordinate.** Move the dot in
+`places.ts` and the line follows it. `verify.mjs` asserts the leader's ring sits
+within 2px of the marker's halo, and that the panel is wholly inside the frame —
+a line pointing at empty sea, or a last line hidden under the telemetry strip,
+is the kind of fault nobody sees until it is on a projector.
+
+**The silhouettes are placeholders.** `src/assets/silhouettes/` holds
+hand-authored stand-ins; supplied artwork should replace them, which is two
+import lines in `presenter.ts` and nothing else — the component, the styles and
+the deck never name a file. They are recoloured in CSS (`filter: brightness(0)
+invert(...)`), so a replacement needs no preparation beyond being a silhouette.
+
+**Personal content is confined to one file.** `presenter.ts` names real people,
+including a child. It is kept in one place so that removing it is one file plus
+three scenes rather than a search across the project.
 
 ## 8. Known limitations
 

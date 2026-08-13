@@ -45,6 +45,8 @@ export interface ViewState {
   camera: Camera;
   /** Marker ids the active scene shows, resolved against data/markers.ts. */
   markerIds: readonly string[];
+  /** Callout panel ids the active scene shows, from data/presenter.ts. */
+  calloutIds: readonly string[];
 
   /** Position in the deck. The only thing the presenter moves. */
   sceneIndex: number;
@@ -87,6 +89,7 @@ function sceneState(scene: Scene) {
     selectedIso: scene.selectedIso ?? null,
     hoveredIso: null,
     markerIds: scene.markers ?? [],
+    calloutIds: scene.callouts ?? [],
   };
 }
 
@@ -146,6 +149,13 @@ declare global {
       scale: number;
       /** Held selection, so verify.mjs can assert which country a spoke is about. */
       selected: string | null;
+      /**
+       * Scene ids in deck order. Exposed so verify.mjs can resolve a scene by
+       * NAME instead of by position — inserting a scene at the front has now
+       * shifted every hard-coded index in the suite three times, and each time
+       * the failures looked like real regressions for a minute.
+       */
+      ids: string[];
     };
   }
 }
@@ -158,6 +168,7 @@ if (typeof window !== 'undefined') {
       layers: s.activeLayers,
       scale: s.camera.k,
       selected: s.selectedIso,
+      ids: DECK.map((scene) => scene.id),
     };
   };
   publish(useViewState.getState());

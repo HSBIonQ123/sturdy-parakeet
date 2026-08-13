@@ -117,6 +117,21 @@ check(
 );
 await page.screenshot({ path: `${SHOTS}/scene-salisbury.png` });
 
+/*
+ * INDICES BY NAME, NOT BY POSITION.
+ *
+ * Every scene inserted at the front of the deck used to shift a dozen
+ * hard-coded numbers in this file, and the resulting failures read like real
+ * regressions until you looked. The deck publishes its ids, so the suite
+ * resolves them once and asserts against names it can actually read.
+ */
+const DECK_IDS = await page.evaluate(() => window.__scene?.ids ?? []);
+const idx = (id) => {
+  const i = DECK_IDS.indexOf(id);
+  if (i < 0) throw new Error(`verify: no scene with id "${id}" — deck ids: ${DECK_IDS.join(', ')}`);
+  return i;
+};
+
 // Everything below wants the fitted EMEA frame. Reach it by id, not by Home —
 // Home is the opening screen now.
 const toBaseMap = async () => {
@@ -349,6 +364,91 @@ check(
   fmt(heaviest),
 );
 await page.keyboard.press('Home');
+
+/*
+ * The callout scenes are asserted HERE, after the frame-rate gate, and the
+ * placement is the point. They were originally checked at the top of the
+ * suite, which put three 2560x1440 PNG encodes in front of the gate and
+ * dropped it to 49fps with the samples INVERTED — 49/19/26 instead of the
+ * usual climb. That is §7d's documented trap, walked into a second time: the
+ * gate measures whatever the suite has been doing to the CPU just before it.
+ * Screenshot-heavy sections belong after it.
+ */
+/* ------------------------------------------------------------------ *
+ * The three opening callout scenes: family, career, why IonQ.
+ *
+ * A panel is content tethered to a point, so the two things worth
+ * asserting are that the tether lands on the dot and that the box stays
+ * inside the frame. A leader line pointing at empty sea, or a panel with
+ * its last line under the telemetry strip, is the kind of fault nobody
+ * notices until it is on a projector.
+ * ------------------------------------------------------------------ */
+for (const [id, heading] of [
+  ['family', 'Salisbury · home'],
+  ['career', 'Career'],
+  ['why-ionq', 'IonQ'],
+]) {
+  await page.keyboard.press('Escape');
+  await sleep(150);
+  await page.keyboard.press('m');
+  await page.waitForSelector('.scene-menu', { timeout: 5000 });
+  await sleep(400);
+  await page.click(`.scene-item[data-scene="${id}"]`, { timeout: 10000 });
+  await page.mouse.move(60, 1400);
+  await sleep(1600);
+
+  const panel = await page.evaluate(() => {
+    const el = document.querySelector('.callout');
+    const dot = document.querySelector('.callout-anchor');
+    // The HALO, not the marker group: a group's bounding box includes its
+    // label text, so its centre sits well to one side of the dot.
+    const marker = document.querySelector('.marker .marker-halo');
+    if (!el || !dot || !marker) return null;
+    const r = el.getBoundingClientRect();
+    const d = dot.getBoundingClientRect();
+    const m = marker.getBoundingClientRect();
+    return {
+      panels: document.querySelectorAll('.callout').length,
+      heading: el.querySelector('.callout-heading')?.textContent ?? null,
+      inFrame:
+        r.left >= 0 && r.top >= 0 && r.right <= window.innerWidth && r.bottom <= window.innerHeight,
+      // The leader's ring must sit on the Salisbury marker, not near it.
+      offAnchor: Math.hypot(
+        d.left + d.width / 2 - (m.left + m.width / 2),
+        d.top + d.height / 2 - (m.top + m.height / 2),
+      ),
+      text: el.textContent ?? '',
+    };
+  });
+  check(
+    `the ${id} panel is on screen, alone, and tethered to the Salisbury dot`,
+    panel &&
+      panel.panels === 1 &&
+      panel.heading === heading &&
+      panel.inFrame &&
+      panel.offAnchor < 2,
+    panel
+      ? `heading "${panel.heading}", inFrame ${panel.inFrame}, ${panel.offAnchor.toFixed(1)}px off the dot`
+      : 'no panel rendered',
+  );
+  if (id === 'career') {
+    // The list is supplied content and the two most recently added entries are
+    // the ones a stale build would silently drop.
+    check(
+      'the career panel carries all five items, Ukraine and Ras Al Khaimah included',
+      panel &&
+        panel.text.includes('Ukraine') &&
+        panel.text.includes('Ras Al Khaimah') &&
+        [...panel.text.matchAll(/0[1-5]/g)].length === 5,
+      panel ? `${[...panel.text.matchAll(/0[1-5]/g)].length} numbered items` : 'no panel',
+    );
+  }
+  await page.screenshot({ path: `${SHOTS}/scene-${id}.png` });
+}
+
+await page.keyboard.press('Home');
+await sleep(900);
+
 await sleep(900);
 
 /* ------------------------------------------------------------------ *
@@ -382,7 +482,11 @@ await page.keyboard.press('Escape');
 await sleep(200);
 
 let st = await sceneState();
-check('deck is 18 scenes and Home returns to the first', st.index === 0 && st.total === 18, JSON.stringify(st.title));
+check(
+  `deck is ${DECK_IDS.length} scenes and Home returns to the first`,
+  st.index === 0 && st.total === DECK_IDS.length,
+  JSON.stringify(st.title),
+);
 
 // Step from the base map, which is scene 2 now.
 await toBaseMap();
@@ -391,7 +495,7 @@ await sleep(700);
 st = await sceneState();
 check(
   'Page Down steps to the EU scene (this is what a clicker sends)',
-  st.index === 2 && st.layers?.join() === 'eu',
+  st.index === idx('eu') && st.layers?.join() === 'eu',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
 check(
@@ -405,10 +509,14 @@ await page.screenshot({ path: `${SHOTS}/scene-eu.png` });
 await page.keyboard.press('PageUp');
 await sleep(700);
 st = await sceneState();
-check('Page Up steps back to the base map', st.index === 1 && st.layers?.length === 0);
+check('Page Up steps back to the base map', st.index === idx('emea') && st.layers?.length === 0);
 check('member tint clears on the base map', st.members === 0, `${st.members} tinted`);
 
-// Stepping must not run off either end mid-talk.
+// Stepping must not run off either end mid-talk. Tested from the FIRST scene
+// rather than by counting PageUps back from the base map — the base map has
+// drifted away from index 0 and would drift again.
+await page.keyboard.press('Home');
+await sleep(900);
 await page.keyboard.press('PageUp');
 await page.keyboard.press('PageUp');
 await sleep(700);
@@ -427,7 +535,7 @@ await sleep(900);
 st = await sceneState();
 check(
   'scene 3 shows both tiers',
-  st.index === 3 && st.layers?.join() === 'eu,eea-efta-uk',
+  st.index === idx('eea-efta-uk') && st.layers?.join() === 'eu,eea-efta-uk',
   `index ${st.index}, layers ${st.layers}`,
 );
 check(
@@ -555,7 +663,7 @@ await sleep(900);
 st = await sceneState();
 check(
   'scene 4 is Horizon Europe, over the same EU layer',
-  st.index === 4 && st.layers?.join() === 'eu,horizon-associated',
+  st.index === idx('horizon-europe') && st.layers?.join() === 'eu,horizon-associated',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
 check(
@@ -618,7 +726,7 @@ await sleep(1000);
 st = await sceneState();
 check(
   'scene 5 is EuroQCI',
-  st.index === 5 && st.layers?.join() === 'euroqci,euroqci-eligible',
+  st.index === idx('euroqci') && st.layers?.join() === 'euroqci,euroqci-eligible',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
 check(
@@ -696,7 +804,7 @@ await sleep(1000);
 st = await sceneState();
 check(
   'scene 6 is priority political engagement, and it is the only active layer',
-  st.index === 6 && st.layers?.join() === 'political-engagement',
+  st.index === idx('political-engagement') && st.layers?.join() === 'political-engagement',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
 check(
@@ -762,7 +870,7 @@ st = await sceneState();
 const ukScale = await page.evaluate(() => window.__scene?.scale ?? null);
 check(
   'scene 7 is the UK close-up',
-  st.index === 7 && st.title === 'United Kingdom',
+  st.index === idx('uk') && st.title === 'United Kingdom',
   `index ${st.index}, title "${st.title}"`,
 );
 check(
@@ -941,7 +1049,7 @@ await page.keyboard.press('End');
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
-check('stepping past the last scene is a no-op', st.index === 17);
+check('stepping past the last scene is a no-op', st.index === DECK_IDS.length - 1);
 
 /* ---- the menu, for questions ---- */
 check('menu is closed by default', !st.menuOpen);
@@ -968,7 +1076,7 @@ await sleep(700);
 st = await sceneState();
 check(
   'clicking a scene in the menu jumps to it and closes the menu',
-  st.index === 1 && !st.menuOpen,
+  st.index === idx('emea') && !st.menuOpen,
   `index ${st.index}, menu ${st.menuOpen}`,
 );
 

@@ -34,6 +34,7 @@ import { palette, withAlpha } from './palette';
 import { CountryPath } from './CountryPath';
 import { Graticule } from './Graticule';
 import { Markers } from './Markers';
+import { Callouts } from './Callouts';
 import { KeyHints } from './Chrome';
 import { registerCamera, applySceneCamera } from './cameraControl';
 import { DECK } from '../scenes/deck';
@@ -64,6 +65,7 @@ export function Map() {
   const setHovered = useViewState((s) => s.setHovered);
   const finishBoot = useViewState((s) => s.finishBoot);
   const markerIds = useViewState((s) => s.markerIds);
+  const calloutIds = useViewState((s) => s.calloutIds);
   const nextScene = useViewState((s) => s.nextScene);
   const prevScene = useViewState((s) => s.prevScene);
   const gotoScene = useViewState((s) => s.gotoScene);
@@ -468,6 +470,18 @@ export function Map() {
           fill={`url(#${VIGNETTE_ID})`}
         />
       </svg>
+
+      {/* Outside the <svg>: the panels are HTML so the browser can wrap their
+          text, and their leader lines are drawn in an SVG overlay above the
+          map. See render/Callouts.tsx for why it is split that way. */}
+      {optics && calloutIds.length > 0 ? (
+        <Callouts
+          projection={optics.projection}
+          width={size.width}
+          height={size.height}
+          ids={calloutIds}
+        />
+      ) : null}
 
       <KeyHints visible={hintsVisible} />
     </div>

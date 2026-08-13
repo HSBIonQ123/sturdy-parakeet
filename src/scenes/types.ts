@@ -70,4 +70,15 @@ export interface Scene {
    * throws at resolve time rather than quietly drawing nothing.
    */
   readonly markers?: readonly string[];
+  /**
+   * Callout panels, by id, resolved against src/data/presenter.ts. Omit for
+   * none.
+   *
+   * A panel is tethered to a marker rather than to a coordinate, so the dot and
+   * the line it points from cannot drift apart. Kept separate from `markers`
+   * because they are different objects: a marker says where something is, a
+   * callout says something about it, and a scene routinely wants one without
+   * the other.
+   */
+  readonly callouts?: readonly string[];
 }

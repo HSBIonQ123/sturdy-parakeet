@@ -68,6 +68,46 @@ export const DECK: readonly Scene[] = [
     // establishes a presence there. If the dot is meant to assert something,
     // see the source line in data/places.ts — it says what to do about it.
   },
+  /*
+   * The three opening callouts, all on the same deep-focus camera.
+   *
+   * ONE PICTURE, THREE PANELS. The camera does not move between them: the
+   * frame arrived on the previous scene and is held while the content changes,
+   * so each click adds a panel rather than moving the map. That is the same
+   * discipline the layer scenes use — change one thing at a time and let the
+   * eye track it — applied to content instead of tint.
+   *
+   * Three scenes rather than one crowded one. The career list runs to five
+   * items and the panel has to be legible from the back of a room, which is a
+   * constraint that beats economy of clicks every time.
+   */
+  {
+    id: 'family',
+    title: 'Salisbury',
+    // k=20, not the 24 ceiling: at 24 the frame is almost entirely England and
+    // the panel has nothing to sit against. At 20 the south coast, the Isle of
+    // Wight and the Channel give the right-hand third somewhere to be.
+    camera: { lon: -1.7945, lat: 51.0688, k: 20 },
+    selectedIso: 'GBR',
+    markers: ['salisbury'],
+    callouts: ['family'],
+  },
+  {
+    id: 'career',
+    title: 'Salisbury',
+    camera: { lon: -1.7945, lat: 51.0688, k: 20 },
+    selectedIso: 'GBR',
+    markers: ['salisbury'],
+    callouts: ['career'],
+  },
+  {
+    id: 'why-ionq',
+    title: 'Salisbury',
+    camera: { lon: -1.7945, lat: 51.0688, k: 20 },
+    selectedIso: 'GBR',
+    markers: ['salisbury'],
+    callouts: ['why-ionq'],
+  },
   {
     id: 'emea',
     title: 'Base region',

@@ -15,30 +15,36 @@ The deck as it stands:
 | # | Scene | Shows |
 | --- | --- | --- |
 | 01 | Salisbury | the opening screen — the UK held, Salisbury marked |
-| 02 | Base region | 124 EMEA countries, nothing highlighted |
-| 03 | European Union | the 27, solid |
-| 04 | EEA, EFTA and the UK | the 27, plus five states hatched |
-| 05 | Horizon Europe | the 27, plus 19 associated states hatched |
-| 06 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
-| 07 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
-| 08 | United Kingdom | the camera flies in; Westminster and Oxford marked |
-| 09 | Priority European Political Engagement | back out to the six |
-| 10 | Belgium | close up, held selected, Brussels marked |
-| 11 | Priority European Political Engagement | back out to the six |
-| 12 | Italy | close up, held selected, Rome marked |
-| 13 | Priority European Political Engagement | back out to the six |
-| 14 | Germany | close up, held selected, Berlin marked |
-| 15 | Priority European Political Engagement | back out to the six |
-| 16 | Poland | close up, held selected, Warsaw marked |
-| 17 | Priority European Political Engagement | back out to the six |
-| 18 | Lithuania | close up, held selected, Vilnius marked |
+| 02 | Salisbury | deep focus, family panel tethered to the dot |
+| 03 | Salisbury | deep focus, career panel |
+| 04 | Salisbury | deep focus, why IonQ |
+| 05 | Base region | 124 EMEA countries, nothing highlighted |
+| 06 | European Union | the 27, solid |
+| 07 | EEA, EFTA and the UK | the 27, plus five states hatched |
+| 08 | Horizon Europe | the 27, plus 19 associated states hatched |
+| 09 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
+| 10 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
+| 11 | United Kingdom | the camera flies in; Westminster and Oxford marked |
+| 12 | Priority European Political Engagement | back out to the six |
+| 13 | Belgium | close up, held selected, Brussels marked |
+| 14 | Priority European Political Engagement | back out to the six |
+| 15 | Italy | close up, held selected, Rome marked |
+| 16 | Priority European Political Engagement | back out to the six |
+| 17 | Germany | close up, held selected, Berlin marked |
+| 18 | Priority European Political Engagement | back out to the six |
+| 19 | Poland | close up, held selected, Warsaw marked |
+| 20 | Priority European Political Engagement | back out to the six |
+| 21 | Lithuania | close up, held selected, Vilnius marked |
 
-**Scene 1 is the opening screen**: the map of the UK with Salisbury marked, and
-the next click pulls out to the region. It is the only scene in the deck that
+**Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
+three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
+the Salisbury dot by a leader line. The camera does not move between them, so
+each click adds content rather than moving the map. The fifth click pulls out to
+the region. It is the only scene in the deck that
 opens zoomed, which is why `Map.tsx` applies the first scene's camera on mount —
 nothing ever *steps into* scene 1, so `gotoScene` never runs for it.
 
-Scenes 7 to 18 are **hub and spoke**: the six priority states at region scale,
+Scenes 10 to 21 are **hub and spoke**: the six priority states at region scale,
 then one of them close up, then back out to the six, then the next. Every
 country is introduced against the whole selection rather than in isolation, and
 stepping out is what makes the next zoom mean something. It needed no new
@@ -118,6 +124,12 @@ Omitting `camera` is meaningful: it means "return to the fitted frame", not
 "leave the camera alone". Scenes are absolute so that a rehearsed picture is
 reproducible after any amount of improvisation.
 
+**Callout panels** are listed per scene by id — `callouts: ['career']` — and
+resolved against `src/data/presenter.ts`. A panel is HTML so the browser wraps
+its text; its leader line is SVG, drawn from the panel to the dot of the marker
+it names. **The silhouettes in `src/assets/silhouettes/` are placeholders** —
+replacing them is two import lines in `presenter.ts` and no other change.
+
 **Markers** are listed per scene by id — `markers: ['westminster', 'oxford']` —
 and resolved against the registry in `src/data/markers.ts`. Each is drawn as an
 ion held in the trap: a bright core, a containing ring, a soft halo, sitting on
@@ -142,15 +154,15 @@ tint, everything else in EMEA recedes, and the **borders between members
 energise** — the bloc reads as a powered region of the same chip rather than a
 shape coloured in on top of the map.
 
-Layers stack. Scene 4 runs `['eu', 'eea-efta-uk']`: the 27 stay exactly as they
-were on scene 3, and five more states arrive **hatched in amber**. Solid means
+Layers stack. Scene 7 runs `['eu', 'eea-efta-uk']`: the 27 stay exactly as they
+were on scene 6, and five more states arrive **hatched in amber**. Solid means
 member, hatched means associated. That is not decoration — the IonQ gradient is
 a hue rotation inside the orange band, so at the alpha a fill needs, two stops
 differ by about a fifth of the distance between a lit country and an unlit one.
 Colour alone would vanish on a projector; shape does not. `CLAUDE.md` §7b has
 the numbers.
 
-Scene 7 is a different kind of layer and is labelled as one. The scenes before
+Scene 10 is a different kind of layer and is labelled as one. The scenes before
 it draw perimeters you can look up — the 27, the EEA, Horizon association,
 the EuroQCI Declaration. The last draws a **selection**: six states where
 engagement is focused, who are not members of anything in common. So the layer
@@ -209,7 +221,7 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 74 things,
+Drives the production bundle in headless Chromium and asserts 78 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the

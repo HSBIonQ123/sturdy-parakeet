@@ -228,12 +228,28 @@ body {
   right: var(--inset);
   bottom: calc(var(--inset) + 8em);
   width: clamp(230px, 22vw, 330px);
+  /* THE MENU GROWS UPWARD FROM THE BOTTOM, so a long deck runs off the top of
+     the screen and takes the earliest scenes with it — which are exactly the
+     ones a question sends you back to. Cap it against the viewport and scroll
+     the list inside, keeping the head and foot pinned. Found at 21 scenes,
+     where the opening screens had become unreachable from the menu. */
+  max-height: calc(100vh - var(--inset) * 2 - 8em);
+  display: flex;
+  flex-direction: column;
   padding: 0.8em 0.5em 0.6em;
   background: color-mix(in srgb, var(--panel) 96%, transparent);
   border: 1px solid color-mix(in srgb, var(--neutral-line) 70%, transparent);
   backdrop-filter: blur(3px);
   z-index: 5;
   animation: scene-in 160ms ease-out;
+}
+
+.scene-menu-list {
+  /* min-height:0 is load-bearing in a flex column: without it the list refuses
+     to shrink below its content height and the cap above does nothing. */
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .scene-menu-head {
@@ -920,4 +936,138 @@ body {
   .hints {
     display: none;
   }
+}
+
+/* =====================================================================
+   Callout panels — content tethered to a point on the map.
+
+   Styled as instrument chrome, deliberately: same panel ground as the
+   readout, same tracked mono keys, same hairline rule. The opening scenes
+   are personal rather than cartographic, and the one thing that keeps them
+   from reading as a slide deck bolted onto a map is that they are built
+   from the vocabulary already on screen.
+   ===================================================================== */
+
+.callout-leaders {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: scene-in 420ms ease-out;
+}
+
+.callout-leader-base {
+  fill: none;
+  stroke: var(--base);
+  stroke-width: 4;
+  stroke-opacity: 0.85;
+}
+
+.callout-leader {
+  fill: none;
+  stroke: var(--ionq);
+  stroke-width: 1;
+  stroke-opacity: 0.75;
+}
+
+.callout-anchor {
+  fill: none;
+  stroke: var(--ionq);
+  stroke-width: 1.2;
+  stroke-opacity: 0.9;
+}
+
+.callout {
+  position: absolute;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ionq) 34%, transparent);
+  padding: 18px 22px 20px;
+  pointer-events: none;
+  animation: scene-in 420ms ease-out;
+}
+
+.callout-heading {
+  margin: 0 0 14px;
+  color: var(--ionq);
+}
+
+/* ---- figures ---- */
+.callout-figures {
+  display: flex;
+  align-items: flex-end;
+  gap: 22px;
+}
+
+.callout-figure {
+  margin: 0;
+  flex-basis: 0;
+  text-align: center;
+}
+
+.callout-silhouette {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 26vh;
+  object-fit: contain;
+  /* The artwork is authored as a black silhouette. Recolouring it here keeps
+     the palette discipline intact without editing the asset, so a replacement
+     file needs no preparation beyond being a silhouette. */
+  filter: brightness(0) invert(0.82);
+  opacity: 0.92;
+}
+
+.callout-name {
+  margin-top: 12px;
+  color: var(--type);
+}
+
+/* ---- numbered list ---- */
+.callout-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.callout-item {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-top: 1px solid color-mix(in srgb, var(--type-muted) 22%, transparent);
+}
+
+.callout-item:first-child {
+  border-top: 0;
+}
+
+.callout-index {
+  color: var(--ionq);
+  flex: none;
+}
+
+.callout-text {
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.45;
+  color: var(--type);
+}
+
+/* ---- prose ---- */
+.callout-prose-heading {
+  margin: 0 0 10px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-title);
+  letter-spacing: 0.01em;
+  color: var(--type);
+}
+
+.callout-prose-text {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.55;
+  color: var(--type);
 }

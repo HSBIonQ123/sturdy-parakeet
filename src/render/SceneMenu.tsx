@@ -91,7 +91,8 @@ export function SceneMenu() {
             </span>
           </div>
 
-          {DECK.map((scene, i) => {
+          <div className="scene-menu-list">
+            {DECK.map((scene, i) => {
             const current = i === sceneIndex;
             // The layer's DESCRIPTION, not its label: the scene title already
             // says "European Union", so a label here would just repeat it.
@@ -121,7 +122,8 @@ export function SceneMenu() {
                 </span>
               </button>
             );
-          })}
+            })}
+          </div>
 
           <p className="scene-menu-foot label muted">
             Page ↓ / → next · Page ↑ / ← back · M closes
