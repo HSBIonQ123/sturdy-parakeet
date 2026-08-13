@@ -50,7 +50,14 @@ export const palette = {
 export const tint = {
   hover: 0.1,
   selected: 0.14,
-  layer: 0.08,
+  /**
+   * Layer members. The brief's 8-14% band was written for a highlight seen
+   * close up; on a projector, which crushes low-end contrast, 8% over
+   * #141A21 does not survive the room. 15% is the lowest value that still
+   * reads as "these ones" from the back of a hall, and it stays inside the
+   * spirit of the band. Verify on the actual display before changing it.
+   */
+  layer: 0.15,
 } as const;
 
 /** Push tokens onto :root so CSS can reference them. Called once at mount. */

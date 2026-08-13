@@ -14,9 +14,11 @@ import { EMEA_COUNT } from '../data/regions';
 import { INTEGRITY } from '../data/atlas';
 import { PROJECTION_NAME, CENTRAL_MERIDIAN } from './projection';
 import { useViewState } from '../state/viewState';
+import { DECK } from '../scenes/deck';
 
 export function Telemetry() {
   const scale = useViewState((s) => s.camera.k);
+  const sceneIndex = useViewState((s) => s.sceneIndex);
   const selectedIso = useViewState((s) => s.selectedIso);
   const activeLayers = useViewState((s) => s.activeLayers.length);
   const reducedMotion = useViewState((s) => s.reducedMotion);
@@ -25,6 +27,10 @@ export function Telemetry() {
 
   return (
     <footer className="telemetry" aria-label="Map telemetry">
+      <Item
+        label="Scene"
+        value={`${String(sceneIndex + 1).padStart(2, '0')}/${String(DECK.length).padStart(2, '0')}`}
+      />
       <Item label="In scope" value={String(EMEA_COUNT)} />
       <Item label="Proj" value={`${PROJECTION_NAME} λ₀ ${CENTRAL_MERIDIAN}°E`} />
       <Item label="Scale" value={`${scale.toFixed(2)}×`} />

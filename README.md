@@ -4,9 +4,9 @@ An offline, browser-based interactive map of Europe, the Middle East and Africa,
 built to be presented live to policymakers. It replaces PowerPoint for
 government-affairs briefings and it never touches the network.
 
-**State 1 of 4 — the base region map.** Later states add membership layers,
-capital deep-dives, and a scene sequencer. See `CLAUDE.md` for the conventions
-that keep those additive.
+**The base region map, plus a scene sequencer and the first membership layer
+(EU member states).** Capital deep-dives come next. See `CLAUDE.md` for the
+conventions that keep each addition additive.
 
 ## Run it
 
@@ -25,13 +25,30 @@ npm run preview
 
 Press `F` for fullscreen once it is open.
 
-## Controls
+## Presenting with it
+
+**The deck is driven by a clicker.** `Page Down` and `Page Up` step forward and
+back through the scenes — those are the keys almost every presentation remote
+sends, and the only ones most of them send. Arrows and `Space` do the same at
+the machine.
+
+A clicker can only say "next", so for questions there is the **scene menu**:
+press `M` or click **Scenes** in the corner, and jump straight to any scene.
+It is closed and out of the DOM by default, because during the talk the map
+should be the only thing on screen.
+
+Stepping into a scene always restores the picture you rehearsed — layers,
+camera and all. Zoom wherever you like while answering a question; the next
+`Page Down` puts everything back.
 
 | Action | How |
 | --- | --- |
+| Next / previous scene | `Page Down` / `Page Up`, `→` `↓` / `←` `↑`, `Space` |
+| First / last scene | `Home` / `End` |
+| Jump to a scene | `M`, or the **Scenes** button |
 | Inspect | Hover a country. The readout shows name, ISO code, capital and region. |
 | Hold | Click to pin a selection; it survives the pointer moving away. |
-| Clear | `Esc` |
+| Clear selection / close menu | `Esc` |
 | Camera | Drag to pan, wheel to zoom, 1× to 8×. The map cannot be lost off-frame. |
 | Reset camera | `R` |
 | Fullscreen | `F` |
@@ -39,6 +56,31 @@ Press `F` for fullscreen once it is open.
 The boot sequence — the border network energising from dark — plays once on
 load and is skipped by any key or click. Turn it off in
 `src/render/borderConfig.ts` (`boot.enabled`).
+
+## Editing the talk
+
+`src/scenes/deck.ts` is one ordered array, and that array **is** the talk.
+Reordering means moving a block; adding a scene means adding an object:
+
+```ts
+{
+  id: 'nato',
+  title: 'NATO',
+  caption: '32 allies',
+  layers: ['nato'],
+  camera: { lon: 10, lat: 50, k: 2.4 },   // omit for the full EMEA frame
+}
+```
+
+Omitting `camera` is meaningful: it means "return to the fitted frame", not
+"leave the camera alone". Scenes are absolute so that a rehearsed picture is
+reproducible after any amount of improvisation.
+
+A membership layer is a file in `src/data/layers/` containing an array of
+alpha-3 codes and nothing else. When one is active, its members take the orange
+tint, everything else in EMEA recedes, and the **borders between members
+energise** — the bloc reads as a powered region of the same chip rather than a
+shape coloured in on top of the map.
 
 ## What you are looking at
 
@@ -87,11 +129,14 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 17 things,
+Drives the production bundle in headless Chromium and asserts 29 things,
 including: zero network requests leave the origin; every country renders; the
-arc partition is total and disjoint, so no border is drawn twice; the hovered
-outline is unanimated and at full opacity while the ambient pulse is running;
-and the frame rate at 2560×1440. Screenshots land in `screenshots/`, with
+arc partition is total and disjoint, so no border is drawn twice; `Page Down`
+and `Page Up` actually step the deck (the clicker path — if that breaks, the
+talk cannot be driven from anywhere but the laptop); the menu does not let the
+deck step underneath it; a scene restores the camera after improvised zooming;
+the hovered outline is unanimated and at full opacity while the ambient pulse
+is running; and the frame rate at 2560×1440. Screenshots land in `screenshots/`, with
 close-ups of Luxembourg, Slovenia, Lesotho, Gambia, the Gulf, Cyprus, Crimea
 and the Horn — where double-drawing would show first.
 

@@ -44,6 +44,7 @@
      rather than being tuned to whatever laptop it was built on. */
   --t-plate: clamp(15px, 1.55vh, 24px);
   --t-title: clamp(18px, 2.05vh, 30px);
+  --t-scene: clamp(13px, 1.35vh, 20px);
   --t-label: clamp(8px, 0.86vh, 11px);
   --t-value: clamp(10px, 1.12vh, 14px);
   --t-micro: clamp(7px, 0.76vh, 10px);
@@ -158,7 +159,144 @@ body {
 }
 
 .plate-sub {
+  margin: 0.35em 0 0;
+}
+
+/* The scene line changes beneath the fixed brand line. Keyed on scene id in
+   Chrome.tsx so it re-enters on change — a short fade, so a state change
+   registers in peripheral vision without anyone watching an animation end. */
+.plate-scene {
+  animation: scene-in 320ms ease-out;
+}
+
+.plate-scene-title {
   margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-scene);
+  letter-spacing: 0.02em;
+  color: var(--type);
+}
+
+@keyframes scene-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+/* ---- scene menu ----
+   Closed by default and absent from the DOM, because during the talk the map
+   is the only thing that should be on screen. */
+.menu-button {
+  position: absolute;
+  right: var(--inset);
+  bottom: calc(var(--inset) + 4.6em);
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.4em 0.7em;
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neutral-line) 60%, transparent);
+  color: var(--type-muted);
+  cursor: pointer;
+  z-index: 4;
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.menu-button:hover,
+.menu-button:focus-visible,
+.menu-button.is-open {
+  color: var(--type);
+  border-color: var(--ionq);
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
+}
+
+.menu-button .label {
+  color: inherit;
+}
+
+.menu-button-glyph {
+  font-family: var(--mono);
+  font-size: var(--t-value);
+  line-height: 1;
+  color: var(--ionq);
+}
+
+.scene-menu {
+  position: absolute;
+  right: var(--inset);
+  bottom: calc(var(--inset) + 8em);
+  width: clamp(230px, 22vw, 330px);
+  padding: 0.8em 0.5em 0.6em;
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neutral-line) 70%, transparent);
+  backdrop-filter: blur(3px);
+  z-index: 5;
+  animation: scene-in 160ms ease-out;
+}
+
+.scene-menu-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 0.7em 0.6em;
+  border-bottom: 1px solid color-mix(in srgb, var(--neutral-line) 45%, transparent);
+}
+
+.scene-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85em;
+  width: 100%;
+  padding: 0.55em 0.7em;
+  background: none;
+  border: 0;
+  border-left: 2px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.scene-item:hover,
+.scene-item:focus-visible {
+  background: color-mix(in srgb, var(--ionq) 9%, transparent);
+}
+
+.scene-item.is-current {
+  border-left-color: var(--ionq);
+  background: color-mix(in srgb, var(--ionq) 6%, transparent);
+}
+
+.scene-index {
+  color: var(--type-muted);
+}
+
+.scene-item.is-current .scene-index {
+  color: var(--ionq);
+}
+
+.scene-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.scene-title {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-value);
+  color: var(--type);
+}
+
+.scene-meta {
+  color: var(--type-muted);
+}
+
+.scene-menu-foot {
+  margin: 0.7em 0 0;
+  padding: 0.6em 0.7em 0;
+  border-top: 1px solid color-mix(in srgb, var(--neutral-line) 45%, transparent);
 }
 
 /* ---- readout rail ----
@@ -270,6 +408,15 @@ body {
 .legend-oos {
   stroke: var(--border-base);
   opacity: 0.3;
+}
+
+.legend-fill {
+  stroke: var(--border-pulse);
+  stroke-width: 0.8;
+}
+
+.legend-member {
+  fill: color-mix(in srgb, var(--ionq) 15%, transparent);
 }
 
 /* ---- telemetry strip ---- */
@@ -499,6 +646,27 @@ body {
   to {
     opacity: var(--attenuate-to);
   }
+}
+
+/* ---- the member circuit ----
+   Borders internal to an active membership layer, run brighter and heavier
+   than the ambient network so the bloc reads as an energised region of the
+   same chip rather than a shape coloured in on top of the map. */
+.member-base {
+  stroke: var(--border-pulse);
+  stroke-width: var(--member-base-width);
+  stroke-opacity: var(--member-base-opacity);
+  pointer-events: none;
+}
+
+.member-circuit {
+  animation: scene-in 420ms ease-out;
+}
+
+.member-circuit.is-static .pulse {
+  animation: none !important;
+  stroke-dasharray: none;
+  stroke-dashoffset: 0;
 }
 
 /* ---- boot sequence ----

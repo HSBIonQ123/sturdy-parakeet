@@ -39,9 +39,10 @@ import { memo, useEffect, useMemo, useState } from 'react';
 import type { GeoPath } from 'd3-geo';
 import type { CSSProperties } from 'react';
 
-import { BORDERS, NETWORK_ARCS, meshOfArcs, outlineOf } from '../data/atlas';
+import { BORDERS, NETWORK_ARCS, arcsWithinMembers, meshOfArcs, outlineOf } from '../data/atlas';
 import { borderConfig } from './borderConfig';
 import { useViewState } from '../state/viewState';
+import { LAYER_BY_ID } from '../data/layers';
 import type { Alpha3 } from '../data/iso';
 
 export const GLOW_FILTER_ID = 'border-glow';
@@ -116,12 +117,76 @@ function BorderMeshImpl({ path }: Props) {
         </g>
       </g>
 
+      <MemberCircuit path={path} />
       <ArcFlash path={path} />
     </g>
   );
 }
 
 export const BorderMesh = memo(BorderMeshImpl);
+
+/* ------------------------------------------------------------------ *
+ * Member circuit — the borders internal to an active membership layer.
+ *
+ * A membership layer could have been nothing but a tinted fill. Energising the
+ * bloc's own borders instead is what keeps it inside the instrument metaphor:
+ * the EU reads as a powered region of the same chip, not as a shape coloured
+ * in on top of a map. Capitals become ions in State 3 and links between them
+ * photonic interconnects on this same conductor network — this is the first
+ * step of that idea, not a decoration bolted onto it.
+ *
+ * Generic by construction. It reads `activeLayers`, asks atlas.ts for the arcs
+ * internal to that layer's members, and renders them. Adding NATO or the GCC
+ * later touches nothing here — which is the layer contract actually holding.
+ * ------------------------------------------------------------------ */
+
+function MemberCircuit({ path }: Props) {
+  const activeLayers = useViewState((s) => s.activeLayers);
+  const reducedMotion = useViewState((s) => s.reducedMotion);
+
+  const layers = useMemo(
+    () => activeLayers.map((id) => LAYER_BY_ID[id]).filter(Boolean),
+    [activeLayers],
+  );
+
+  const paths = useMemo(
+    () =>
+      layers.map((layer) => ({
+        id: layer.id,
+        d: path(meshOfArcs(arcsWithinMembers(layer.id, layer.members))) ?? '',
+      })),
+    [layers, path],
+  );
+
+  if (paths.length === 0) return null;
+
+  return (
+    <g className={`member-circuit${reducedMotion ? ' is-static' : ''}`}>
+      {paths.map((p) => (
+        <g key={p.id}>
+          <path className="member-base" d={p.d} />
+          {borderConfig.pulseProfile.map((layer, i) => (
+            <path
+              key={i}
+              className="pulse member-pulse"
+              d={p.d}
+              style={
+                {
+                  '--w': layer.width * borderConfig.member.pulseWidthScale,
+                  '--o': Math.min(1, layer.opacity * borderConfig.member.pulseOpacityScale),
+                  '--dash': `var(--pulse-${i}-dash)`,
+                  '--boot-dash': `var(--pulse-${i}-boot-dash)`,
+                  '--phase': `var(--pulse-${i}-phase)`,
+                  '--end': `var(--pulse-${i}-end)`,
+                } as CSSProperties
+              }
+            />
+          ))}
+        </g>
+      ))}
+    </g>
+  );
+}
 
 /* ------------------------------------------------------------------ *
  * Arc flash — optional, off by default.

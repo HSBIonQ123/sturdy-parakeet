@@ -31,6 +31,8 @@ import { BorderMesh, ActiveOutlines, GLOW_FILTER_ID } from './BorderMesh';
 import { CountryPath } from './CountryPath';
 import { Graticule } from './Graticule';
 import { KeyHints } from './Chrome';
+import { registerCamera } from './cameraControl';
+import { DECK } from '../scenes/deck';
 
 declare global {
   interface Window {
@@ -54,6 +56,11 @@ export function Map() {
   const select_ = useViewState((s) => s.select);
   const setHovered = useViewState((s) => s.setHovered);
   const finishBoot = useViewState((s) => s.finishBoot);
+  const nextScene = useViewState((s) => s.nextScene);
+  const prevScene = useViewState((s) => s.prevScene);
+  const gotoScene = useViewState((s) => s.gotoScene);
+  const toggleMenu = useViewState((s) => s.toggleMenu);
+  const closeMenu = useViewState((s) => s.closeMenu);
 
   /* ---- viewport size ------------------------------------------------ */
   useEffect(() => {
@@ -156,6 +163,13 @@ export function Map() {
     };
   }, [focusOn]);
 
+  // Hand the camera to the scene sequencer. d3 stays authoritative for what
+  // the transform actually is; scenes only ask for positions.
+  useEffect(
+    () => registerCamera({ focus: focusOn, reset: resetCamera }),
+    [focusOn, resetCamera],
+  );
+
   /* ---- boot sequence ------------------------------------------------ */
   useEffect(() => {
     if (!borderConfig.boot.enabled) {
@@ -170,15 +184,81 @@ export function Map() {
   const [hintsVisible, setHintsVisible] = useState(true);
 
   useEffect(() => {
+    /**
+     * PRESENTER KEYS.
+     *
+     * Page Down / Page Up are first because that is what a presentation
+     * remote actually sends — almost every clicker emulates exactly those two
+     * keys, and nothing else. Arrows and Space are the same commands for when
+     * you are at the machine. A clicker can only say "next", which is why the
+     * deck is an ordered walk and why the menu exists for questions.
+     */
     const onKey = (e: KeyboardEvent) => {
       // Any key skips the boot sequence. It is an opener, not an obstacle.
       finishBoot();
       setHintsVisible(false);
 
+      const menuIsOpen = useViewState.getState().menuOpen;
+
+      // Space and Enter belong to whatever control has focus. Stepping the
+      // deck as well would fire two actions from one press.
+      const target = e.target as HTMLElement | null;
+      const onControl =
+        target instanceof HTMLElement &&
+        (target.tagName === 'BUTTON' || target.isContentEditable);
+
+      if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        toggleMenu();
+        return;
+      }
+
       if (e.key === 'Escape') {
-        select_(null);
-        setHovered(null);
-      } else if (e.key === 'r' || e.key === 'R') {
+        // Esc is layered: close the menu first, and only clear the selection
+        // once there is no menu to close.
+        if (menuIsOpen) closeMenu();
+        else {
+          select_(null);
+          setHovered(null);
+        }
+        return;
+      }
+
+      // With the menu open it owns navigation, or opening it would step the
+      // deck underneath the list you are reading.
+      if (menuIsOpen) return;
+
+      switch (e.key) {
+        case 'PageDown':
+        case 'ArrowRight':
+        case 'ArrowDown':
+          e.preventDefault();
+          nextScene();
+          return;
+        case 'PageUp':
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          e.preventDefault();
+          prevScene();
+          return;
+        case ' ':
+          if (onControl) return;
+          e.preventDefault();
+          nextScene();
+          return;
+        case 'Home':
+          e.preventDefault();
+          gotoScene(0);
+          return;
+        case 'End':
+          e.preventDefault();
+          gotoScene(DECK.length - 1);
+          return;
+        default:
+          break;
+      }
+
+      if (e.key === 'r' || e.key === 'R') {
         resetCamera();
       } else if (e.key === 'f' || e.key === 'F') {
         if (document.fullscreenElement) void document.exitFullscreen();
@@ -187,7 +267,17 @@ export function Map() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [finishBoot, resetCamera, select_, setHovered]);
+  }, [
+    finishBoot,
+    resetCamera,
+    select_,
+    setHovered,
+    nextScene,
+    prevScene,
+    gotoScene,
+    toggleMenu,
+    closeMenu,
+  ]);
 
   /* ---- cursor auto-hide --------------------------------------------- */
   useEffect(() => {

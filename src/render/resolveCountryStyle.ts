@@ -77,7 +77,7 @@ const SELECTED: CountryStyle = {
  * the map still reads as a whole region — a layer is an overlay on EMEA, not a
  * replacement for it.
  */
-const NON_MEMBER_DIM = 0.55;
+const NON_MEMBER_DIM = 0.45;
 
 const IN_SCOPE_DIMMED: CountryStyle = { ...IN_SCOPE, opacity: NON_MEMBER_DIM };
 

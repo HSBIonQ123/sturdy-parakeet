@@ -20,6 +20,7 @@
  * here is the precedence rule — it is deliberately data, not code.
  */
 import type { Alpha3 } from '../iso';
+import { EU } from './eu';
 
 export interface MembershipLayer {
   /** Stable machine id, used in scene definitions in State 4. */
@@ -40,8 +41,9 @@ export interface MembershipLayer {
 
 /** Ordered layer registry. Precedence is array order. */
 export const LAYERS: readonly MembershipLayer[] = [
-  // State 2 populates this: EU, NATO, EuroQCI, EU Quantum Flagship,
-  // Commonwealth, GCC, Council of Europe.
+  EU,
+  // Still to come: NATO, EuroQCI, EU Quantum Flagship, Commonwealth, GCC,
+  // Council of Europe. Each is one file here plus one entry in this array.
 ];
 
 export const LAYER_BY_ID: Readonly<Record<string, MembershipLayer>> =

@@ -144,6 +144,25 @@ export const borderConfig = {
     underOpacity: 0.95,
   },
 
+  /* ---- membership layers ------------------------------------------- */
+  /**
+   * How much brighter the borders INTERNAL to an active membership layer run
+   * than the ambient network. This is the difference between the EU reading as
+   * an energised circuit and reading as a shape coloured in.
+   *
+   * Keep it moderate. Push the scales much past 2 and the bloc's interior
+   * out-shouts its own outline, which inverts the thing you are showing.
+   */
+  member: {
+    /** Multiplier on each pulse layer's width. */
+    pulseWidthScale: 1.7,
+    /** Multiplier on each pulse layer's opacity, clamped to 1. */
+    pulseOpacityScale: 1.9,
+    /** The always-lit conductor beneath, for member borders. */
+    baseWidth: 0.9,
+    baseOpacity: 0.95,
+  },
+
   /* ---- disputed lines ---------------------------------------------- */
   /** De facto administrative lines. Dashed hairline, never pulses. */
   deFacto: {
@@ -243,6 +262,9 @@ export function borderCssVars(cfg: BorderConfig = borderConfig): Record<string, 
     '--select-width': `${cfg.selection.width}`,
     '--select-under-width': `${cfg.selection.underWidth}`,
     '--select-under-opacity': `${cfg.selection.underOpacity}`,
+
+    '--member-base-width': `${cfg.member.baseWidth}`,
+    '--member-base-opacity': `${cfg.member.baseOpacity}`,
 
     '--defacto-width': `${cfg.deFacto.width}`,
     '--defacto-opacity': `${cfg.deFacto.opacity}`,

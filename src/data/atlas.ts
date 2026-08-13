@@ -227,6 +227,46 @@ export const BORDERS: Readonly<Record<BorderClass, Feature<MultiLineString>>> = 
 /** The pulsing network's arc indices, for the optional arc-flash discharge. */
 export const NETWORK_ARCS: readonly number[] = buckets.network;
 
+/**
+ * The sub-network of borders INTERNAL to a set of member codes.
+ *
+ * This is what lets a membership layer read as part of the instrument rather
+ * than as a chart: when a layer is active, the borders between its members
+ * energise as a brighter circuit inside the wider mesh, so the EU looks like a
+ * powered region of the same chip rather than a coloured-in shape.
+ *
+ * Deliberately generic, and written once. It takes an array of alpha-3 codes —
+ * which is all a layer ever is — so adding NATO or the GCC in a later session
+ * still requires no change to any border rendering code. That is the layer
+ * contract holding under load, which is the only test of it that counts.
+ *
+ * Only arcs with BOTH owners inside the set qualify. An arc between a member
+ * and a non-member is the edge of the bloc, not part of its circuit, and
+ * lighting it would misstate where the boundary of the thing actually is.
+ */
+const memberArcCache = new Map<string, readonly number[]>();
+
+export function arcsWithinMembers(
+  cacheKey: string,
+  members: readonly Alpha3[],
+): readonly number[] {
+  const cached = memberArcCache.get(cacheKey);
+  if (cached) return cached;
+
+  const set = new Set(members);
+  const arcs: number[] = [];
+  for (const arc of buckets.network) {
+    const owners = arcOwners.get(arc);
+    if (!owners) continue;
+    const distinct = [...new Set(owners)];
+    if (distinct.length === 2 && set.has(distinct[0]) && set.has(distinct[1])) {
+      arcs.push(arc);
+    }
+  }
+  memberArcCache.set(cacheKey, arcs);
+  return arcs;
+}
+
 /** Per-country outline, built on demand for the hover treatment. */
 const outlineCache = new Map<Alpha3, Feature<MultiLineString>>();
 

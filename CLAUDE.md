@@ -6,10 +6,15 @@ anything; if you change a decision recorded here, change it here too.
 
 ```
 State 1  base EMEA region map                    <- BUILT
-State 2  membership layers over the base map
+State 2  membership layers over the base map     <- STARTED: EU is the first
+State 4  scene sequencer                         <- BUILT EARLY, see §3a
 State 3  capital deep-dives with a data panel
-State 4  scene sequencer — a talk as an ordered walk through saved states
 ```
+
+State 4 was brought forward deliberately. The presenter drives the talk with a
+clicker, and a clicker can only say "next" — so the states had to be an ordered
+walk from the first one, not a set of toggles that would have needed rewriting
+into a deck later.
 
 The test of the architecture is simple: **adding a layer in State 2 must not
 require editing rendering code.** If it does, the architecture has drifted.
@@ -31,7 +36,7 @@ literal. Do not add a hex to a component or to `styles.css`.
 | `borderBase` | `#8A4200` | the unpowered conductor, always lit |
 | `borderPulse` | `#FFB04D` | the travelling charge — a filament at temperature |
 | `neutralLine` | `#2A3440` | coastline, exterior boundary, graticule. Never pulses. |
-| `ionq` | **`#FF8300`** | selection, active state, readout accent — **only** |
+| `ionq` | **`#FF8300`** | selection, active state, layer members, readout accent — **only** |
 | `typePrimary` | `#C9D3DD` | type |
 | `typeMuted` | `#5E6B79` | labels |
 
@@ -43,11 +48,13 @@ sampled value wins. Note that the sibling tool `redesigned-octo-memory` uses
 `#F15A24` as its accent, which appears nowhere in the logo; that inconsistency
 is inherited, not introduced here.
 
-Fill tints are `ionq` at 8–14% alpha (`tint` in `palette.ts`): hover 10%,
-selected 14%, layer 8%.
+Fill tints are `ionq` alpha (`tint` in `palette.ts`): hover 10%, selected 14%,
+layer members 15%. The layer value is above the brief's 8–14% band on purpose:
+8% over `#141A21` does not survive a projector, which crushes low-end contrast.
+Check it on the actual display before lowering it.
 
-**Discipline.** Orange is the sole brand accent and appears in exactly three
-roles: the border network, selection, and the readout rule. Everything else is
+**Discipline.** Orange is the sole brand accent and appears in four roles only:
+the border network, selection, layer membership, and the readout rule. Everything else is
 neutral. Adding a fourth hue is a design decision, not a convenience — the
 instrument reads as an instrument because it is monochrome plus one.
 
@@ -77,12 +84,15 @@ To add one in State 2:
 
 1. create `src/data/layers/eu.ts` exporting a `MembershipLayer`;
 2. add it to the `LAYERS` array in `src/data/layers/index.ts`;
-3. add **one clause** to `resolveCountryStyle` in
-   `src/render/resolveCountryStyle.ts`, inside the marked block.
+3. add it to a scene's `layers` array in `src/scenes/deck.ts`.
 
-That is the whole procedure. Nothing in `Map.tsx`, `BorderMesh.tsx`,
-`CountryPath.tsx` or the store changes. `LAYERS` is ordered, and order is
-precedence, so precedence is data rather than code.
+`resolveCountryStyle` already has the clause that handles any layer, and
+`BorderMesh` already energises any layer's internal borders generically via
+`arcsWithinMembers`. **The EU layer was added without touching either.** That
+is the contract holding under load, which is the only test of it that counts.
+
+`LAYERS` is ordered, and order is precedence when a country belongs to more
+than one active layer — so precedence is data rather than code.
 
 **`resolveCountryStyle` is the only place a country's appearance is decided.**
 No component may set a fill, stroke or opacity on a country path. If you want a
@@ -93,6 +103,45 @@ instances. This is load-bearing, not tidiness: components subscribe with
 `useViewState(s => resolveCountryStyle(...))` and zustand compares with
 `Object.is`. Allocate a fresh object per call and all 238 country paths
 re-render on every hover, and the pulse visibly stutters.
+
+## 3a. The scene sequencer — the presentation surface
+
+**The deck is `src/scenes/deck.ts`: one ordered array. That array IS the talk.**
+Reordering the talk means moving a block in that file, which is deliberately
+the easiest edit in the project, because reordering is what you actually do
+while rehearsing.
+
+A `Scene` (`src/scenes/types.ts`) carries `layers`, `camera`, `title`,
+`caption` and an optional `selectedIso`. It is not just a layer id, and that
+matters: a later scene will want to zoom to Brussels and put a caption up. If
+scenes had started as bare toggles, adding camera and caption would mean
+changing how every existing scene is defined.
+
+**Scenes are absolute, never relative.** `gotoScene` writes `activeLayers`,
+`selectedIso` and the camera every time. Omitting `camera` means "the fitted
+EMEA frame", not "leave it where it is". This is the property that makes the
+deck safe live: after ten minutes of improvised zooming during questions,
+stepping to the next scene restores exactly the picture that was rehearsed.
+`verify.mjs` asserts it.
+
+**How it is driven.**
+
+| Input | Action | Why |
+| --- | --- | --- |
+| `Page Down` / `Page Up` | next / previous scene | **What a presentation clicker actually sends.** Almost every remote emulates these two keys and nothing else. If these break, the talk cannot be driven away from the laptop. |
+| `→` `↓` / `←` `↑` / `Space` | next / previous | The same commands at the machine. |
+| `Home` / `End` | first / last scene | |
+| `M`, or the Scenes button | open the scene menu | Jump directly to any scene. A clicker cannot do this, which is exactly why it exists — questions do not arrive in running order. |
+| `Esc` | close the menu, else clear selection | Layered on purpose: never make someone press Esc twice to close one thing. |
+
+While the menu is open it owns arrow keys and the deck does not step
+underneath it. `Space` is ignored when focus is on a button, so one press never
+fires two actions.
+
+**The camera is the one imperative escape hatch.** `render/cameraControl.ts` is
+a module-level registry that `Map` writes to on mount. The alternative — lifting
+the zoom transform into the store — would re-render the map on every wheel tick
+and leave d3 and the store arguing about which transform is authoritative.
 
 ## 4. Disputed-territory policy
 
@@ -218,13 +267,39 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 17 assertions
+npm run verify         # drive the real build in Chromium; 29 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
 `npm run verify` writes screenshots to `screenshots/`, including close-ups of
 Luxembourg, Slovenia, Lesotho, Gambia, the Gulf, Cyprus, Crimea and the Horn —
 the places where border double-drawing or phase doubling would show first.
+
+## 7a. Membership layers
+
+`src/data/layers/eu.ts` is the worked example. A layer is an array of alpha-3
+codes; it knows no geometry and sets no colour.
+
+Two things happen when a layer is active, and neither required layer-specific
+code:
+
+1. **Members take the orange tint; non-members in scope dim to 45%.** A layer
+   is an overlay on EMEA, not a replacement for it, so the region still reads
+   whole.
+2. **The bloc's internal borders energise.** `arcsWithinMembers` (atlas.ts)
+   returns the arcs whose *both* owners are members, and those run brighter and
+   heavier than the ambient network. This is what keeps a layer inside the
+   instrument metaphor — the EU reads as a powered region of the same chip
+   rather than a shape coloured in on top of a map. Tunable under `member` in
+   `borderConfig.ts`.
+
+Only arcs with both owners inside the set qualify. A border between a member
+and a non-member is the *edge* of the bloc, not part of its circuit; lighting
+it would misstate where the boundary of the thing actually is.
+
+The EU file records what is deliberately absent — the UK, Northern Cyprus (de
+jure EU territory, acquis suspended), Greenland, the Faroes, the Crown
+Dependencies, EFTA — because each is a question somebody may ask.
 
 ## 8. Known limitations
 

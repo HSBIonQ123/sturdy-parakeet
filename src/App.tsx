@@ -13,6 +13,7 @@ import { Map } from './render/Map';
 import { Readout } from './render/Readout';
 import { Telemetry } from './render/Telemetry';
 import { CornerBrackets, TitlePlate, Legend } from './render/Chrome';
+import { SceneMenu } from './render/SceneMenu';
 import { applyPalette } from './render/palette';
 import { borderCssVars } from './render/borderConfig';
 import { useViewState } from './state/viewState';
@@ -48,6 +49,7 @@ export function App() {
       <TitlePlate />
       <Readout />
       <Legend />
+      <SceneMenu />
       <Telemetry />
     </div>
   );

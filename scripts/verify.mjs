@@ -218,6 +218,112 @@ if (hoveredName) {
 }
 
 /* ------------------------------------------------------------------ *
+ * 4b. The scene sequencer — the presentation surface.
+ *
+ * The clicker checks matter most: a presentation remote sends Page Down and
+ * Page Up and nothing else, so if those two keys do not step the deck, the
+ * talk cannot be driven from anywhere but the laptop.
+ * ------------------------------------------------------------------ */
+const sceneState = () =>
+  page.evaluate(() => ({
+    index: window.__scene?.index ?? null,
+    total: window.__scene?.total ?? null,
+    layers: window.__scene?.layers ?? null,
+    title: document.querySelector('.plate-scene-title')?.textContent ?? null,
+    menuOpen: Boolean(document.querySelector('.scene-menu')),
+    members: [...document.querySelectorAll('path.country')].filter(
+      (el) => el.getAttribute('fill')?.startsWith('rgba(255, 131, 0'),
+    ).length,
+  }));
+
+await page.mouse.move(20, 700);
+await page.keyboard.press('Escape');
+await sleep(200);
+
+let st = await sceneState();
+check('deck starts on scene 1 of 2', st.index === 0 && st.total === 2, JSON.stringify(st.title));
+
+await page.keyboard.press('PageDown');
+await sleep(700);
+st = await sceneState();
+check(
+  'Page Down steps to the EU scene (this is what a clicker sends)',
+  st.index === 1 && st.layers?.join() === 'eu',
+  `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
+);
+check(
+  '28 polygons take the member tint (27 states + Åland)',
+  st.members === 28,
+  `${st.members} tinted`,
+);
+
+await page.screenshot({ path: `${SHOTS}/scene-eu.png` });
+
+await page.keyboard.press('PageUp');
+await sleep(700);
+st = await sceneState();
+check('Page Up steps back to the base map', st.index === 0 && st.layers?.length === 0);
+check('member tint clears on the base map', st.members === 0, `${st.members} tinted`);
+
+// Stepping must not run off either end mid-talk.
+await page.keyboard.press('PageUp');
+await page.keyboard.press('PageUp');
+await sleep(400);
+st = await sceneState();
+check('stepping back past the first scene is a no-op', st.index === 0);
+
+await page.keyboard.press('End');
+await page.keyboard.press('PageDown');
+await sleep(700);
+st = await sceneState();
+check('stepping past the last scene is a no-op', st.index === 1);
+
+/* ---- the menu, for questions ---- */
+check('menu is closed by default', !st.menuOpen);
+
+await page.keyboard.press('m');
+await sleep(300);
+st = await sceneState();
+check('M opens the scene menu', st.menuOpen);
+await page.screenshot({ path: `${SHOTS}/scene-menu.png` });
+
+// With the menu open, the deck must not step underneath the list.
+const beforeArrow = st.index;
+await page.keyboard.press('ArrowDown');
+await sleep(250);
+st = await sceneState();
+check(
+  'arrows navigate the menu rather than stepping the deck underneath it',
+  st.index === beforeArrow && st.menuOpen,
+  `index ${st.index}, menu ${st.menuOpen}`,
+);
+
+await page.click('.scene-item[data-scene="emea"]');
+await sleep(700);
+st = await sceneState();
+check(
+  'clicking a scene in the menu jumps to it and closes the menu',
+  st.index === 0 && !st.menuOpen,
+  `index ${st.index}, menu ${st.menuOpen}`,
+);
+
+// Scenes are absolute: improvised zoom during questions must not survive.
+await page.evaluate(() => window.__focus?.(51.5, 25.3, 6));
+await sleep(900);
+const zoomed = await page.evaluate(() => window.__scene?.scale ?? null);
+await page.keyboard.press('PageDown');
+await sleep(1100);
+const afterStep = await page.evaluate(() => window.__scene?.scale ?? null);
+check(
+  'stepping a scene restores the composition after improvised zooming',
+  zoomed > 3 && Math.abs(afterStep - 1) < 0.02,
+  `zoomed to ${zoomed?.toFixed(2)}x, scene restored to ${afterStep?.toFixed(2)}x`,
+);
+
+await page.keyboard.press('Home');
+await sleep(900);
+
+/* ------------------------------------------------------------------ *
  * 5. Frame rate at 2560x1440, with the pulse running.
  * ------------------------------------------------------------------ */
 await page.mouse.move(200, 200);

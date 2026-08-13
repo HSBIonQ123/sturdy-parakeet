@@ -9,7 +9,8 @@
  * map; if anything here starts moving, it is competing with the one thing that
  * is meant to carry the room.
  */
-import { CENTRAL_MERIDIAN } from './projection';
+import { useViewState, currentScene } from '../state/viewState';
+import { LAYER_BY_ID } from '../data/layers';
 
 /** Corner brackets. Thin orange rules with a gap, like a chamber viewport. */
 export function CornerBrackets() {
@@ -23,25 +24,56 @@ export function CornerBrackets() {
   );
 }
 
+/**
+ * The title plate.
+ *
+ * The brand line is fixed and the scene line changes beneath it. Keeping the
+ * brand persistent matters: the scene title is the slide, but the plate is
+ * whose slide it is, and a deck that drops its own name the moment it shows
+ * content looks like a demo rather than a product.
+ *
+ * The scene line is keyed on scene id so it re-enters on change — a short
+ * fade, so a state change registers in peripheral vision without anyone
+ * watching an animation finish.
+ */
 export function TitlePlate() {
+  const scene = useViewState(currentScene);
+
   return (
     <header className="plate">
       <h1 className="plate-title">IonQ · EMEA Atlas</h1>
       <div className="plate-rule" />
-      <p className="plate-sub label">
-        Equal-area · λ₀ {CENTRAL_MERIDIAN}°E · 1:50m
-      </p>
+      <div className="plate-scene" key={scene.id}>
+        <p className="plate-scene-title">{scene.title}</p>
+        {scene.caption ? <p className="plate-sub label">{scene.caption}</p> : null}
+      </div>
     </header>
   );
 }
 
 /**
- * The key legend. Deliberately terse and low-contrast: it answers "why is that
- * line dashed" for anyone who asks, without inviting the question.
+ * The key. Terse and low-contrast: it answers "why is that line dashed" for
+ * anyone who asks, without inviting the question.
+ *
+ * The membership row appears only while a layer is active, so the base map
+ * carries no legend it does not need.
  */
 export function Legend() {
+  const activeLayers = useViewState((s) => s.activeLayers);
+  const active = activeLayers.map((id) => LAYER_BY_ID[id]).filter(Boolean);
+
   return (
     <div className="legend" aria-label="Key">
+      {active.map((layer) => (
+        <span className="legend-item" key={layer.id}>
+          <svg className="legend-swatch" viewBox="0 0 24 6" aria-hidden>
+            <rect x="1" y="0" width="22" height="6" className="legend-fill legend-member" />
+          </svg>
+          <span className="label">
+            {layer.label} · {layer.description}
+          </span>
+        </span>
+      ))}
       <span className="legend-item">
         <svg className="legend-swatch" viewBox="0 0 24 6" aria-hidden>
           <line x1="1" y1="3" x2="23" y2="3" className="legend-line legend-network" />
@@ -69,13 +101,16 @@ export function KeyHints({ visible }: { readonly visible: boolean }) {
   return (
     <div className={`hints label${visible ? '' : ' is-hidden'}`} aria-hidden={!visible}>
       <span>
+        <kbd>Pg↓</kbd> next
+      </span>
+      <span>
+        <kbd>M</kbd> scenes
+      </span>
+      <span>
         <kbd>R</kbd> reset
       </span>
       <span>
         <kbd>F</kbd> fullscreen
-      </span>
-      <span>
-        <kbd>Esc</kbd> deselect
       </span>
     </div>
   );
