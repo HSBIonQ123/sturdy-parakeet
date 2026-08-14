@@ -134,14 +134,16 @@ const idx = (id) => {
 
 // Everything below wants the fitted EMEA frame. Reach it by id, not by Home —
 // Home is the opening screen now.
-const toBaseMap = async () => {
+const goto = async (id) => {
   await page.keyboard.press('Escape');
   await sleep(150);
   await page.keyboard.press('m');
-  await sleep(300);
-  await page.click('.scene-item[data-scene="emea"]');
+  await page.waitForSelector('.scene-menu', { timeout: 5000 });
+  await sleep(350);
+  await page.click(`.scene-item[data-scene="${id}"]`, { timeout: 10000 });
   await sleep(900);
 };
+const toBaseMap = () => goto('emea');
 await toBaseMap();
 
 /* ------------------------------------------------------------------ *
@@ -461,6 +463,87 @@ for (const [id, heading] of [
   await page.screenshot({ path: `${SHOTS}/scene-${id}.png` });
 }
 
+/* ------------------------------------------------------------------ *
+ * The five EU policy scenes.
+ *
+ * The content is an internal assessment reproduced VERBATIM, so what is
+ * worth asserting is that it all fits on screen and that it is all still
+ * there. A panel silently clipped at the bottom of the frame would lose
+ * the last bullet of a legal risk assessment, which is the worst thing
+ * this deck could do quietly.
+ * ------------------------------------------------------------------ */
+for (const [id, phrase] of [
+  ['ppa-situation', 'EU-designated critical technology'],
+  ['ppa-action', 'lex specialis'],
+  ['quantum-act-situation', 'no group entity is a clean EU participant'],
+  ['quantum-act-action', 'place of operational control'],
+  ['quantum-act-timeline', 'blocking arithmetic'],
+]) {
+  await goto(id);
+  await page.mouse.move(40, 1400);
+  await sleep(900);
+
+  const panel = await page.evaluate((needle) => {
+    const el = document.querySelector('.callout');
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return {
+      inFrame:
+        r.left >= 0 && r.top >= 0 && r.right <= window.innerWidth && r.bottom <= window.innerHeight,
+      over: Math.round(Math.max(0, r.bottom - window.innerHeight)),
+      // Every one of these panels must say what it is.
+      stamped: Boolean(el.querySelector('.callout-stamp')),
+      hasPhrase: (el.textContent ?? '').includes(needle),
+    };
+  }, phrase);
+
+  check(
+    `the ${id} panel fits the frame, is stamped internal, and keeps its text`,
+    panel && panel.inFrame && panel.stamped && panel.hasPhrase,
+    panel
+      ? `inFrame ${panel.inFrame} (${panel.over}px over), stamped ${panel.stamped}, phrase ${panel.hasPhrase}`
+      : 'no panel rendered',
+  );
+  await page.screenshot({ path: `${SHOTS}/scene-${id}.png` });
+}
+
+/*
+ * The timeline's "you are here" marker — asked for explicitly, and the one
+ * pulsing thing outside the border network. Assert that it exists AND that it
+ * is on the right stage: a marker defaulting to the left edge would quietly
+ * claim the talk is at stage one of seven.
+ *
+ * Runs while the timeline scene is still on screen from the loop above.
+ */
+const timeline = await page.evaluate(() => {
+  const ring = document.querySelector('.timeline-now-ring');
+  const nowStage = document.querySelector('.timeline-stage.is-now');
+  const nowNode = document.querySelector('.timeline-node.is-now');
+  const box = (el) => el.getBoundingClientRect();
+  return {
+    stages: document.querySelectorAll('.timeline-stage').length,
+    label: document.querySelector('.timeline-now-label')?.textContent ?? null,
+    onStage: nowStage?.getAttribute('data-stage') ?? null,
+    animated: ring ? getComputedStyle(ring).animationName : null,
+    offNode:
+      ring && nowNode
+        ? Math.abs(
+            box(ring).left + box(ring).width / 2 - (box(nowNode).left + box(nowNode).width / 2),
+          )
+        : null,
+  };
+});
+check('the timeline shows all seven stages', timeline.stages === 7, `${timeline.stages} stages`);
+check(
+  'the "you are here" marker pulses on the pre-publication stage, aligned to its node',
+  timeline.onStage === 'pre-publication' &&
+    timeline.label === 'August 2026 · you are here' &&
+    timeline.animated === 'timeline-now-breathe' &&
+    timeline.offNode !== null &&
+    timeline.offNode < 1.5,
+  `stage ${timeline.onStage}, "${timeline.label}", animation ${timeline.animated}, ${timeline.offNode?.toFixed(1)}px off its node`,
+);
+
 await page.keyboard.press('Home');
 await sleep(900);
 
@@ -541,11 +624,17 @@ check('stepping back past the first scene is a no-op', st.index === 0);
 // Back to the base map to continue the walk through the layer scenes. Every
 // index below is one higher than it used to be, because the opening screen now
 // sits in front of the base map.
-await toBaseMap();
-
-/* ---- scene 3: the second tier builds on the first ---- */
-await page.keyboard.press('PageDown');
-await page.keyboard.press('PageDown');
+/*
+ * Jump to the EEA scene by NAME rather than stepping to it.
+ *
+ * The layer progression used to be contiguous — base map, EU, EEA, Horizon,
+ * EuroQCI — and this section counted PageDowns to walk it. Five EU policy
+ * scenes now sit between the EU scene and the EEA scene, so counting steps
+ * lands in the middle of a briefing. The scenes from here on ARE still
+ * adjacent, so the PageDowns below continue to test the clicker path; only the
+ * entry point had to stop being a step count.
+ */
+await goto('eea-efta-uk');
 await sleep(900);
 st = await sceneState();
 check(

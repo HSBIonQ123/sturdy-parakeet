@@ -123,6 +123,63 @@ export const DECK: readonly Scene[] = [
     // so it reads at the full frame; zooming to Europe here would lose the
     // contrast against the rest of EMEA, which is the point of the slide.
   },
+  /*
+   * THE LIVE EU FILES — five scenes, all with the EU 27 still lit.
+   *
+   * They sit directly after the EU scene because that is where the Union is on
+   * screen as a legislator, and they keep `layers: ['eu']` throughout, so the
+   * progression the next three scenes build on is not interrupted: step out of
+   * the last of these into the EEA scene and the 27 are exactly where they were.
+   *
+   * Each document is split at its natural seam — Situation and Risk, then
+   * Timeline and next steps — rather than condensed. The text is an assessment
+   * with named advisers behind it and is reproduced verbatim; the panels are
+   * `wide` so that the words fit rather than the words being cut to fit.
+   *
+   * Every one of them is INTERNAL and stamped as such on screen. See the header
+   * of data/policy.ts.
+   */
+  {
+    id: 'ppa-situation',
+    title: 'EU procurement',
+    caption: 'Public Procurement Regulation · situation and risk',
+    layers: ['eu'],
+    markers: [capital('BEL')],
+    callouts: ['ppa-situation'],
+  },
+  {
+    id: 'ppa-action',
+    title: 'EU procurement',
+    caption: 'Public Procurement Regulation · timeline and next steps',
+    layers: ['eu'],
+    markers: [capital('BEL')],
+    callouts: ['ppa-action'],
+  },
+  {
+    id: 'quantum-act-situation',
+    title: 'EU Quantum Act',
+    caption: 'Situation and risk',
+    layers: ['eu'],
+    markers: [capital('BEL')],
+    callouts: ['quantum-act-situation'],
+  },
+  {
+    id: 'quantum-act-action',
+    title: 'EU Quantum Act',
+    caption: 'Timeline and next steps',
+    layers: ['eu'],
+    markers: [capital('BEL')],
+    callouts: ['quantum-act-action'],
+  },
+  {
+    id: 'quantum-act-timeline',
+    title: 'EU Quantum Act',
+    caption: 'Ordinary legislative procedure · seven stages',
+    layers: ['eu'],
+    // No marker and no anchor: the timeline is about the calendar, so nothing
+    // on the map is being pointed at. The panel spans the frame instead.
+    callouts: ['quantum-act-timeline'],
+  },
   {
     id: 'eea-efta-uk',
     title: 'EEA, EFTA and the UK',

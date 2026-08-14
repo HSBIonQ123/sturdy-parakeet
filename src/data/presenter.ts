@@ -15,53 +15,18 @@
  * ON PERSONAL CONTENT IN A REPOSITORY. These are real people, including a
  * child. Their names are here because the presenter asked for them and
  * confirmed they were happy for them to be committed. If this repository ever
- * changes hands or goes public, this file and the two assets beside it are the
- * things to review first — they are deliberately kept in one place so that
- * removing them is one file plus three scenes, not a search across the project.
+ * changes hands or goes public, this file is the first thing to review — it is
+ * deliberately the only place any of it appears, so removing it is one file plus
+ * three scenes rather than a search across the project.
  *
  * ON THE CAREER LIST. Supplied by the presenter about himself, so it needs no
  * external provenance in the way `deployments.ts` does — but it goes stale the
  * same way a priority list does, and it is on screen in front of the people
  * best placed to notice. Read it before a talk.
  */
-import type { FigureIconId } from '../render/FigureIcon';
+import type { Callout } from './callouts';
 
-/** A figure in the family panel: one glyph, one name under it. */
-export interface Figure {
-  readonly id: string;
-  /** Which glyph to draw. The shapes live in render/, this file only names one. */
-  readonly icon: FigureIconId;
-  /** Name printed under the glyph. */
-  readonly label: string;
-}
-
-/**
- * What a callout panel contains. A discriminated union rather than one shape
- * with optional fields on it: a figure row, a numbered list and a paragraph
- * lay out nothing like each other, and a union means `Callouts.tsx` cannot
- * render a panel whose data does not fit the layout it chose.
- */
-export type CalloutBody =
-  | { readonly kind: 'figures'; readonly figures: readonly Figure[] }
-  | { readonly kind: 'list'; readonly items: readonly string[] }
-  | { readonly kind: 'prose'; readonly heading: string; readonly text: string };
-
-export interface Callout {
-  readonly id: string;
-  /** Small key-register heading, in the same idiom as READOUT on the panel. */
-  readonly heading: string;
-  /**
-   * The marker id this panel's leader line is drawn from. A marker rather than
-   * a coordinate, so the dot and the line can never drift apart — move the
-   * marker in places.ts and the line follows.
-   */
-  readonly anchor: string;
-  /** Which side of the frame the panel sits on. */
-  readonly side: 'left' | 'right';
-  readonly body: CalloutBody;
-}
-
-export const CALLOUTS: readonly Callout[] = [
+export const PRESENTER_CALLOUTS: readonly Callout[] = [
   {
     id: 'family',
     heading: 'Salisbury · home',
@@ -106,20 +71,3 @@ export const CALLOUTS: readonly Callout[] = [
     },
   },
 ];
-
-export const CALLOUT_BY_ID: Readonly<Record<string, Callout>> = Object.fromEntries(
-  CALLOUTS.map((c) => [c.id, c]),
-);
-
-/**
- * Resolve a scene's callout ids. Throws on an unknown id for the same reason
- * `resolveMarkers` does: a panel that silently fails to appear is a blank half
- * of a slide, and rehearsal is too late to find out.
- */
-export function resolveCallouts(ids: readonly string[]): readonly Callout[] {
-  const unknown = ids.filter((id) => !CALLOUT_BY_ID[id]);
-  if (unknown.length > 0) {
-    throw new Error(`Unknown callout id(s): ${unknown.join(', ')}`);
-  }
-  return CALLOUTS.filter((c) => ids.includes(c.id));
-}

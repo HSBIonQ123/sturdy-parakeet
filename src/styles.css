@@ -1083,3 +1083,242 @@ body {
   line-height: 1.55;
   color: var(--type);
 }
+
+/* ---- briefing panels and the timeline ----
+   Same panel ground and same tracked keys as the readout. These carry verbatim
+   assessment text, so the job of the styling is legibility at distance and
+   nothing else: no cards, no rules under headings, no decoration competing with
+   the map behind. */
+
+.callout-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5em;
+  margin-bottom: 10px;
+}
+
+.callout-head .callout-heading {
+  margin: 0;
+}
+
+/* The internal stamp. Quiet but unmissable — it should never be the brightest
+   thing on screen, and it should never be absent from a panel that needs it. */
+.callout-stamp {
+  margin: 0;
+  color: var(--ionq);
+  white-space: nowrap;
+}
+
+.callout-title {
+  margin: 0 0 16px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-title);
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+  color: var(--type);
+}
+
+.callout-standfirst {
+  margin: -6px 0 14px;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.4;
+  color: var(--type-muted);
+}
+
+.callout-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.callout-section-heading {
+  margin: 0 0 6px;
+  color: var(--type-muted);
+}
+
+.callout-section-note {
+  margin: 0 0 8px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-value);
+  color: var(--ionq);
+}
+
+.callout-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.callout-point {
+  position: relative;
+  padding: 5px 0 5px 16px;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.5;
+  color: var(--type);
+}
+
+/* A hairline dash rather than a bullet — the same one-pixel vocabulary as the
+   rest of the chrome. */
+.callout-point::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1.05em;
+  width: 8px;
+  height: 1px;
+  background: color-mix(in srgb, var(--ionq) 70%, transparent);
+}
+
+.callout-sources {
+  margin: 18px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--type-muted) 22%, transparent);
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: var(--type-muted);
+}
+
+/* ---- timeline ---- */
+.timeline-track {
+  position: relative;
+  height: 46px;
+  margin: 4px 0 6px;
+}
+
+.timeline-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  height: 1px;
+  background: color-mix(in srgb, var(--border-base) 90%, transparent);
+}
+
+.timeline-node {
+  position: absolute;
+  bottom: 3px;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border: 1px solid var(--ionq);
+  border-radius: 50%;
+  background: var(--base);
+}
+
+.timeline-node.is-now {
+  background: #fff3e0;
+  border-color: #fff3e0;
+}
+
+.timeline-now {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeline-now-label {
+  color: var(--ionq);
+  white-space: nowrap;
+  margin-bottom: 6px;
+}
+
+/* The one pulsing thing outside the border network, and a deliberate exception
+   — see the note in Callouts.tsx. A slow breath, not a flash. */
+.timeline-now-ring {
+  width: 20px;
+  height: 20px;
+  margin-bottom: -3px;
+  border: 1px solid var(--ionq);
+  border-radius: 50%;
+  animation: timeline-now-breathe 2600ms ease-in-out infinite;
+}
+
+@keyframes timeline-now-breathe {
+  0%,
+  100% {
+    transform: scale(0.72);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-now-ring {
+    animation: none;
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+}
+
+.timeline-stages {
+  display: grid;
+  gap: 0 22px;
+}
+
+.timeline-stage {
+  padding-top: 12px;
+}
+
+.timeline-timing {
+  margin: 0 0 4px;
+  color: var(--ionq);
+}
+
+.timeline-stage-name {
+  margin: 0 0 8px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-value);
+  line-height: 1.3;
+  color: var(--type);
+}
+
+.timeline-what,
+.timeline-engagement {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.45;
+  color: var(--type);
+}
+
+.timeline-key {
+  margin: 10px 0 3px;
+  color: var(--type-muted);
+}
+
+.timeline-engagement {
+  color: color-mix(in srgb, var(--type) 82%, transparent);
+}
+
+/* The stage the talk is standing in reads slightly forward of the rest. */
+.timeline-stage.is-now .timeline-stage-name {
+  color: #fff3e0;
+}
+
+.timeline-footnote {
+  margin: 18px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--type-muted) 22%, transparent);
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: var(--type-muted);
+}

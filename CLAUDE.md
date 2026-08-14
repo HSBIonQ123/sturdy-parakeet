@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 79 assertions
+npm run verify         # drive the real build in Chromium; 86 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -669,6 +669,52 @@ set".
 **Personal content is confined to one file.** `presenter.ts` names real people,
 including a child. It is kept in one place so that removing it is one file plus
 three scenes rather than a search across the project.
+
+**`callouts.ts` is the registry; the sources make different claims.**
+`presenter.ts` is personal. `policy.ts` is an internal legislative assessment
+with named advisers and a leaked draft behind it. Splitting them is what lets the
+sensitive one be found, reviewed or removed on its own.
+
+## 7h. The EU policy scenes, and the three rules they added
+
+Scenes 7–11 reproduce two Government Affairs information boxes **verbatim** —
+the presenter's explicit instruction, for an internal company meeting. Three
+things follow from that and are worth keeping:
+
+1. **The fix for dense content is width, never words.** A `620px` panel ran the
+   briefings off the bottom of the frame, so `Callout.size` gained `wide`
+   (0.42 of the viewport) and `full`. Each document is also split at its own
+   seam — Situation and Risk, then Timeline and next steps — across two scenes.
+   `verify.mjs` asserts every one of the five panels sits wholly inside the frame
+   and still contains a named phrase from deep in its text, because a panel
+   clipped at the bottom loses the last bullet of a legal risk assessment
+   silently.
+2. **`internal: true` stamps the panel.** The content states that no group entity
+   is a clean EU participant and sets out where the negotiating leverage is.
+   Nobody should be on one of these scenes, in a room, and have to remember
+   that — so the stamp carries the as-at date too, which makes a stale build
+   visibly stale. This is the most perishable content in the project: the PPA
+   publishes 9 September 2026 and the Act's own timeline says every downstream
+   date moves with publication.
+3. **A `full`-width panel takes no leader line.** `Callout.anchor` is optional
+   because the timeline is about the calendar, not about a place; a line from it
+   to Brussels would assert a relationship that is not there. The briefing panels
+   do tether — to `capital-BEL`, which already existed.
+
+**The timeline's "you are here" marker pulses, and that is a deliberate
+exception** to the rule that the borders are the only ambient motion (§7e). It
+was asked for, and it earns it: on a static seven-stage track every node looks
+equally live, and where the talk is standing is the one thing the room needs. It
+is a slow breath on a ring rather than a flash, it goes still under
+`prefers-reduced-motion`, and it is placed by stage **id** rather than by date or
+fraction — so it sits on a node the layout already placed, and `verify.mjs`
+asserts it is within 1.5px of that node's centre. A marker silently defaulting to
+the left edge would claim the talk is at stage one of seven.
+
+**Inserting scenes mid-deck breaks step-counting, not just indices.** The layer
+progression used to be contiguous, and the suite walked it with `PageDown`. Five
+scenes between the EU and EEA scenes turned that into a walk through a briefing,
+so the suite now reaches the EEA scene by name and keeps stepping from there.
 
 ## 8. Known limitations
 
