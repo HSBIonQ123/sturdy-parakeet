@@ -392,6 +392,53 @@ export const DECK: readonly Scene[] = [
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'POL',
   },
+  /*
+   * POLAND'S THREE PANELS — the same shape as the Belgium block, and for the
+   * same reason: the talk is already standing in Warsaw, so these push in on
+   * the city rather than stepping back out to the region, and the hub that
+   * follows returns to the six.
+   *
+   * The layer stays `political-engagement` here, unlike the Belgium block. That
+   * block switched to `eu` because its subject was Union law; these three are
+   * about Poland itself, so nothing but the camera and the panel changes.
+   *
+   * The camera is centred EAST of Warsaw for the reason recorded on the
+   * Brussels scenes: the panel takes the right 42% of the frame, and a camera
+   * centred on the dot leaves its label nowhere to go.
+   *
+   * CONTENT PENDING. The panels are scaffolded and deliberately blank — see the
+   * header of data/countryBriefs.ts. Filling them in touches that file only.
+   */
+  {
+    id: 'poland-defence-funding',
+    title: 'Poland',
+    caption: 'Defence funding',
+    layers: ['political-engagement'],
+    camera: { lon: 22.7, lat: 52.23, k: 24 },
+    selectedIso: 'POL',
+    markers: [capital('POL')],
+    callouts: ['poland-defence-funding'],
+  },
+  {
+    id: 'poland-quantum-strategy',
+    title: 'Poland',
+    caption: 'Quantum strategy',
+    layers: ['political-engagement'],
+    camera: { lon: 22.7, lat: 52.23, k: 24 },
+    selectedIso: 'POL',
+    markers: [capital('POL')],
+    callouts: ['poland-quantum-strategy'],
+  },
+  {
+    id: 'poland-event-opportunity',
+    title: 'Poland',
+    caption: 'Event opportunity',
+    layers: ['political-engagement'],
+    camera: { lon: 22.7, lat: 52.23, k: 24 },
+    selectedIso: 'POL',
+    markers: [capital('POL')],
+    callouts: ['poland-event-opportunity'],
+  },
   hub('engagement-after-poland'),
   {
     id: 'lithuania',

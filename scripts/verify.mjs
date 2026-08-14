@@ -1082,17 +1082,21 @@ const WALK = [
   // The five EU files sit INSIDE the Belgium spoke: the talk is already in
   // Brussels, so it pushes in on the city rather than stepping back out to the
   // Union. They hold Belgium selected and carry a panel each.
-  { brief: 'EU procurement' },
-  { brief: 'EU procurement' },
-  { brief: 'EU Quantum Act' },
-  { brief: 'EU Quantum Act' },
-  { brief: 'EU Quantum Act' },
+  { brief: 'EU procurement', iso: 'BEL' },
+  { brief: 'EU procurement', iso: 'BEL' },
+  { brief: 'EU Quantum Act', iso: 'BEL' },
+  { brief: 'EU Quantum Act', iso: 'BEL' },
+  { brief: 'EU Quantum Act', iso: 'BEL' },
   { hub: true },
   { title: 'Italy', iso: 'ITA' },
   { hub: true },
   { title: 'Germany', iso: 'DEU' },
   { hub: true },
   { title: 'Poland', iso: 'POL' },
+  // Poland's three engagement panels, the same shape as the Belgium block.
+  { brief: 'Poland', iso: 'POL' },
+  { brief: 'Poland', iso: 'POL' },
+  { brief: 'Poland', iso: 'POL' },
   { hub: true },
   { title: 'Lithuania', iso: 'LTU' },
 ];
@@ -1134,7 +1138,7 @@ for (let i = 0; i < WALK.length; i += 1) {
     // exactly one panel. A brief that quietly lost its panel is a blank slide.
     if (at.title !== want.brief) walkProblems.push(`brief at ${index}: "${at.title}" not "${want.brief}"`);
     if (at.scale <= 1.01) walkProblems.push(`brief at ${index} is not zoomed (${at.scale?.toFixed(2)}x)`);
-    if (at.selected !== 'BEL') walkProblems.push(`brief at ${index} selected ${at.selected}`);
+    if (at.selected !== want.iso) walkProblems.push(`brief at ${index} selected ${at.selected}`);
     if (at.panels !== 1) walkProblems.push(`brief at ${index} shows ${at.panels} panels`);
   } else {
     if (at.title !== want.title) walkProblems.push(`spoke at ${index}: "${at.title}" not "${want.title}"`);
@@ -1145,7 +1149,7 @@ for (let i = 0; i < WALK.length; i += 1) {
 check(
   'the hub-and-spoke tail alternates region / country / brief all the way to Lithuania',
   walkProblems.length === 0,
-  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 5 briefs, in order',
+  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 8 briefs, in order',
 );
 // Every hub is generated from one definition, so they cannot drift apart — and
 // the layer must be identical on both sides of a zoom or the spoke would be

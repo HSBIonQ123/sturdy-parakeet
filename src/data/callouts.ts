@@ -1,12 +1,13 @@
 /**
  * callouts.ts — every panel the deck can put beside the map, in one registry.
  *
- * Same shape as markers.ts, and for the same reason: the panels now come from
- * two sources that make completely different claims. `presenter.ts` is personal
- * — a family and a career. `policy.ts` is an internal legislative assessment
- * with named advisers and a leaked draft behind it. Keeping them in separate
+ * Same shape as markers.ts, and for the same reason: the panels come from
+ * sources that make completely different claims. `presenter.ts` is personal —
+ * a family and a career. `policy.ts` is an internal legislative assessment with
+ * named advisers and a leaked draft behind it. `countryBriefs.ts` holds the
+ * panels that belong to a single country's close-up. Keeping them in separate
  * files means the sensitive one can be found, reviewed or removed on its own,
- * and it means neither file has to know how a panel is drawn.
+ * and it means none of them has to know how a panel is drawn.
  *
  * ONE COMPONENT, MANY BODIES. render/Callouts.tsx draws everything here. A body
  * is a discriminated union rather than one shape with optional fields, because a
@@ -17,6 +18,7 @@
 import type { FigureIconId } from '../render/FigureIcon';
 import { PRESENTER_CALLOUTS } from './presenter';
 import { POLICY_CALLOUTS } from './policy';
+import { COUNTRY_BRIEF_CALLOUTS } from './countryBriefs';
 
 /** A figure in the family panel: one glyph, one name under it. */
 export interface Figure {
@@ -118,7 +120,11 @@ export interface Callout {
 }
 
 /** Ordered registry. Order is draw order when a scene shows more than one. */
-export const CALLOUTS: readonly Callout[] = [...PRESENTER_CALLOUTS, ...POLICY_CALLOUTS];
+export const CALLOUTS: readonly Callout[] = [
+  ...PRESENTER_CALLOUTS,
+  ...POLICY_CALLOUTS,
+  ...COUNTRY_BRIEF_CALLOUTS,
+];
 
 export const CALLOUT_BY_ID: Readonly<Record<string, Callout>> = Object.fromEntries(
   CALLOUTS.map((c) => [c.id, c]),
