@@ -126,7 +126,9 @@ function CalloutsImpl({ projection, width, height, ids }: Props) {
               // Stamped rather than assumed. This content is an internal
               // assessment; nobody should be on one of these scenes, in a room,
               // and have to remember that.
-              <p className="callout-stamp label">Internal · as at {callout.asAt}</p>
+              <p className="callout-stamp label">
+                {callout.asAt ? `Internal · as at ${callout.asAt}` : 'Internal'}
+              </p>
             ) : null}
           </div>
           {callout.title ? <p className="callout-title">{callout.title}</p> : null}

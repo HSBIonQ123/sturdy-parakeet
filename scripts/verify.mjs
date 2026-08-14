@@ -478,6 +478,10 @@ for (const [id, phrase] of [
   ['quantum-act-situation', 'no group entity is a clean EU participant'],
   ['quantum-act-action', 'place of operational control'],
   ['quantum-act-timeline', 'blocking arithmetic'],
+  ['lithuania-political', 'Dalia Markinienė'],
+  ['lithuania-institutional', 'unified management of cyber incidents'],
+  ['lithuania-academic', 'more than 220 U.S., international and local companies'],
+  ['lithuania-agenda', 'autumn session of the Parliament starts on 10 September'],
 ]) {
   await goto(id);
   await page.mouse.move(40, 1400);
@@ -491,17 +495,27 @@ for (const [id, phrase] of [
       inFrame:
         r.left >= 0 && r.top >= 0 && r.right <= window.innerWidth && r.bottom <= window.innerHeight,
       over: Math.round(Math.max(0, r.bottom - window.innerHeight)),
-      // Every one of these panels must say what it is.
+      // Every one of these panels must say what it is — and must not have that
+      // marking hidden behind the readout, which grows a second line for
+      // countries whose region name wraps.
       stamped: Boolean(el.querySelector('.callout-stamp')),
+      stampHidden: (() => {
+        const stamp = el.querySelector('.callout-stamp');
+        const readout = document.querySelector('.readout');
+        if (!stamp || !readout) return false;
+        const a = stamp.getBoundingClientRect();
+        const b = readout.getBoundingClientRect();
+        return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+      })(),
       hasPhrase: (el.textContent ?? '').includes(needle),
     };
   }, phrase);
 
   check(
     `the ${id} panel fits the frame, is stamped internal, and keeps its text`,
-    panel && panel.inFrame && panel.stamped && panel.hasPhrase,
+    panel && panel.inFrame && panel.stamped && !panel.stampHidden && panel.hasPhrase,
     panel
-      ? `inFrame ${panel.inFrame} (${panel.over}px over), stamped ${panel.stamped}, phrase ${panel.hasPhrase}`
+      ? `inFrame ${panel.inFrame} (${panel.over}px over), stamped ${panel.stamped}${panel.stampHidden ? ' BUT HIDDEN' : ''}, phrase ${panel.hasPhrase}`
       : 'no panel rendered',
   );
   await page.screenshot({ path: `${SHOTS}/scene-${id}.png` });
@@ -513,8 +527,13 @@ for (const [id, phrase] of [
  * is on the right stage: a marker defaulting to the left edge would quietly
  * claim the talk is at stage one of seven.
  *
- * Runs while the timeline scene is still on screen from the loop above.
+ * Reached BY NAME. This used to rely on the loop above happening to end on the
+ * timeline scene, which stopped being true the moment four Lithuania panels
+ * were appended to that loop — and the failure read as "the timeline has no
+ * stages" rather than "you are looking at the wrong scene".
  */
+await goto('quantum-act-timeline');
+await sleep(600);
 const timeline = await page.evaluate(() => {
   const ring = document.querySelector('.timeline-now-ring');
   const nowStage = document.querySelector('.timeline-stage.is-now');
@@ -1099,6 +1118,11 @@ const WALK = [
   { brief: 'Poland', iso: 'POL' },
   { hub: true },
   { title: 'Lithuania', iso: 'LTU' },
+  // The Vilnius visit block closes the deck.
+  { brief: 'Lithuania', iso: 'LTU' },
+  { brief: 'Lithuania', iso: 'LTU' },
+  { brief: 'Lithuania', iso: 'LTU' },
+  { brief: 'Lithuania', iso: 'LTU' },
 ];
 
 // Start at the first hub and step forward through the tail. Its index is read
@@ -1149,7 +1173,7 @@ for (let i = 0; i < WALK.length; i += 1) {
 check(
   'the hub-and-spoke tail alternates region / country / brief all the way to Lithuania',
   walkProblems.length === 0,
-  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 8 briefs, in order',
+  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 12 briefs, in order',
 );
 // Every hub is generated from one definition, so they cannot drift apart — and
 // the layer must be identical on both sides of a zoom or the spoke would be
@@ -1205,8 +1229,14 @@ check(
 );
 
 // Scenes are absolute: improvised zoom during questions must not survive.
+//
+// Let the menu click's own camera transition finish first. Firing __focus into
+// a running d3 transition intermittently left the camera at 1x, which read as a
+// failure of the absolute-scene property when it was really the test racing the
+// move it had just asked for.
+await sleep(700);
 await page.evaluate(() => window.__focus?.(51.5, 25.3, 6));
-await sleep(900);
+await sleep(1200);
 const zoomed = await page.evaluate(() => window.__scene?.scale ?? null);
 await page.keyboard.press('PageDown');
 await sleep(1100);

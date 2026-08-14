@@ -452,6 +452,58 @@ export const DECK: readonly Scene[] = [
     selectedIso: 'LTU',
     markers: [capital('LTU')],
   },
+  /*
+   * THE VILNIUS VISIT BLOCK — the stakeholder mapping, one scene per group,
+   * then the agenda. Same shape as Belgium and Poland: the talk is already in
+   * Lithuania, so these push in on the capital rather than stepping back out.
+   *
+   * k=16 rather than the 24 those two use, and the reason is geography: Vilnius
+   * sits about 40km from the Belarusian border, so at 24 the country is almost
+   * entirely off-frame to the west and the shot is mostly Belarus. At 16 the
+   * eastern half of Lithuania reads while the dot still clears the panel.
+   *
+   * This block ends the deck, so there is no hub after it to hand back to.
+   */
+  {
+    id: 'lithuania-political',
+    title: 'Lithuania',
+    caption: 'Visit stakeholders · political',
+    layers: ['political-engagement'],
+    camera: { lon: 26.8, lat: 54.9, k: 16 },
+    selectedIso: 'LTU',
+    markers: [capital('LTU')],
+    callouts: ['lithuania-political'],
+  },
+  {
+    id: 'lithuania-institutional',
+    title: 'Lithuania',
+    caption: 'Visit stakeholders · institutional',
+    layers: ['political-engagement'],
+    camera: { lon: 26.8, lat: 54.9, k: 16 },
+    selectedIso: 'LTU',
+    markers: [capital('LTU')],
+    callouts: ['lithuania-institutional'],
+  },
+  {
+    id: 'lithuania-academic',
+    title: 'Lithuania',
+    caption: 'Visit stakeholders · academic and business',
+    layers: ['political-engagement'],
+    camera: { lon: 26.8, lat: 54.9, k: 16 },
+    selectedIso: 'LTU',
+    markers: [capital('LTU')],
+    callouts: ['lithuania-academic'],
+  },
+  {
+    id: 'lithuania-agenda',
+    title: 'Lithuania',
+    caption: 'Visit agenda · 7–11 September',
+    layers: ['political-engagement'],
+    camera: { lon: 26.8, lat: 54.9, k: 16 },
+    selectedIso: 'LTU',
+    markers: [capital('LTU')],
+    callouts: ['lithuania-agenda'],
+  },
 ];
 
 /** Index bounds helper, so nothing off-by-ones its way past the end mid-talk. */

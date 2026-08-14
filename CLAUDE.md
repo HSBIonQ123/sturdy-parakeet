@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 86 assertions
+npm run verify         # drive the real build in Chromium; 90 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -726,6 +726,15 @@ is a slow breath on a ring rather than a flash, it goes still under
 fraction — so it sits on a node the layout already placed, and `verify.mjs`
 asserts it is within 1.5px of that node's centre. A marker silently defaulting to
 the left edge would claim the talk is at stage one of seven.
+
+**The internal stamp stacks under the heading rather than sitting opposite it.**
+It used to be pushed to the panel's right edge, which put it underneath the
+readout whenever the readout grew a second line — "Central & Eastern Europe"
+wraps where "Western Europe" does not, so the marking vanished on the Lithuania
+panels and survived on the Belgian ones. A safety marking that hides itself
+depending on which country is selected is worse than none, because it looks
+present. `verify.mjs` now asserts the stamp's box does not intersect the
+readout's on every briefing panel.
 
 **Inserting scenes mid-deck breaks step-counting, not just indices.** The layer
 progression used to be contiguous, and the suite walked it with `PageDown`. Five

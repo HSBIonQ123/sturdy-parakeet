@@ -1090,11 +1090,18 @@ body {
    nothing else: no cards, no rules under headings, no decoration competing with
    the map behind. */
 
+/* Heading and stamp STACK rather than sitting on one line.
+   They used to be a row with the stamp pushed right, which put the stamp under
+   the readout panel whenever the readout grew a second line — "Central &
+   Eastern Europe" wraps where "Western Europe" does not, so the stamp vanished
+   on the Lithuania panels and survived on the Belgian ones. A safety marking
+   that hides itself depending on which country is selected is worse than no
+   marking, because it looks present. */
 .callout-head {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1.5em;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
   margin-bottom: 10px;
 }
 

@@ -38,8 +38,15 @@ The deck as it stands:
 | 22 | Germany | close up, held selected, Berlin marked |
 | 23 | Priority European Political Engagement | back out to the six |
 | 24 | Poland | close up, held selected, Warsaw marked |
-| 25 | Priority European Political Engagement | back out to the six |
-| 26 | Lithuania | close up, held selected, Vilnius marked |
+| 25 | Poland | defence funding (internal, content pending) |
+| 26 | Poland | quantum strategy (internal, content pending) |
+| 27 | Poland | event opportunity (internal, content pending) |
+| 28 | Priority European Political Engagement | back out to the six |
+| 29 | Lithuania | close up, held selected, Vilnius marked |
+| 30 | Lithuania | visit stakeholders — political (internal) |
+| 31 | Lithuania | visit stakeholders — institutional (internal) |
+| 32 | Lithuania | visit stakeholders — academic and business (internal) |
+| 33 | Lithuania | visit agenda, 7–11 September (internal) |
 
 **Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
 three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
@@ -49,7 +56,7 @@ the region. It is the only scene in the deck that
 opens zoomed, which is why `Map.tsx` applies the first scene's camera on mount —
 nothing ever *steps into* scene 1, so `gotoScene` never runs for it.
 
-Scenes 10 to 26 are **hub and spoke**: the six priority states at region scale,
+Scenes 10 to 33 are **hub and spoke**: the six priority states at region scale,
 then one of them close up, then back out to the six, then the next. Every
 country is introduced against the whole selection rather than in isolation, and
 stepping out is what makes the next zoom mean something. It needed no new
@@ -128,6 +135,11 @@ Reordering means moving a block; adding a scene means adding an object:
 Omitting `camera` is meaningful: it means "return to the fitted frame", not
 "leave the camera alone". Scenes are absolute so that a rehearsed picture is
 reproducible after any amount of improvisation.
+
+Three spokes carry briefing blocks of their own, in the same shape: Belgium
+opens into the EU files (14–18), Poland into three engagement panels (25–27),
+and Lithuania into the Vilnius visit mapping (30–33). Each pushes in on the
+capital and, where a hub follows, hands back to the six.
 
 **Scenes 14 to 18 are the live EU files** — the Public Procurement Regulation and
 the Quantum Act — reproduced verbatim from two Government Affairs information
@@ -236,7 +248,7 @@ at mid brightness and nothing on screen moves.
 npm run build && npm run verify
 ```
 
-Drives the production bundle in headless Chromium and asserts 86 things,
+Drives the production bundle in headless Chromium and asserts 90 things,
 including: zero network requests leave the origin; every country renders; the
 arc partition is total and disjoint, so no border is drawn twice; `Page Down`
 and `Page Up` actually step the deck (the clicker path — if that breaks, the
