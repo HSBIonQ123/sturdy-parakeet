@@ -677,9 +677,25 @@ sensitive one be found, reviewed or removed on its own.
 
 ## 7h. The EU policy scenes, and the three rules they added
 
-Scenes 7–11 reproduce two Government Affairs information boxes **verbatim** —
-the presenter's explicit instruction, for an internal company meeting. Three
-things follow from that and are worth keeping:
+Scenes 14–18 reproduce two Government Affairs information boxes **verbatim** —
+the presenter's explicit instruction, for an internal company meeting.
+
+**They sit inside the Belgium spoke, and the placement is the argument.** Beside
+the EU layer scene they were an aside about the Union in general; after the
+Belgium close-up they are what is happening in the building the camera is
+already pointed at. The block pushes in on Brussels at k=24, holds `selectedIso`
+on Belgium throughout so the place stays continuous, and hands back to the hub
+that returns to the six.
+
+The cameras are centred EAST of Brussels rather than on it: the panel occupies
+the right 42% of the frame, and a camera centred on the dot leaves its label
+nowhere to go, so the label runs under the box. `Markers.tsx` flips labels at the
+FRAME edge and knows nothing about panels — so the fix belongs in the camera,
+which is data, not in the renderer. The timeline's camera is shifted south for
+the same class of reason: its panel spans the frame from a third of the way down,
+so Belgium has to ride above it.
+
+Three more things follow from reproducing the text verbatim:
 
 1. **The fix for dense content is width, never words.** A `620px` panel ran the
    briefings off the bottom of the frame, so `Callout.size` gained `wide`

@@ -123,63 +123,6 @@ export const DECK: readonly Scene[] = [
     // so it reads at the full frame; zooming to Europe here would lose the
     // contrast against the rest of EMEA, which is the point of the slide.
   },
-  /*
-   * THE LIVE EU FILES — five scenes, all with the EU 27 still lit.
-   *
-   * They sit directly after the EU scene because that is where the Union is on
-   * screen as a legislator, and they keep `layers: ['eu']` throughout, so the
-   * progression the next three scenes build on is not interrupted: step out of
-   * the last of these into the EEA scene and the 27 are exactly where they were.
-   *
-   * Each document is split at its natural seam — Situation and Risk, then
-   * Timeline and next steps — rather than condensed. The text is an assessment
-   * with named advisers behind it and is reproduced verbatim; the panels are
-   * `wide` so that the words fit rather than the words being cut to fit.
-   *
-   * Every one of them is INTERNAL and stamped as such on screen. See the header
-   * of data/policy.ts.
-   */
-  {
-    id: 'ppa-situation',
-    title: 'EU procurement',
-    caption: 'Public Procurement Regulation · situation and risk',
-    layers: ['eu'],
-    markers: [capital('BEL')],
-    callouts: ['ppa-situation'],
-  },
-  {
-    id: 'ppa-action',
-    title: 'EU procurement',
-    caption: 'Public Procurement Regulation · timeline and next steps',
-    layers: ['eu'],
-    markers: [capital('BEL')],
-    callouts: ['ppa-action'],
-  },
-  {
-    id: 'quantum-act-situation',
-    title: 'EU Quantum Act',
-    caption: 'Situation and risk',
-    layers: ['eu'],
-    markers: [capital('BEL')],
-    callouts: ['quantum-act-situation'],
-  },
-  {
-    id: 'quantum-act-action',
-    title: 'EU Quantum Act',
-    caption: 'Timeline and next steps',
-    layers: ['eu'],
-    markers: [capital('BEL')],
-    callouts: ['quantum-act-action'],
-  },
-  {
-    id: 'quantum-act-timeline',
-    title: 'EU Quantum Act',
-    caption: 'Ordinary legislative procedure · seven stages',
-    layers: ['eu'],
-    // No marker and no anchor: the timeline is about the calendar, so nothing
-    // on the map is being pointed at. The panel spans the frame instead.
-    callouts: ['quantum-act-timeline'],
-  },
   {
     id: 'eea-efta-uk',
     title: 'EEA, EFTA and the UK',
@@ -304,6 +247,104 @@ export const DECK: readonly Scene[] = [
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'BEL',
     markers: [capital('BEL')],
+  },
+  /*
+   * THE LIVE EU FILES — five scenes, inside the Belgium spoke.
+   *
+   * They sit here rather than beside the EU layer scene because this is where
+   * the talk is already standing in Brussels: the previous scene closes on
+   * Belgium, these push in on the city itself, and the hub that follows returns
+   * to the six. The legislation is not an aside about the Union in general — it
+   * is what is happening in the building the camera is now pointed at.
+   *
+   * The camera moves in rather than holding Belgium's frame, so stepping into
+   * the block reads as going somewhere. `selectedIso` stays on Belgium through
+   * all five, which keeps the place continuous while the layer changes to the
+   * EU 27 — the subject of these scenes is Union law, and that is the honest
+   * tint for it.
+   *
+   * Each document is split at its natural seam — Situation and Risk, then
+   * Timeline and next steps — rather than condensed. The text is an assessment
+   * with named advisers behind it and is reproduced verbatim; the panels are
+   * `wide` so that the words fit rather than the words being cut to fit.
+   *
+   * Every one of them is INTERNAL and stamped as such on screen. See the header
+   * of data/policy.ts.
+   */
+  {
+    id: 'ppa-situation',
+    title: 'EU procurement',
+    caption: 'Public Procurement Regulation · situation and risk',
+    layers: ['eu'],
+    // Centred EAST of Brussels, not on it. The panel occupies the right 42% of
+    // the frame, so a camera centred on the dot leaves its label nowhere to go
+    // and the label runs under the box — Markers.tsx flips at the FRAME edge and
+    // knows nothing about panels. Shifting the centre 1.65° east puts Brussels
+    // at about a third of the width, with the whole left of the frame clear.
+    camera: { lon: 6.0, lat: 50.85, k: 24 },
+    selectedIso: 'BEL',
+    markers: [capital('BEL')],
+    callouts: ['ppa-situation'],
+  },
+  {
+    id: 'ppa-action',
+    title: 'EU procurement',
+    caption: 'Public Procurement Regulation · timeline and next steps',
+    layers: ['eu'],
+    // Centred EAST of Brussels, not on it. The panel occupies the right 42% of
+    // the frame, so a camera centred on the dot leaves its label nowhere to go
+    // and the label runs under the box — Markers.tsx flips at the FRAME edge and
+    // knows nothing about panels. Shifting the centre 1.65° east puts Brussels
+    // at about a third of the width, with the whole left of the frame clear.
+    camera: { lon: 6.0, lat: 50.85, k: 24 },
+    selectedIso: 'BEL',
+    markers: [capital('BEL')],
+    callouts: ['ppa-action'],
+  },
+  {
+    id: 'quantum-act-situation',
+    title: 'EU Quantum Act',
+    caption: 'Situation and risk',
+    layers: ['eu'],
+    // Centred EAST of Brussels, not on it. The panel occupies the right 42% of
+    // the frame, so a camera centred on the dot leaves its label nowhere to go
+    // and the label runs under the box — Markers.tsx flips at the FRAME edge and
+    // knows nothing about panels. Shifting the centre 1.65° east puts Brussels
+    // at about a third of the width, with the whole left of the frame clear.
+    camera: { lon: 6.0, lat: 50.85, k: 24 },
+    selectedIso: 'BEL',
+    markers: [capital('BEL')],
+    callouts: ['quantum-act-situation'],
+  },
+  {
+    id: 'quantum-act-action',
+    title: 'EU Quantum Act',
+    caption: 'Timeline and next steps',
+    layers: ['eu'],
+    // Centred EAST of Brussels, not on it. The panel occupies the right 42% of
+    // the frame, so a camera centred on the dot leaves its label nowhere to go
+    // and the label runs under the box — Markers.tsx flips at the FRAME edge and
+    // knows nothing about panels. Shifting the centre 1.65° east puts Brussels
+    // at about a third of the width, with the whole left of the frame clear.
+    camera: { lon: 6.0, lat: 50.85, k: 24 },
+    selectedIso: 'BEL',
+    markers: [capital('BEL')],
+    callouts: ['quantum-act-action'],
+  },
+  {
+    id: 'quantum-act-timeline',
+    title: 'EU Quantum Act',
+    caption: 'Ordinary legislative procedure · seven stages',
+    layers: ['eu'],
+    // Same longitude as the briefings so the block holds together, but shifted
+    // SOUTH: this panel spans the frame from a third of the way down, so a
+    // camera centred on Belgium would park it behind the box. Centring below it
+    // rides Belgium up into the band that is still visible.
+    camera: { lon: 6.0, lat: 49.2, k: 24 },
+    selectedIso: 'BEL',
+    // No marker and no anchor: the timeline is about the calendar, so nothing
+    // on the map is being pointed at. The panel spans the frame instead.
+    callouts: ['quantum-act-timeline'],
   },
   hub('engagement-after-belgium'),
   {

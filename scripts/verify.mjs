@@ -565,6 +565,7 @@ const sceneState = () =>
     selected: window.__scene?.selected ?? null,
     title: document.querySelector('.plate-scene-title')?.textContent ?? null,
     menuOpen: Boolean(document.querySelector('.scene-menu')),
+    panels: document.querySelectorAll('.callout').length,
     members: [...document.querySelectorAll('path.country')].filter(
       (el) => el.getAttribute('fill')?.startsWith('rgba(255, 131, 0'),
     ).length,
@@ -625,14 +626,14 @@ check('stepping back past the first scene is a no-op', st.index === 0);
 // index below is one higher than it used to be, because the opening screen now
 // sits in front of the base map.
 /*
- * Jump to the EEA scene by NAME rather than stepping to it.
+ * Jump to the EEA scene by NAME rather than counting PageDowns to it.
  *
- * The layer progression used to be contiguous — base map, EU, EEA, Horizon,
- * EuroQCI — and this section counted PageDowns to walk it. Five EU policy
- * scenes now sit between the EU scene and the EEA scene, so counting steps
- * lands in the middle of a briefing. The scenes from here on ARE still
- * adjacent, so the PageDowns below continue to test the clicker path; only the
- * entry point had to stop being a step count.
+ * This section used to count steps from the base map, which broke the moment
+ * five policy scenes were inserted between the EU and EEA scenes — it walked
+ * into the middle of a briefing. Those scenes have since moved into the Belgium
+ * spoke, making the progression contiguous again, but the entry point stays
+ * named: the next insertion should not be able to break it either. The
+ * PageDowns below continue from here, so the clicker path is still tested.
  */
 await goto('eea-efta-uk');
 await sleep(900);
@@ -1078,6 +1079,14 @@ const WALK = [
   { title: 'United Kingdom', iso: 'GBR' },
   { hub: true },
   { title: 'Belgium', iso: 'BEL' },
+  // The five EU files sit INSIDE the Belgium spoke: the talk is already in
+  // Brussels, so it pushes in on the city rather than stepping back out to the
+  // Union. They hold Belgium selected and carry a panel each.
+  { brief: 'EU procurement' },
+  { brief: 'EU procurement' },
+  { brief: 'EU Quantum Act' },
+  { brief: 'EU Quantum Act' },
+  { brief: 'EU Quantum Act' },
   { hub: true },
   { title: 'Italy', iso: 'ITA' },
   { hub: true },
@@ -1120,6 +1129,13 @@ for (let i = 0; i < WALK.length; i += 1) {
     if (at.title !== 'Priority European Political Engagement') {
       walkProblems.push(`hub at ${index} titled "${at.title}"`);
     }
+  } else if (want.brief) {
+    // A briefing scene must stay zoomed on Brussels, hold Belgium, and show
+    // exactly one panel. A brief that quietly lost its panel is a blank slide.
+    if (at.title !== want.brief) walkProblems.push(`brief at ${index}: "${at.title}" not "${want.brief}"`);
+    if (at.scale <= 1.01) walkProblems.push(`brief at ${index} is not zoomed (${at.scale?.toFixed(2)}x)`);
+    if (at.selected !== 'BEL') walkProblems.push(`brief at ${index} selected ${at.selected}`);
+    if (at.panels !== 1) walkProblems.push(`brief at ${index} shows ${at.panels} panels`);
   } else {
     if (at.title !== want.title) walkProblems.push(`spoke at ${index}: "${at.title}" not "${want.title}"`);
     if (at.scale <= 1.01) walkProblems.push(`spoke ${want.title} did not zoom (${at.scale?.toFixed(2)}x)`);
@@ -1127,9 +1143,9 @@ for (let i = 0; i < WALK.length; i += 1) {
   }
 }
 check(
-  'the hub-and-spoke tail alternates region / country all the way to Lithuania',
+  'the hub-and-spoke tail alternates region / country / brief all the way to Lithuania',
   walkProblems.length === 0,
-  walkProblems.length ? walkProblems.join(' | ') : '6 hubs and 6 spokes, in order',
+  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 5 briefs, in order',
 );
 // Every hub is generated from one definition, so they cannot drift apart — and
 // the layer must be identical on both sides of a zoom or the spoke would be

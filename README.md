@@ -20,18 +20,18 @@ The deck as it stands:
 | 04 | Salisbury | deep focus, why IonQ |
 | 05 | Base region | 124 EMEA countries, nothing highlighted |
 | 06 | European Union | the 27, solid |
-| 07 | EU procurement | PPA — situation and risk (internal) |
-| 08 | EU procurement | PPA — timeline and next steps (internal) |
-| 09 | EU Quantum Act | situation and risk (internal) |
-| 10 | EU Quantum Act | timeline and next steps (internal) |
-| 11 | EU Quantum Act | seven-stage engagement timeline, "you are here" at Aug 2026 (internal) |
-| 12 | EEA, EFTA and the UK | the 27, plus five states hatched |
-| 13 | Horizon Europe | the 27, plus 19 associated states hatched |
-| 14 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
-| 15 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
-| 16 | United Kingdom | the camera flies in; Westminster and Oxford marked |
-| 17 | Priority European Political Engagement | back out to the six |
-| 18 | Belgium | close up, held selected, Brussels marked |
+| 07 | EEA, EFTA and the UK | the 27, plus five states hatched |
+| 08 | Horizon Europe | the 27, plus 19 associated states hatched |
+| 09 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
+| 10 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
+| 11 | United Kingdom | the camera flies in; Westminster and Oxford marked |
+| 12 | Priority European Political Engagement | back out to the six |
+| 13 | Belgium | close up, held selected, Brussels marked |
+| 14 | EU procurement | PPA — situation and risk (internal) |
+| 15 | EU procurement | PPA — timeline and next steps (internal) |
+| 16 | EU Quantum Act | situation and risk (internal) |
+| 17 | EU Quantum Act | timeline and next steps (internal) |
+| 18 | EU Quantum Act | seven-stage engagement timeline, "you are here" at Aug 2026 (internal) |
 | 19 | Priority European Political Engagement | back out to the six |
 | 20 | Italy | close up, held selected, Rome marked |
 | 21 | Priority European Political Engagement | back out to the six |
@@ -49,7 +49,7 @@ the region. It is the only scene in the deck that
 opens zoomed, which is why `Map.tsx` applies the first scene's camera on mount —
 nothing ever *steps into* scene 1, so `gotoScene` never runs for it.
 
-Scenes 15 to 26 are **hub and spoke**: the six priority states at region scale,
+Scenes 10 to 26 are **hub and spoke**: the six priority states at region scale,
 then one of them close up, then back out to the six, then the next. Every
 country is introduced against the whole selection rather than in isolation, and
 stepping out is what makes the next zoom mean something. It needed no new
@@ -129,12 +129,13 @@ Omitting `camera` is meaningful: it means "return to the fitted frame", not
 "leave the camera alone". Scenes are absolute so that a rehearsed picture is
 reproducible after any amount of improvisation.
 
-**Scenes 7 to 11 are the live EU files** — the Public Procurement Regulation and
+**Scenes 14 to 18 are the live EU files** — the Public Procurement Regulation and
 the Quantum Act — reproduced verbatim from two Government Affairs information
-boxes. They are **internal**, stamped as such on screen with their as-at date,
-and they keep the EU 27 lit throughout so the layer progression that follows
-still builds cleanly. Scene 11 is the seven-stage engagement timeline, with a
-pulsing "you are here" marker on the stage the talk is standing in.
+boxes. They sit **inside the Belgium spoke**, because that is where the talk is
+already standing: Belgium closes up, these push in on Brussels, and the hub that
+follows returns to the six. They are **internal**, stamped as such on screen with
+their as-at date. Scene 18 is the seven-stage engagement timeline, with a pulsing
+"you are here" marker on the stage the talk is standing in.
 
 **Callout panels** are listed per scene by id — `callouts: ['career']` — and
 resolved against the registry in `src/data/callouts.ts`, whose sources are
@@ -168,7 +169,7 @@ tint, everything else in EMEA recedes, and the **borders between members
 energise** — the bloc reads as a powered region of the same chip rather than a
 shape coloured in on top of the map.
 
-Layers stack. Scene 12 runs `['eu', 'eea-efta-uk']`: the 27 stay exactly as they
+Layers stack. Scene 7 runs `['eu', 'eea-efta-uk']`: the 27 stay exactly as they
 were on scene 6, and five more states arrive **hatched in amber**. Solid means
 member, hatched means associated. That is not decoration — the IonQ gradient is
 a hue rotation inside the orange band, so at the alpha a fill needs, two stops
@@ -176,7 +177,7 @@ differ by about a fifth of the distance between a lit country and an unlit one.
 Colour alone would vanish on a projector; shape does not. `CLAUDE.md` §7b has
 the numbers.
 
-Scene 15 is a different kind of layer and is labelled as one. The scenes before
+Scene 10 is a different kind of layer and is labelled as one. The scenes before
 it draw perimeters you can look up — the 27, the EEA, Horizon association,
 the EuroQCI Declaration. The last draws a **selection**: six states where
 engagement is focused, who are not members of anything in common. So the layer
