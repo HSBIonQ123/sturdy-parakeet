@@ -14,9 +14,11 @@
  * ON WHAT COUNTS AS A SITE. `kind` is typed rather than lumped together,
  * because a national QKD network, an installed quantum computer and an
  * engineering campus are three different claims and a policymaker will hear
- * them differently. All three currently render the same dot; if you want the
- * QKD networks to out-read the rest on the EuroQCI scene, that is one clause
- * in Markers.tsx.
+ * them differently. All three currently render the same dot, and `kind` is what
+ * the EuroQCI scene selects on — it takes `network` and nothing else, so the
+ * field decides what appears on a slide, not just what a source note says. If
+ * you also want the networks to out-read the rest wherever they are shown
+ * together, that is one clause in Markers.tsx.
  *
  * ON POSITIONS. `precision` says whether the coordinate is the actual site or
  * just the country. QuantumBasel is at Arlesheim, which is where the machine
@@ -65,9 +67,11 @@ export const DEPLOYMENTS: readonly Marker[] = [
     kind: 'network',
     precision: 'country',
     detail: 'ID Quantique · QKD',
-    // Right, not left: a left label here runs head-on into QuantumBasel's.
-    // Bratislava and Arlesheim are close enough on screen that only one of
-    // them can label leftward.
+    // Default side, deliberately not `left`: a left label here runs head-on
+    // into QuantumBasel's, Bratislava and Arlesheim being close enough on
+    // screen that only one of them can label leftward. No scene shows both any
+    // more — the EuroQCI slide takes the networks only — so this costs nothing
+    // today and is the right default the moment one does again.
     source:
       IDQ +
       ' Slovakia’s first national quantum communication network, delivered as ' +
@@ -137,23 +141,25 @@ export const DEPLOYMENTS: readonly Marker[] = [
 /**
  * HOW THIS READS ON THE EuroQCI SCENE.
  *
- * Four of the six markers fall INSIDE the highlighted area — Poland, Slovakia,
- * Romania and Greece are EuroQCI signatories with IonQ QKD networks delivered
- * through ID Quantique. That is the substance of the slide: the argument is
- * not that IonQ would like to be part of EuroQCI, it is that IonQ hardware is
- * already carrying national contributions to it in four member states.
+ * The scene shows the QKD networks ONLY — Poland, Slovakia, Romania and Greece,
+ * all four inside the highlighted area, all four EuroQCI signatories with IonQ
+ * networks delivered through ID Quantique. That is the substance of the slide:
+ * the argument is not that IonQ would like to be part of EuroQCI, it is that
+ * IonQ hardware is already carrying national contributions to it in four member
+ * states.
  *
- * The other two fall outside, and for different reasons worth keeping
- * straight: Switzerland is excluded from EuroQCI outright, being EFTA but not
- * EEA, and the United Kingdom has been a third country since 2020. So the
- * compute system and the engineering base sit beyond a perimeter that the QKD
- * networks sit inside. Whether that is a gap to close or simply the shape of
- * the map is an argument the map does not make for you — it states where
- * things are and stops, which is the disputed.ts policy applied to commercial
- * geography.
+ * QuantumBasel and Oxford Ionics are deliberately NOT on it. Both are true and
+ * both are outside the perimeter — Switzerland is excluded from EuroQCI
+ * outright, being EFTA but not EEA, and the United Kingdom has been a third
+ * country since 2020 — but a slide whose argument is "IonQ is already inside
+ * this programme" should not spend two of its six dots on sites that are not.
+ * They still carry their own scenes: Oxford is half the content of the UK
+ * spoke, and adding a QuantumBasel scene is one block in deck.ts.
  *
- * If the six together feel busy, filtering to `kind === 'network'` for this
- * scene is a one-line change and loses nothing from the EuroQCI argument.
+ * The filter is `kind === 'network'`, applied through NETWORK_DEPLOYMENT_IDS
+ * below, so this stays derived rather than hand-listed: a fifth national
+ * network appears on the scene the moment it is added to the array above, and a
+ * second European system does not.
  */
 
 export const DEPLOYMENTS_BY_ISO: Readonly<Record<string, readonly Marker[]>> =
@@ -169,7 +175,24 @@ export const DEPLOYMENT_COUNTRIES: readonly string[] = [
 
 /**
  * Every IonQ site, by id — what a scene lists when it wants the full set.
- * Derived rather than written out, so adding a site to the array above puts it
- * on the EuroQCI scene automatically and cannot leave the two disagreeing.
+ * Derived rather than written out, so adding a site to the array above reaches
+ * any scene that asks for the set and cannot leave the two disagreeing.
+ *
+ * No scene currently uses it: the EuroQCI slide takes the networks only (see
+ * the note above) and the UK spoke names its two markers. It stays because
+ * "the whole IonQ set" is the case scenes/types.ts documents, and a scene that
+ * wants it should not have to re-derive it.
  */
 export const DEPLOYMENT_IDS: readonly string[] = DEPLOYMENTS.map((d) => d.id);
+
+/**
+ * The national QKD networks, by id — the EuroQCI scene's set.
+ *
+ * Derived on `kind` rather than listed, so the scene keeps stating a category
+ * ("the networks") instead of a snapshot of four countries. Add a fifth
+ * national network to the array above and it lights on that slide; add another
+ * installed system and it does not.
+ */
+export const NETWORK_DEPLOYMENT_IDS: readonly string[] = DEPLOYMENTS.filter(
+  (d) => d.kind === 'network',
+).map((d) => d.id);

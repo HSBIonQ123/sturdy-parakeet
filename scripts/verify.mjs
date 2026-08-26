@@ -819,12 +819,14 @@ check(
 await page.screenshot({ path: `${SHOTS}/scene-horizon.png` });
 
 /* ------------------------------------------------------------------ *
- * Scene 5: EuroQCI, with IonQ site markers.
+ * Scene 5: EuroQCI, with the IonQ QKD network markers.
  *
- * The assertions that matter here are the exclusions. The whole point of
- * the slide is that both IonQ sites fall OUTSIDE the highlighted area, so
- * if Switzerland or the UK ever lights up on this scene the slide is
- * making the opposite argument to the one intended.
+ * Two kinds of assertion here. The exclusions: Switzerland and the UK are
+ * outside the programme, so if either ever lights up on this scene the slide
+ * is making the opposite argument to the one intended. And the marker set:
+ * the scene shows the four national networks, all inside the highlighted
+ * area — QuantumBasel and Oxford Ionics are outside it and are deliberately
+ * not on this slide.
  * ------------------------------------------------------------------ */
 await page.keyboard.press('PageDown');
 await sleep(1000);
@@ -880,13 +882,22 @@ check(
   `wrongly lit: ${qci.wronglyLit.join(', ') || 'none'}`,
 );
 check(
-  'all six IonQ markers render on the EuroQCI scene',
-  qci.markers === 6,
+  'the four QKD network markers render on the EuroQCI scene',
+  qci.markers === 4,
   `${qci.markers} markers: ${qci.labels.join(', ')}`,
 );
-// The substance of the slide: four markers sit INSIDE EuroQCI. If a future
-// edit dropped the QKD networks the scene would quietly make the opposite
-// argument — that IonQ is outside the programme looking in.
+// The scene shows the networks ONLY. QuantumBasel and Oxford Ionics are both
+// outside the perimeter, so on this slide they would argue the opposite of the
+// other four — and this is the assertion that catches a future edit swapping
+// the set back to every IonQ site.
+check(
+  'QuantumBasel and Oxford Ionics are off the EuroQCI scene',
+  !qci.labels.some((l) => /QuantumBasel|Oxford/.test(l ?? '')),
+  `labels: ${qci.labels.join(', ')}`,
+);
+// The substance of the slide: every marker on it sits INSIDE EuroQCI. If a
+// future edit dropped the QKD networks the scene would quietly make the
+// opposite argument — that IonQ is outside the programme looking in.
 check(
   'the four QKD networks sit in EuroQCI signatory states',
   ['POL', 'SVK', 'ROU', 'GRC'].every((iso) => qci.litDeploymentCountries.includes(iso)),

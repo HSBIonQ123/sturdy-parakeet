@@ -13,7 +13,7 @@
  * a dozen files would make the running order the one thing you cannot see.
  */
 import type { Scene } from './types';
-import { DEPLOYMENT_IDS } from '../data/deployments';
+import { NETWORK_DEPLOYMENT_IDS } from '../data/deployments';
 import { capital } from '../data/capitalMarkers';
 
 /**
@@ -148,21 +148,25 @@ export const DECK: readonly Scene[] = [
   {
     id: 'euroqci',
     title: 'EuroQCI',
-    caption: '27 signatories · 3 eligible · IonQ deployments marked',
+    caption: '27 signatories · 3 eligible · IonQ QKD networks marked',
     // This scene uses the `euroqci` layer rather than `eu`, even though the
     // membership is identical — the legend should say "signatories", not
     // "member states". The list is not duplicated; euroQci.ts takes it from
     // the EU layer.
     //
-    // Four of the six markers land INSIDE the highlighted area — Poland,
-    // Slovakia, Romania and Greece run IonQ QKD networks through ID Quantique
-    // as their national EuroQCI contributions. The other two, Switzerland and
-    // the UK, fall outside a perimeter drawn by EEA membership. See the note
+    // All four markers land INSIDE the highlighted area — Poland, Slovakia,
+    // Romania and Greece run IonQ QKD networks through ID Quantique as their
+    // national EuroQCI contributions. That is the whole argument of the slide,
+    // and it is why the set is the NETWORKS rather than every IonQ site:
+    // QuantumBasel and Oxford Ionics are both outside the perimeter (Switzerland
+    // is EFTA but not EEA, the UK a third country since 2020), so on this slide
+    // they would be two dots arguing the opposite of the other four. Neither
+    // loses its place in the talk — Oxford is half the UK spoke. See the note
     // at the foot of data/deployments.ts.
     layers: ['euroqci', 'euroqci-eligible'],
-    // The whole IonQ site list, derived rather than spelled out, so adding a
-    // deployment puts it on this scene without touching the deck.
-    markers: DEPLOYMENT_IDS,
+    // Derived on `kind`, not spelled out, so a fifth national network reaches
+    // this scene without touching the deck and a second system does not.
+    markers: NETWORK_DEPLOYMENT_IDS,
   },
   // ---- The six, then each of them in turn. -------------------------
   //

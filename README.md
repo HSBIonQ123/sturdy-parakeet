@@ -22,7 +22,7 @@ The deck as it stands:
 | 06 | European Union | the 27, solid |
 | 07 | EEA, EFTA and the UK | the 27, plus five states hatched |
 | 08 | Horizon Europe | the 27, plus 19 associated states hatched |
-| 09 | EuroQCI | the 27 signatories, 3 eligible states, and IonQ deployments marked |
+| 09 | EuroQCI | the 27 signatories, 3 eligible states, and the four IonQ QKD networks marked |
 | 10 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
 | 11 | United Kingdom | the camera flies in; Westminster and Oxford marked |
 | 12 | Priority European Political Engagement | back out to the six |
@@ -153,7 +153,11 @@ the same conductor network the borders form.
 There are four sources, kept apart because they claim different things.
 `deployments.ts` says IonQ has something at a place, entry by entry, with
 provenance; that list is partly supplied and partly reconstructed from public
-announcements, so **confirm it before presenting.** `institutions.ts` says only
+announcements, so **confirm it before presenting.** A scene can take a whole
+category of it rather than a hand-written list: the EuroQCI slide asks for the
+national QKD networks and gets exactly those four, so QuantumBasel and Oxford
+Ionics — both true, both outside the programme's perimeter — stay off a slide
+whose argument is that IonQ is already inside it. `institutions.ts` says only
 that a place matters — Westminster is where the decision is taken, not somewhere
 IonQ sits. `capitals.ts` is a gazetteer — all 125 EMEA capitals, projected into
 markers, so a country close-up names its capital with no new data. `places.ts`
@@ -246,8 +250,8 @@ the membership tiers separate on shape and the legend matches the map; no
 border segment is stroked by two layer circuits; Liechtenstein and the Faroes
 swap sides between scenes 3 and 4, so the research area can never quietly
 become a copy of the single market; the four IonQ QKD networks sit inside
-EuroQCI signatory states, so the slide can never quietly start making the
-opposite argument; the closing engagement scene lights exactly its six states
+EuroQCI signatory states and are the only markers on that slide, so it can
+never quietly start making the opposite argument; the closing engagement scene lights exactly its six states
 and no EU or EEA member leaks into it, so a selection can never drift into
 looking like a bloc; a zoomed scene arrives at its camera and gives it back on
 the way out, and no marker label runs off the frame while it is there;

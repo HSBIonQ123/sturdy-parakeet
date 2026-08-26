@@ -65,9 +65,12 @@ export interface Scene {
    * rather than all of them.
    *
    * Ids rather than set names. A scene saying `['westminster', 'oxford']` is
-   * the honest description of that slide, and `DEPLOYMENT_IDS` covers the case
-   * where a scene does want a whole set without spelling it out. An unknown id
-   * throws at resolve time rather than quietly drawing nothing.
+   * the honest description of that slide, and the derived id lists in
+   * deployments.ts (`DEPLOYMENT_IDS`, `NETWORK_DEPLOYMENT_IDS`) cover the case
+   * where a scene wants a whole category without spelling it out — a category
+   * being the thing that stays true as the data grows, which a hand-listed
+   * snapshot does not. An unknown id throws at resolve time rather than quietly
+   * drawing nothing.
    */
   readonly markers?: readonly string[];
   /**

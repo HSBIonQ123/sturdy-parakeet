@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 86 assertions
+npm run verify         # drive the real build in Chromium; 87 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -468,9 +468,19 @@ component with a third data source** — do not write a second marker system.
 
 **A scene lists marker ids** (`markers: ['westminster', 'oxford']`), resolved
 against the registry, and an unknown id throws rather than quietly drawing
-nothing. `DEPLOYMENT_IDS` covers a scene that wants the whole IonQ set without
-spelling it out. This replaced `deployments: boolean` when the second source
-arrived, which is exactly the trigger `scenes/types.ts` had recorded for it.
+nothing. This replaced `deployments: boolean` when the second source arrived,
+which is exactly the trigger `scenes/types.ts` had recorded for it.
+
+**A scene that wants a category asks for the category, not a snapshot of it.**
+`deployments.ts` exports derived id lists — `DEPLOYMENT_IDS` for every IonQ
+site, `NETWORK_DEPLOYMENT_IDS` for the national QKD networks — so the EuroQCI
+scene stays correct as the data grows: a fifth network lights on it, a second
+installed system does not. That slide takes the networks only, because
+QuantumBasel and Oxford Ionics are both outside the programme's perimeter and
+would argue the opposite of the other four on a slide whose whole claim is that
+IonQ hardware is already inside it. Neither is lost — Oxford is half the UK
+spoke. Filtering by hand in `deck.ts` would work today and rot quietly, which
+is the difference worth keeping.
 
 **The sources are separate files because they make different claims.**
 `deployments.ts` asserts, entry by entry, that IonQ has something somewhere,
@@ -542,7 +552,7 @@ random before a talk teaches you to ignore it, which is worse than not having
 one. A real regression still fails, because it lowers all three samples.
 
 **The gate must measure the heaviest scene, and it reaches it by name.**
-EuroQCI is the worst case — two hatch patterns, 31 tints and six markers. It
+EuroQCI is the worst case — two hatch patterns, 31 tints and four markers. It
 stopped being the last scene when scene 6 arrived, and stopped again when
 scene 7 did, so the gate no longer counts steps from either end of the deck:
 it opens the menu and clicks `.scene-item[data-scene="euroqci"]`. Counting
