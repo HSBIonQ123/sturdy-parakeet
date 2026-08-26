@@ -1,22 +1,25 @@
 /**
  * callouts.ts — every panel the deck can put beside the map, in one registry.
  *
- * Same shape as markers.ts, and for the same reason: the panels now come from
- * two sources that make completely different claims. `presenter.ts` is personal
+ * Same shape as markers.ts, and for the same reason: the panels come from
+ * sources that make completely different claims. `presenter.ts` is personal
  * — a family and a career. `policy.ts` is an internal legislative assessment
- * with named advisers and a leaked draft behind it. Keeping them in separate
- * files means the sensitive one can be found, reviewed or removed on its own,
- * and it means neither file has to know how a panel is drawn.
+ * with named advisers and a leaked draft behind it. `strategy.ts` is neither:
+ * it is what IonQ intends to do about those files, in which capital and through
+ * which relationship. Keeping them in separate files means the sensitive ones
+ * can be found, reviewed or removed on their own, and it means no source file
+ * has to know how a panel is drawn.
  *
  * ONE COMPONENT, MANY BODIES. render/Callouts.tsx draws everything here. A body
  * is a discriminated union rather than one shape with optional fields, because a
- * figure row, a numbered list, a sectioned briefing and a seven-stage timeline
- * lay out nothing like each other — the union is what stops a panel being handed
- * to a layout that cannot render it.
+ * figure row, a numbered list, a sectioned briefing, a seven-stage timeline and
+ * a two-way circuit lay out nothing like each other — the union is what stops a
+ * panel being handed to a layout that cannot render it.
  */
 import type { FigureIconId } from '../render/FigureIcon';
 import { PRESENTER_CALLOUTS } from './presenter';
 import { POLICY_CALLOUTS } from './policy';
+import { STRATEGY_CALLOUTS } from './strategy';
 
 /** A figure in the family panel: one glyph, one name under it. */
 export interface Figure {
@@ -41,6 +44,45 @@ export interface Section {
   readonly heading: string;
   readonly note?: string;
   readonly items: readonly string[];
+}
+
+/**
+ * One end of an influence circuit — a place where decisions are taken.
+ *
+ * Deliberately NOT a marker id. The circuit nodes are Rome and Brussels as
+ * institutions, and the diagram is about the relationship between them rather
+ * than about where they sit; tying a node to a coordinate would invite someone
+ * to draw a line from the box to the dot, which would be the panel making a
+ * geographic claim the argument does not need. The panel's one leader line
+ * still tethers to a marker, as every anchored panel does.
+ */
+export interface CircuitNode {
+  readonly id: string;
+  readonly label: string;
+  /** What sits there, in the key register — 'Commission · Council · ENISA'. */
+  readonly detail: string;
+}
+
+/**
+ * A named lever on one arm of the circuit: the thing that makes that direction
+ * actually work. Kept as its own type rather than a second list of strings
+ * because a lever has a name AND a case for it, and the name is what the room
+ * remembers.
+ */
+export interface CircuitLever {
+  readonly id: string;
+  readonly label: string;
+  readonly detail: string;
+}
+
+/** One direction of travel round the circuit. */
+export interface CircuitArm {
+  readonly id: string;
+  /** Which way the current runs. Decides which end the arrowhead is drawn at. */
+  readonly direction: 'up' | 'down';
+  readonly label: string;
+  readonly claim: string;
+  readonly levers?: readonly CircuitLever[];
 }
 
 /** One stage of a legislative timeline. */
@@ -70,6 +112,24 @@ export type CalloutBody =
       readonly nowAtStage: string;
       /** Label for the marker. Read aloud as much as read off the screen. */
       readonly nowLabel: string;
+      readonly footnote?: string;
+    }
+  | {
+      /**
+       * Two nodes and the two directions of travel between them — the shape an
+       * argument takes when it is a loop rather than a list.
+       *
+       * `arms` is a TUPLE of exactly two, not an array, because the layout is a
+       * circuit: two columns between two nodes. A third arm has nowhere to go
+       * and a single arm is not a circuit, so the type says two and the
+       * renderer never has to decide what to do with a number it cannot draw.
+       * Which way each one runs is `direction`, not position, so swapping the
+       * columns is a reorder in the data and the arrowheads follow.
+       */
+      readonly kind: 'circuit';
+      readonly top: CircuitNode;
+      readonly bottom: CircuitNode;
+      readonly arms: readonly [CircuitArm, CircuitArm];
       readonly footnote?: string;
     };
 
@@ -118,7 +178,11 @@ export interface Callout {
 }
 
 /** Ordered registry. Order is draw order when a scene shows more than one. */
-export const CALLOUTS: readonly Callout[] = [...PRESENTER_CALLOUTS, ...POLICY_CALLOUTS];
+export const CALLOUTS: readonly Callout[] = [
+  ...PRESENTER_CALLOUTS,
+  ...POLICY_CALLOUTS,
+  ...STRATEGY_CALLOUTS,
+];
 
 export const CALLOUT_BY_ID: Readonly<Record<string, Callout>> = Object.fromEntries(
   CALLOUTS.map((c) => [c.id, c]),

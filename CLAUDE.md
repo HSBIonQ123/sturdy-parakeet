@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 87 assertions
+npm run verify         # drive the real build in Chromium; 92 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -741,6 +741,53 @@ the left edge would claim the talk is at stage one of seven.
 progression used to be contiguous, and the suite walked it with `PageDown`. Five
 scenes between the EU and EEA scenes turned that into a walk through a briefing,
 so the suite now reaches the EEA scene by name and keeps stepping from there.
+
+## 7i. The Italy circuit — a diagram argues through its shape
+
+Scene 21 (`strategy.ts`, `kind: 'circuit'`) puts the Rome–Brussels relationship
+up as a picture: two terminals, two conductors, one running each way. It sits
+**inside the Italy spoke**, the same placement argument §7h makes for the EU
+files — beside a layer scene it would be an aside about the Union; after the
+Italy close-up it is what the country the camera is already on is *for*.
+
+**A third source file, because it makes a third kind of claim.** `presenter.ts`
+is personal, `policy.ts` reproduces the EU's assessments of us, and
+`strategy.ts` is what IonQ intends to DO about them — which capital, through
+which relationship. It names a national agency and says what our access to it is
+to be used for, so it is exactly the file §7g's split exists to keep findable.
+Two of its assertions are internal judgement rather than sourced fact (the
+Italian posture towards US companies; the reach of the AISI relationship into
+ENISA), the panel says so in its `sources` line, and the file says so at length.
+The AISI acronym is deliberately **not expanded** anywhere — more than one
+Italian body would fit, and §4's rule applies to commercial geography too.
+
+Three things the body kind established:
+
+1. **The shape is the argument, so the shape is what the suite asserts.** Two
+   arms pointing the same way would render perfectly and mean something nobody
+   wrote; a rail stopping short of a terminal leaves the loop open. Neither
+   throws and neither shows in a thumbnail, so `verify.mjs` reads the arrowhead
+   direction off the CSS triangle and measures the drawn rule — the `::before`,
+   not the element that positions it — against both node boxes. A check against
+   the element box passes on a rail that visibly stops short; that was caught by
+   writing the check wrong first.
+2. **`arms` is a tuple of two, and position and direction are kept apart.**
+   Which side of its column a rail hugs is decided by POSITION, so the loop
+   closes into a rectangle whichever order the arms are given in; which way the
+   arrowhead points is decided by `direction`. Conflating them would mean
+   reordering the data could quietly open the loop.
+3. **Geometry in CSS, not SVG — the same call `Timeline` made.** The rails
+   stretch to whatever height the claims and levers come to, so nothing measures
+   the DOM and the circuit stays closed as content grows. Two straight lines and
+   two triangles are not worth a layout pass on every camera move.
+
+**It is the only scene whose camera holds two capitals**, because the diagram
+names both and a camera showing only Rome would leave half the picture asserted
+by the panel and unsupported by the map. Italy stays `selectedIso` throughout —
+Brussels is the other END of the circuit, not a new subject. The camera is
+centred east and pulled back to k=6.5 for the §7h reason: at the first framing
+tried, Rome's label ran under the panel. That fix belongs in the camera, which
+is data; `Markers.tsx` flips at the FRAME edge and knows nothing about panels.
 
 ## 8. Known limitations
 

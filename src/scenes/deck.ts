@@ -363,6 +363,40 @@ export const DECK: readonly Scene[] = [
     selectedIso: 'ITA',
     markers: [capital('ITA')],
   },
+  /*
+   * THE ITALY CIRCUIT — inside the Italy spoke, exactly as the EU files sit
+   * inside Belgium's, and for the same reason: the talk is already standing in
+   * Italy, so the argument about what Italy is FOR belongs here rather than
+   * beside a layer scene where it would be an aside about the Union.
+   *
+   * It is the one scene in the deck whose camera holds TWO capitals. Every
+   * other spoke frames a country; this one frames a relationship, and the
+   * diagram beside it has Rome and Brussels as its two nodes — so a camera
+   * showing only Rome would leave half the picture asserted by the panel and
+   * unsupported by the map. Both dots are lit members of the same layer, which
+   * is what lets the pair read as one circuit rather than as subject and
+   * neighbour.
+   *
+   * Italy stays selected throughout, so the subject of the spoke does not
+   * change underneath the argument — Brussels is the other END of the circuit,
+   * not the new subject. The hub that follows returns to the six.
+   */
+  {
+    id: 'italy-circuit',
+    title: 'Italy and Brussels',
+    caption: 'Top-down and bottom-up · one circuit',
+    layers: ['political-engagement'],
+    // Centred between Rome and Brussels and shifted EAST, the same correction
+    // the Belgium briefings make: the panel takes the right 42% of the frame,
+    // so a camera centred on the pair would put Brussels under the box. Framed
+    // on the real build at 2560x1440, not estimated — §3b.
+    camera: { lon: 20.0, lat: 46.4, k: 6.5 },
+    selectedIso: 'ITA',
+    // Both ends of the circuit. Rome carries the leader line; Brussels is on
+    // the map because the diagram names it.
+    markers: [capital('ITA'), capital('BEL')],
+    callouts: ['italy-circuit'],
+  },
   hub('engagement-after-italy'),
   {
     id: 'germany',

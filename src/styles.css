@@ -1322,3 +1322,178 @@ body {
   line-height: 1.5;
   color: var(--type-muted);
 }
+
+/* ---- the influence circuit ----
+   Two nodes with two arms of travel between them. Everything here is the same
+   one-pixel vocabulary as the rest of the chrome: hairline boxes, hairline
+   rails, and a single solid arrowhead per arm to say which way the current
+   runs. No fills, no cards, nothing that reads as a chart pasted onto the map.
+
+   The rails are CSS rather than SVG so they stretch to whatever height the
+   claim and its levers come to — the circuit stays closed as content grows,
+   with nothing measuring the DOM. See the note in Callouts.tsx. */
+.circuit {
+  display: flex;
+  flex-direction: column;
+}
+
+/* A node is a hairline box, not a filled one: it has to read as a terminal on
+   a circuit rather than as a button. */
+.circuit-node {
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--ionq) 42%, transparent);
+  background: color-mix(in srgb, var(--ionq) 5%, transparent);
+}
+
+.circuit-node-label {
+  margin: 0 0 3px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-value);
+  letter-spacing: 0.02em;
+  color: var(--type);
+}
+
+.circuit-node-detail {
+  margin: 0;
+  color: var(--ionq);
+}
+
+/* Inset from the node boxes on both sides. Without it the rails land exactly on
+   the boxes' left and right borders and read as the outline continuing, rather
+   than as two conductors running between two terminals. */
+.circuit-arms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 26px;
+  padding: 0 26px;
+}
+
+/* Rail then text. The rail column is fixed so both arms line up whatever their
+   content does. */
+.circuit-arm {
+  display: grid;
+  grid-template-columns: 13px 1fr;
+  gap: 0 12px;
+  padding: 16px 0;
+}
+
+/* THE RAIL HUGS THE OUTER EDGE OF ITS COLUMN, so the two arms and the two nodes
+   close into a rectangle and the thing reads as a circuit rather than as two
+   parallel lines down the middle of a two-column layout. Which side is decided
+   by POSITION — first column hugs left, second hugs right — while which way the
+   arrow points is decided by `direction`. Keeping those two apart is what lets
+   the arms be reordered in the data without the loop coming open. */
+.circuit-arm:last-child {
+  grid-template-columns: 1fr 13px;
+}
+
+.circuit-arm:last-child .circuit-rail {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.circuit-arm:last-child .circuit-arm-body {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* The geometry. `stretch` is what closes the circuit: the rule runs the full
+   height of the arm, so it always meets both nodes. */
+.circuit-rail {
+  position: relative;
+  align-self: stretch;
+  justify-self: center;
+  width: 13px;
+}
+
+.circuit-rail::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  bottom: -16px;
+  left: 6px;
+  width: 1px;
+  background: var(--ionq);
+  opacity: 0.85;
+}
+
+/* The arrowhead — a CSS triangle, placed from the direction class rather than
+   from which column the arm landed in. Sized to read from the back of a room:
+   it is the only thing on the panel that says which way the current runs. */
+.circuit-rail::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+}
+
+.circuit-arm--up .circuit-rail::after {
+  top: -16px;
+  border-bottom: 9px solid var(--ionq);
+}
+
+.circuit-arm--down .circuit-rail::after {
+  bottom: -16px;
+  border-top: 9px solid var(--ionq);
+}
+
+.circuit-arm-label {
+  margin: 0 0 6px;
+  color: var(--ionq);
+}
+
+.circuit-arm-claim {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.5;
+  color: var(--type);
+}
+
+.circuit-levers {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* A lever is set in from the claim by a hairline, so it reads as hanging off
+   that arm rather than as a second paragraph of it. */
+.circuit-lever {
+  padding-left: 12px;
+  border-left: 1px solid color-mix(in srgb, var(--ionq) 40%, transparent);
+}
+
+.circuit-lever-label {
+  margin: 0 0 3px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-value);
+  line-height: 1.3;
+  color: #fff3e0;
+}
+
+.circuit-lever-detail {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--type) 82%, transparent);
+}
+
+.circuit-footnote {
+  margin: 16px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--type-muted) 22%, transparent);
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: var(--type-muted);
+}

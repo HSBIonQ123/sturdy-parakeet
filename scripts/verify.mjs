@@ -507,14 +507,127 @@ for (const [id, phrase] of [
   await page.screenshot({ path: `${SHOTS}/scene-${id}.png` });
 }
 
+/* ------------------------------------------------------------------ *
+ * The Italy italyCircuit.
+ *
+ * A diagram makes a claim through its SHAPE, so the shape is what has to
+ * be asserted. Two things would let it argue the wrong thing while still
+ * rendering cleanly: both arrowheads pointing the same way, which turns a
+ * circuit into two parallel lines and quietly drops the argument that the
+ * directions depend on each other; and a rail that stops short of a node,
+ * which leaves the loop open. Neither would throw, and neither is visible
+ * in a thumbnail.
+ *
+ * It is also the one scene whose camera has to hold TWO capitals, so the
+ * marker labels are checked against the panel as well as the frame — Rome
+ * ran under the box at the first camera tried.
+ * ------------------------------------------------------------------ */
+await goto('italy-circuit');
+await page.mouse.move(40, 1400);
+await sleep(900);
+
+const italyCircuit = await page.evaluate(() => {
+  const el = document.querySelector('.callout');
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  const arms = [...document.querySelectorAll('.circuit-arm')].map((arm) => {
+    const rail = arm.querySelector('.circuit-rail');
+    const head = getComputedStyle(rail, '::after');
+    // The RULE is the ::before, and it deliberately overhangs the rail element
+    // by the arm's padding at each end — that overhang is what reaches the
+    // nodes. So measure the drawn line, not the box that positions it: a check
+    // against the element would pass on a rail that visibly stops short.
+    const line = getComputedStyle(rail, '::before');
+    const box = rail.getBoundingClientRect();
+    return {
+      id: arm.dataset.arm,
+      // Which way the head points, read off the triangle itself: a CSS
+      // triangle pointing up has a bottom border and no top border.
+      points: head.borderBottomWidth !== '0px' ? 'up' : 'down',
+      lineTop: box.top + parseFloat(line.top),
+      lineBottom: box.bottom - parseFloat(line.bottom),
+    };
+  });
+  const nodes = [...document.querySelectorAll('.circuit-node')].map((n) => n.getBoundingClientRect());
+  return {
+    inFrame:
+      r.left >= 0 && r.top >= 0 && r.right <= window.innerWidth && r.bottom <= window.innerHeight,
+    over: Math.round(Math.max(0, r.bottom - window.innerHeight)),
+    stamped: Boolean(el.querySelector('.callout-stamp')),
+    text: el.textContent ?? '',
+    arms: arms.map((a) => ({ id: a.id, points: a.points })),
+    levers: document.querySelectorAll('.circuit-lever').length,
+    // The gap between the drawn rule and each node. Both ends of both rails
+    // must be ~0 or the loop is open.
+    gaps: arms.flatMap((a) => [
+      Math.round(a.lineTop - nodes[0].bottom),
+      Math.round(nodes[1].top - a.lineBottom),
+    ]),
+    // Marker labels must clear the panel, not just the frame edge.
+    labelsClearPanel: [...document.querySelectorAll('.marker-label')].every(
+      (l) => l.getBoundingClientRect().right < r.left,
+    ),
+    markers: [...document.querySelectorAll('.marker-label')].map((l) => l.textContent).sort(),
+    panelLeft: Math.round(r.left),
+  };
+});
+
+check(
+  'the Italy circuit panel fits the frame, is stamped internal, and keeps its text',
+  italyCircuit &&
+    italyCircuit.inFrame &&
+    italyCircuit.stamped &&
+    italyCircuit.text.includes('standard-setting') &&
+    italyCircuit.text.includes('most supportive of American companies'),
+  italyCircuit
+    ? `inFrame ${italyCircuit.inFrame} (${italyCircuit.over}px over), stamped ${italyCircuit.stamped}`
+    : 'no panel rendered',
+);
+// The shape IS the argument: one arm up, one arm down. Two arms pointing the
+// same way would render perfectly and mean something nobody wrote.
+check(
+  'the circuit runs both ways — one arm into Brussels, one back into Rome',
+  italyCircuit &&
+    italyCircuit.arms.length === 2 &&
+    italyCircuit.arms.find((a) => a.id === 'bottom-up')?.points === 'up' &&
+    italyCircuit.arms.find((a) => a.id === 'top-down')?.points === 'down',
+  italyCircuit ? italyCircuit.arms.map((a) => `${a.id}:${a.points}`).join(', ') : 'no arms',
+);
+// An open loop is a broken diagram. The rails must meet both nodes.
+check(
+  'both rails meet both nodes, so the loop is closed',
+  italyCircuit && italyCircuit.gaps.every((g) => Math.abs(g) <= 2),
+  italyCircuit ? `gaps ${italyCircuit.gaps.join(', ')}px` : 'no rails',
+);
+check(
+  'the two levers the slide is built on are both on it',
+  italyCircuit &&
+    italyCircuit.text.includes('AISI') &&
+    italyCircuit.text.includes('ENISA') &&
+    italyCircuit.levers === 3,
+  italyCircuit ? `${italyCircuit.levers} levers` : 'no levers',
+);
+// Both ends of the circuit are on the map, and neither label runs under the
+// panel — the fix for which is the camera, never the renderer (§7h).
+check(
+  'Rome and Brussels are both marked, and both labels clear the panel',
+  italyCircuit && italyCircuit.markers.join() === 'Brussels,Rome' && italyCircuit.labelsClearPanel,
+  italyCircuit
+    ? `markers ${italyCircuit.markers.join(', ')}, panel starts at ${italyCircuit.panelLeft}px`
+    : 'no markers',
+);
+await page.screenshot({ path: `${SHOTS}/scene-italy-circuit.png` });
+
 /*
  * The timeline's "you are here" marker — asked for explicitly, and the one
  * pulsing thing outside the border network. Assert that it exists AND that it
  * is on the right stage: a marker defaulting to the left edge would quietly
  * claim the talk is at stage one of seven.
  *
- * Runs while the timeline scene is still on screen from the loop above.
+ * Re-reached by name: the loop above left the deck on the Italy circuit.
  */
+await goto('quantum-act-timeline');
+await sleep(900);
 const timeline = await page.evaluate(() => {
   const ring = document.querySelector('.timeline-now-ring');
   const nowStage = document.querySelector('.timeline-stage.is-now');
@@ -1093,13 +1206,18 @@ const WALK = [
   // The five EU files sit INSIDE the Belgium spoke: the talk is already in
   // Brussels, so it pushes in on the city rather than stepping back out to the
   // Union. They hold Belgium selected and carry a panel each.
-  { brief: 'EU procurement' },
-  { brief: 'EU procurement' },
-  { brief: 'EU Quantum Act' },
-  { brief: 'EU Quantum Act' },
-  { brief: 'EU Quantum Act' },
+  { brief: 'EU procurement', iso: 'BEL' },
+  { brief: 'EU procurement', iso: 'BEL' },
+  { brief: 'EU Quantum Act', iso: 'BEL' },
+  { brief: 'EU Quantum Act', iso: 'BEL' },
+  { brief: 'EU Quantum Act', iso: 'BEL' },
   { hub: true },
   { title: 'Italy', iso: 'ITA' },
+  // And one inside the Italy spoke, for the same reason: the talk is already
+  // standing in Italy, so what Italy is FOR belongs here rather than beside a
+  // layer scene. It holds ITA, not BEL — which is why the brief branch below
+  // reads the iso from the walk instead of assuming Brussels.
+  { brief: 'Italy and Brussels', iso: 'ITA' },
   { hub: true },
   { title: 'Germany', iso: 'DEU' },
   { hub: true },
@@ -1141,11 +1259,14 @@ for (let i = 0; i < WALK.length; i += 1) {
       walkProblems.push(`hub at ${index} titled "${at.title}"`);
     }
   } else if (want.brief) {
-    // A briefing scene must stay zoomed on Brussels, hold Belgium, and show
-    // exactly one panel. A brief that quietly lost its panel is a blank slide.
+    // A briefing scene must stay zoomed, hold the country whose spoke it sits
+    // inside, and show exactly one panel. A brief that quietly lost its panel
+    // is a blank slide.
     if (at.title !== want.brief) walkProblems.push(`brief at ${index}: "${at.title}" not "${want.brief}"`);
     if (at.scale <= 1.01) walkProblems.push(`brief at ${index} is not zoomed (${at.scale?.toFixed(2)}x)`);
-    if (at.selected !== 'BEL') walkProblems.push(`brief at ${index} selected ${at.selected}`);
+    if (at.selected !== want.iso) {
+      walkProblems.push(`brief at ${index} selected ${at.selected}, wanted ${want.iso}`);
+    }
     if (at.panels !== 1) walkProblems.push(`brief at ${index} shows ${at.panels} panels`);
   } else {
     if (at.title !== want.title) walkProblems.push(`spoke at ${index}: "${at.title}" not "${want.title}"`);
@@ -1156,7 +1277,7 @@ for (let i = 0; i < WALK.length; i += 1) {
 check(
   'the hub-and-spoke tail alternates region / country / brief all the way to Lithuania',
   walkProblems.length === 0,
-  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 5 briefs, in order',
+  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 6 briefs, in order',
 );
 // Every hub is generated from one definition, so they cannot drift apart — and
 // the layer must be identical on both sides of a zoom or the spoke would be

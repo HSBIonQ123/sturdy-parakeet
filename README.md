@@ -34,12 +34,13 @@ The deck as it stands:
 | 18 | EU Quantum Act | seven-stage engagement timeline, "you are here" at Aug 2026 (internal) |
 | 19 | Priority European Political Engagement | back out to the six |
 | 20 | Italy | close up, held selected, Rome marked |
-| 21 | Priority European Political Engagement | back out to the six |
-| 22 | Germany | close up, held selected, Berlin marked |
-| 23 | Priority European Political Engagement | back out to the six |
-| 24 | Poland | close up, held selected, Warsaw marked |
-| 25 | Priority European Political Engagement | back out to the six |
-| 26 | Lithuania | close up, held selected, Vilnius marked |
+| 21 | Italy and Brussels | the influence circuit — top-down and bottom-up (internal) |
+| 22 | Priority European Political Engagement | back out to the six |
+| 23 | Germany | close up, held selected, Berlin marked |
+| 24 | Priority European Political Engagement | back out to the six |
+| 25 | Poland | close up, held selected, Warsaw marked |
+| 26 | Priority European Political Engagement | back out to the six |
+| 27 | Lithuania | close up, held selected, Vilnius marked |
 
 **Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
 three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
@@ -49,7 +50,7 @@ the region. It is the only scene in the deck that
 opens zoomed, which is why `Map.tsx` applies the first scene's camera on mount —
 nothing ever *steps into* scene 1, so `gotoScene` never runs for it.
 
-Scenes 10 to 26 are **hub and spoke**: the six priority states at region scale,
+Scenes 10 to 27 are **hub and spoke**: the six priority states at region scale,
 then one of them close up, then back out to the six, then the next. Every
 country is introduced against the whole selection rather than in isolation, and
 stepping out is what makes the next zoom mean something. It needed no new
@@ -137,9 +138,24 @@ follows returns to the six. They are **internal**, stamped as such on screen wit
 their as-at date. Scene 18 is the seven-stage engagement timeline, with a pulsing
 "you are here" marker on the stage the talk is standing in.
 
+**Scene 21 is the Italy circuit**, and it sits inside the Italy spoke for the same
+reason: the talk is already standing in Italy, so the argument about what Italy is
+*for* belongs there rather than beside a layer scene. Its panel is a diagram —
+Brussels and Rome as two terminals, with a conductor running each way between
+them. Bottom-up is Italy as a route into EU decision-making, carrying the two
+levers the slide is built on: a member state assessed as among the most supportive
+of American companies operating in the Union, and an existing AISI relationship to
+be leveraged into ENISA decision-making and the standard-setting after it.
+Top-down is the return path — what Brussels settles is what decides the Italian
+sale, which is the procurement and Quantum Act files seen from the other end. It
+is the one scene whose camera holds two capitals, because the diagram names both.
+Internal, and stamped.
+
 **Callout panels** are listed per scene by id — `callouts: ['career']` — and
 resolved against the registry in `src/data/callouts.ts`, whose sources are
-`presenter.ts` (personal) and `policy.ts` (the internal EU assessments). A panel is HTML so the browser wraps
+`presenter.ts` (personal), `policy.ts` (the internal EU assessments) and
+`strategy.ts` (what IonQ intends to do about them, and through which
+relationship). A panel is HTML so the browser wraps
 its text; its leader line is SVG, drawn from the panel to the dot of the marker
 it names. The family glyphs are line icons drawn in `render/FigureIcon.tsx` —
 strokes on a shared grid, at the same weight as every other hairline on the map,
@@ -253,7 +269,10 @@ become a copy of the single market; the four IonQ QKD networks sit inside
 EuroQCI signatory states and are the only markers on that slide, so it can
 never quietly start making the opposite argument; the closing engagement scene lights exactly its six states
 and no EU or EEA member leaks into it, so a selection can never drift into
-looking like a bloc; a zoomed scene arrives at its camera and gives it back on
+looking like a bloc; the Italy circuit runs one arm each way and both rails meet
+both terminals, because a diagram argues through its shape and two arrows
+pointing the same way would render perfectly while meaning something nobody
+wrote; a zoomed scene arrives at its camera and gives it back on
 the way out, and no marker label runs off the frame while it is there;
 Westminster is drawn without the IonQ core that Oxford has, so a seat of
 government can never start reading as a site IonQ occupies; the whole

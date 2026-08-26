@@ -20,6 +20,13 @@
  * fixed inset from its top edge — a point that exists without knowing the
  * panel's height, so content can grow without the anchor drifting.
  *
+ * BODIES ARE A UNION, AND EACH ONE OWNS ITS LAYOUT. A figure row, a numbered
+ * list, a sectioned briefing, a seven-stage timeline and a two-way circuit share
+ * a frame, a heading and a leader line, and share nothing else. Where a body
+ * needs geometry — the timeline's track, the circuit's rails — it is drawn in
+ * CSS rather than SVG, so it stretches to whatever height the text came to
+ * without anything measuring the DOM. See `Timeline` and `Circuit` below.
+ *
  * THREE SIZES, AND WHY `full` TAKES NO LEADER.
  * `standard` is the personal panels. `wide` exists because the policy briefings
  * are reproduced verbatim and a 620px column would run them off the bottom of
@@ -201,7 +208,80 @@ function CalloutBody({ callout }: { readonly callout: Callout }) {
     );
   }
 
+  if (body.kind === 'circuit') {
+    return <Circuit body={body} />;
+  }
+
   return <Timeline body={body} />;
+}
+
+/**
+ * The influence circuit: two nodes, and the two directions of travel between
+ * them.
+ *
+ * DRAWN IN CSS, NOT SVG, and that is the same call the Timeline made. The
+ * geometry here is two vertical rails and two arrowheads — a rule and a
+ * triangle, both of which CSS draws exactly and neither of which needs to know
+ * how tall the text beside it turned out to be. An SVG diagram would have to,
+ * and would put a layout measurement back inside render for the sake of two
+ * straight lines. The rails stretch to whatever height the claim and its levers
+ * come to, so the circuit stays closed as the content grows.
+ *
+ * The arrowhead is placed from `direction` rather than from column position, so
+ * reordering the arms in the data reorders the columns and the arrows follow.
+ */
+function Circuit({ body }: { readonly body: Extract<Callout['body'], { kind: 'circuit' }> }) {
+  // A circuit with both arms running the same way is not a circuit — it is two
+  // lines pointing the same direction, which would draw cleanly and argue
+  // something nobody wrote. Fail loudly, like the Timeline's missing stage.
+  if (body.arms[0].direction === body.arms[1].direction) {
+    throw new Error(
+      `Circuit: both arms run "${body.arms[0].direction}" — a circuit needs one of each`,
+    );
+  }
+
+  return (
+    <div className="circuit">
+      <CircuitNodeBox node={body.top} />
+
+      <div className="circuit-arms">
+        {body.arms.map((arm) => (
+          <div className={`circuit-arm circuit-arm--${arm.direction}`} key={arm.id} data-arm={arm.id}>
+            {/* The rail. Empty by design: it is geometry, and the ::before rule
+                and ::after arrowhead are drawn from the direction class. */}
+            <span className="circuit-rail" aria-hidden />
+            <div className="circuit-arm-body">
+              <p className="circuit-arm-label label">{arm.label}</p>
+              <p className="circuit-arm-claim">{arm.claim}</p>
+              {arm.levers ? (
+                <ul className="circuit-levers">
+                  {arm.levers.map((lever) => (
+                    <li className="circuit-lever" key={lever.id} data-lever={lever.id}>
+                      <p className="circuit-lever-label">{lever.label}</p>
+                      <p className="circuit-lever-detail">{lever.detail}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <CircuitNodeBox node={body.bottom} />
+
+      {body.footnote ? <p className="circuit-footnote">{body.footnote}</p> : null}
+    </div>
+  );
+}
+
+function CircuitNodeBox({ node }: { readonly node: { label: string; detail: string } }) {
+  return (
+    <div className="circuit-node">
+      <p className="circuit-node-label">{node.label}</p>
+      <p className="circuit-node-detail label">{node.detail}</p>
+    </div>
+  );
 }
 
 /**
