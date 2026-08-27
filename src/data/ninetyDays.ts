@@ -22,36 +22,41 @@
  * what is behind them.
  * ============================================================================
  *
- * THREE THINGS THAT ARE NOT TIDIED, BECAUSE TIDYING THEM WOULD BE INVENTING.
+ * THE REGISTER IS THE SOURCE OF TRUTH, AND THE SUMMARY IS COUNTED FROM IT.
  *
- * 1. THE COUNTS DO NOT RECONCILE, and both are reproduced as supplied. The
- *    "Risks mitigated" row on the first slide says: "Of 8 exposures identified,
- *    4 reduced to low risk, 2 held at medium risk under active mitigation, 1
- *    prepared for with a defined gate for further action, and 1 resolved."
- *    The register on the second slide lists SEVEN exposures, landing 5 at low,
- *    1 at medium and 1 held at high. Neither the count (8 vs 7) nor the
- *    distribution matches. One of the two is out of date, and this project has
- *    no way to know which — so both are shown as written and this note says so.
- *    Fix it in the source deck, then here. Do not let a build quietly pick one.
+ * The source deck disagreed with itself: the "Risks mitigated" row on page 03/16
+ * said "Of 8 exposures identified, 4 reduced to low risk, 2 held at medium risk
+ * under active mitigation, 1 prepared for with a defined gate for further
+ * action, and 1 resolved", while the register on page 04/16 enumerated SEVEN.
+ * Neither the count nor the distribution matched.
  *
- * 2. THE SUMMARY SAYS "See next page", and it is left in. In the deck the next
- *    page IS the next scene, so the sentence stays true — and it is the source's
- *    own wording.
+ * The register wins, because it is the one that enumerates: every exposure on it
+ * has a severity each side and a set of drivers behind it, so it can be checked
+ * line by line in a way a summary sentence cannot. So `RISK_SUMMARY` below is
+ * BUILT FROM `RISK_ROWS` — the count, and how many landed at each level, are
+ * computed rather than typed. Add an exposure to the register and the summary
+ * sentence on the previous scene updates with it; there is no second number to
+ * keep in step, which is what let the two drift apart in the first place.
+ * `verify.mjs` asserts the sentence and the register agree.
  *
- * 3. NAMES AND ACRONYMS ARE NOT EXPANDED. "NdM", "IC", "SoS BIST", "DG
- *    Technology", "ProQure" appear as supplied. Expanding any of them would be
- *    this project asserting a reading of an internal shorthand, which is the §4
- *    rule (state what is, and stop) applied to a briefing instead of a border.
+ * "See next page" is left in. In the deck the next page IS the next scene, so
+ * the sentence stays true — and it is the source's own wording.
  *
- * ON THE ARROWS. `shift.verb` is the source's word — REDUCED, MITIGATED,
- * PREPARED — and is data. The arrow's DIRECTION is not: it is derived at render
- * from the two severity levels, so an arrow can never point a way its own row
- * contradicts. The source's glyphs disagree with its own levels on one row
- * ("No visibility on changes in EMEA priorities" is marked with a right arrow
- * while moving MEDIUM to LOW), and a diagram that argues against the numbers
- * beside it is worse than one that simply follows them.
+ * NAMES AND ACRONYMS ARE NOT EXPANDED. "NdM", "IC", "SoS BIST", "DG Technology",
+ * "ProQure" appear as supplied. Expanding any of them would be this project
+ * asserting a reading of an internal shorthand, which is the §4 rule (state what
+ * is, and stop) applied to a briefing instead of a border.
+ *
+ * ON THE ARROWS. `verb` is the source's word — Reduced, Mitigated, Prepared —
+ * and is data. The arrow's DIRECTION is not: it is derived at render from the two
+ * severity levels. The source marked one row ("No visibility on changes in EMEA
+ * priorities") with a sideways glyph while moving it MEDIUM to LOW; the levels
+ * are right and the glyph was not, so the render follows the levels and the row
+ * now draws a falling arrow with the source's own word beside it. A diagram that
+ * argues against the numbers next to it is worse than one that simply follows
+ * them, and deriving the direction means that can never happen again.
  */
-import type { Callout } from './callouts';
+import type { Callout, RiskLevel, RiskRow } from './callouts';
 
 /**
  * The date these slides were SUPPLIED, not a date printed on them — the source
@@ -59,6 +64,216 @@ import type { Callout } from './callouts';
  * the same reasoning as policy.ts.
  */
 const AS_AT = '26 August 2026';
+
+/* ---- the register, and the numbers counted from it -------------------- */
+/*
+ * Declared first because BOTH scenes depend on it: scene 02 renders it, and the
+ * summary row on scene 01 is counted from it. That dependency is the whole fix
+ * for the two pages disagreeing — there is now one register and no second
+ * number anywhere to fall out of step with it.
+ */
+
+/**
+ * The register itself, as its own const so the summary sentence on the previous
+ * scene can be COUNTED from it rather than written beside it. See the header.
+ */
+const RISK_ROWS: readonly RiskRow[] = [
+  {
+    id: 'uk-ic',
+    from: {
+      level: 'high',
+      title: 'Lack of visibility with UK IC',
+      detail: 'No official channels or structured credibility with UK Intel Community.',
+    },
+    verb: 'Reduced',
+    to: {
+      level: 'low',
+      title: 'Active briefing channel',
+      detail:
+        'Direct access point established with route for policy alignment, and 13 ' +
+        'further introductions across IC planned with Sir Peter Knight.',
+    },
+    drivers: [
+      'Completed breakthrough meeting with DG Technology at GCHQ.',
+      'Alignment with key industry figure, Sir Peter Knight, on need for IonQ to have ' +
+        'greater say in policy discussions with IC; further introductions brokered.',
+    ],
+  },
+  {
+    id: 'uk-champion',
+    from: {
+      level: 'high',
+      title: 'Not viewed as ‘UK champion’',
+      detail: 'Perceived as a foreign entity; excluded from national priority lists.',
+    },
+    verb: 'Reduced',
+    to: {
+      level: 'low',
+      title: 'Ministerial validation',
+      detail: 'Formally positioned at the highest level of ministerial priority.',
+    },
+    drivers: [
+      'Secured official ministerial advice nominating IonQ as first ‘quantum ' +
+        'ministerial visit’ for SoS BIST.',
+      'Secured call with Deputy Chief of Staff to Chancellor to directly advance ' +
+        'NdM’s priorities.',
+      'Approach to political relationships by senior leaders changed, to ensure asks ' +
+        'are grounded in political reality and ladder to a broader political strategy.',
+    ],
+  },
+  {
+    id: 'us-company',
+    from: {
+      level: 'high',
+      title: 'Geopolitical exposure as US company',
+      detail:
+        'Perception of IonQ as an ‘American company’ by some definitions drives risk ' +
+        'to ability to access public sector procurement in the EU.',
+    },
+    verb: 'Reduced',
+    to: {
+      level: 'medium',
+      title: 'Active EU lobbying strategy',
+      detail:
+        'IonQ is now active across key European capitals, ensuring that definitions ' +
+        'adopted into law reduce risk of US-vendor lock-out.',
+    },
+    drivers: [
+      'Formulated and adopted clear ‘quantum sovereignty’ policy framework.',
+      'Prepared policy framework for EU Quantum Act, initiating deep engagement with ' +
+        'DGs in Brussels and those that influence them.',
+      'Ensured we are engaging on national level budgets and ministries as European ' +
+        'procurement vehicles to de-risk future lock-out by EU by having member-state ' +
+        'track record.',
+    ],
+  },
+  {
+    id: 'proqure',
+    from: {
+      level: 'high',
+      title: 'ProQure commercial decision',
+      detail: 'Risk of reputational harm due to failure to anchor work in UK pathways.',
+    },
+    // The one row that does not fall. Held at high and prepared for, which
+    // is what the sideways arrow says — see the header note on directions.
+    verb: 'Mitigated',
+    to: {
+      level: 'high',
+      title: 'Legal engagement prepared',
+      detail:
+        'Paul Dacier briefed on the potential impact of a negative decision; gate ' +
+        'identified for pursuing further action.',
+    },
+    drivers: [
+      'Alignment sought and achieved with Chris Ballance and Tom Harty on what the ' +
+        'decision-gate for moving forward with legal action would be, namely if there ' +
+        'is no other way, based on feedback that the decision could have gone against ' +
+        'IonQ unless US-ownership was considered a factor.',
+      'Legal counsel briefed and suggestion made of law firm to use in the event we ' +
+        'proceed.',
+    ],
+  },
+  {
+    id: 'comms',
+    from: {
+      level: 'high',
+      title: 'Communications mis-step in translating US ambition to European context',
+      detail: 'Communications previously designed for US market misses in EMEA.',
+    },
+    verb: 'Reduced',
+    to: {
+      level: 'low',
+      title: 'EMEA translation layer live, and force multiplication in place',
+      detail: 'Internal fix and external capacity brought to bear on the risk.',
+    },
+    drivers: [
+      'European lens now offered on executive communications (op-eds etc. as produced ' +
+        'for senior leadership approval).',
+      'Focussed executive communications programme initiated through Edelman to build ' +
+        'a repeatable engine for delivery of tailored EMEA messaging in key outlets.',
+    ],
+  },
+  {
+    id: 'horizon',
+    from: {
+      level: 'medium',
+      title: 'No visibility on changes in EMEA priorities',
+      detail:
+        'Engagement was reactive; with no view on 3-5 year horizon. Business not ' +
+        'prepared for change in EC Presidency or shifting sovereignty focus.',
+    },
+    verb: 'Mitigated',
+    to: {
+      level: 'low',
+      title: 'Engagement on longer term horizon',
+      detail:
+        'First engagement conducted with opposition figures and new EC president ' +
+        'engagement planned to insulate IonQ from political change.',
+    },
+    drivers: [
+      'IonQ senior leaders have now met with Reform and Conservative leadership in ' +
+        'the UK.',
+      'Comprehensive engagement with Lithuanian government ahead of EC presidency ' +
+        'planned.',
+      'Longer-term stakeholder management now systematised and carried out across ' +
+        'priority markets.',
+    ],
+  },
+  {
+    id: 'key-person',
+    from: {
+      level: 'medium',
+      title: 'Single point of failure',
+      detail: 'Entire international function will quickly run through one person.',
+    },
+    verb: 'Prepared',
+    to: {
+      level: 'low',
+      title: 'Continuity tools created',
+      detail:
+        'Relationships tracked in a register; with policy positions now codified, not ' +
+        'personal knowledge.',
+    },
+    drivers: [
+      'Relationship register and engagement log built and current.',
+      'Building out function in short-term reduces key person risk in international ' +
+        'government affairs.',
+    ],
+  },
+];
+
+/** How many exposures the register holds. */
+export const RISK_EXPOSURE_COUNT = RISK_ROWS.length;
+
+/** How many landed at a given severity. */
+const landingAt = (level: RiskLevel) => RISK_ROWS.filter((r) => r.to.level === level).length;
+
+/**
+ * The summary sentence for the "Risks mitigated" row on the previous scene.
+ *
+ * Every number in it is computed. The clauses are built conditionally and
+ * phrased by LANDING STATE rather than by movement ("now sit at low risk", not
+ * "reduced to low risk"), so the sentence stays true whatever a future register
+ * contains — including a level that nothing lands on, which simply drops its
+ * clause instead of printing a zero.
+ */
+const RISK_SUMMARY = (() => {
+  const clauses = [
+    [landingAt('low'), 'now sit at low risk'],
+    [landingAt('medium'), 'at medium risk under active mitigation'],
+    [landingAt('high'), 'held at high risk with a defined gate for further action'],
+  ]
+    .filter(([n]) => (n as number) > 0)
+    .map(([n, text]) => `${n} ${text}`);
+  const list =
+    clauses.length > 1
+      ? `${clauses.slice(0, -1).join(', ')}, and ${clauses[clauses.length - 1]}`
+      : clauses.join('');
+  return (
+    'Risks have been broadly mitigated or materially reduced in 90 days. Of ' +
+    `${RISK_EXPOSURE_COUNT} exposures identified, ${list}. See next page.`
+  );
+})();
 
 /* ---- 01 · the four state changes ------------------------------------ */
 
@@ -134,20 +349,17 @@ export const STATE_CHANGES: Callout = {
         from:
           'Substantial risks to the business were identified at my onboarding from lack ' +
           'of current government affairs support in rest-of-world.',
-        // "See next page" is kept: in this deck the next page is the next
-        // scene, so the sentence stays true. See the header note on the counts.
-        to:
-          'Risks have been broadly mitigated or materially reduced in 90 days. Of 8 ' +
-          'exposures identified, 4 reduced to low risk, 2 held at medium risk under ' +
-          'active mitigation, 1 prepared for with a defined gate for further action, and ' +
-          '1 resolved. See next page.',
+        // COUNTED FROM THE REGISTER, not typed. The source's own summary said
+        // eight exposures where its register enumerated seven; deriving the
+        // sentence is what makes a second number impossible. See the header.
+        to: RISK_SUMMARY,
       },
     ],
   },
   sources:
-    'IonQ internal, page 03/16, "Confidential — internal use only". Reproduced verbatim. ' +
-    'The exposure counts in the final row do not reconcile with the register on the next ' +
-    'scene; both are shown as supplied — see the note in data/ninetyDays.ts.',
+    'IonQ internal, page 03/16, "Confidential — internal use only". Reproduced verbatim, ' +
+    'except the exposure counts in the final row, which are counted from the register on ' +
+    'the next scene rather than restated.',
 };
 
 /* ---- 02 · the portfolio risk register -------------------------------- */
@@ -157,8 +369,8 @@ export const RISK_REGISTER: Callout = {
   heading: '02 · Portfolio risk register (90-day review)',
   title: 'A systemic de-risking of our European market engagement',
   standfirst:
-    'Seven exposures identified at onboarding, and where each one stands after ninety ' +
-    'days. Severity is the bar; the word is the source’s own.',
+    `${RISK_EXPOSURE_COUNT} exposures identified at onboarding, and where each one stands ` +
+    'after ninety days. Severity is the bar; the word is the source’s own.',
   size: 'full',
   // Clear of the readout in the top-right corner: at 0.1 the internal stamp
   // ran under it, and a stamp you cannot read is a stamp that is not there.
@@ -171,170 +383,7 @@ export const RISK_REGISTER: Callout = {
     shiftLabel: 'Risk shift',
     toLabel: 'Current mitigated position · Day 90',
     driversLabel: 'Key de-risking mitigation drivers',
-    rows: [
-      {
-        id: 'uk-ic',
-        from: {
-          level: 'high',
-          title: 'Lack of visibility with UK IC',
-          detail: 'No official channels or structured credibility with UK Intel Community.',
-        },
-        verb: 'Reduced',
-        to: {
-          level: 'low',
-          title: 'Active briefing channel',
-          detail:
-            'Direct access point established with route for policy alignment, and 13 ' +
-            'further introductions across IC planned with Sir Peter Knight.',
-        },
-        drivers: [
-          'Completed breakthrough meeting with DG Technology at GCHQ.',
-          'Alignment with key industry figure, Sir Peter Knight, on need for IonQ to have ' +
-            'greater say in policy discussions with IC; further introductions brokered.',
-        ],
-      },
-      {
-        id: 'uk-champion',
-        from: {
-          level: 'high',
-          title: 'Not viewed as ‘UK champion’',
-          detail: 'Perceived as a foreign entity; excluded from national priority lists.',
-        },
-        verb: 'Reduced',
-        to: {
-          level: 'low',
-          title: 'Ministerial validation',
-          detail: 'Formally positioned at the highest level of ministerial priority.',
-        },
-        drivers: [
-          'Secured official ministerial advice nominating IonQ as first ‘quantum ' +
-            'ministerial visit’ for SoS BIST.',
-          'Secured call with Deputy Chief of Staff to Chancellor to directly advance ' +
-            'NdM’s priorities.',
-          'Approach to political relationships by senior leaders changed, to ensure asks ' +
-            'are grounded in political reality and ladder to a broader political strategy.',
-        ],
-      },
-      {
-        id: 'us-company',
-        from: {
-          level: 'high',
-          title: 'Geopolitical exposure as US company',
-          detail:
-            'Perception of IonQ as an ‘American company’ by some definitions drives risk ' +
-            'to ability to access public sector procurement in the EU.',
-        },
-        verb: 'Reduced',
-        to: {
-          level: 'medium',
-          title: 'Active EU lobbying strategy',
-          detail:
-            'IonQ is now active across key European capitals, ensuring that definitions ' +
-            'adopted into law reduce risk of US-vendor lock-out.',
-        },
-        drivers: [
-          'Formulated and adopted clear ‘quantum sovereignty’ policy framework.',
-          'Prepared policy framework for EU Quantum Act, initiating deep engagement with ' +
-            'DGs in Brussels and those that influence them.',
-          'Ensured we are engaging on national level budgets and ministries as European ' +
-            'procurement vehicles to de-risk future lock-out by EU by having member-state ' +
-            'track record.',
-        ],
-      },
-      {
-        id: 'proqure',
-        from: {
-          level: 'high',
-          title: 'ProQure commercial decision',
-          detail: 'Risk of reputational harm due to failure to anchor work in UK pathways.',
-        },
-        // The one row that does not fall. Held at high and prepared for, which
-        // is what the sideways arrow says — see the header note on directions.
-        verb: 'Mitigated',
-        to: {
-          level: 'high',
-          title: 'Legal engagement prepared',
-          detail:
-            'Paul Dacier briefed on the potential impact of a negative decision; gate ' +
-            'identified for pursuing further action.',
-        },
-        drivers: [
-          'Alignment sought and achieved with Chris Ballance and Tom Harty on what the ' +
-            'decision-gate for moving forward with legal action would be, namely if there ' +
-            'is no other way, based on feedback that the decision could have gone against ' +
-            'IonQ unless US-ownership was considered a factor.',
-          'Legal counsel briefed and suggestion made of law firm to use in the event we ' +
-            'proceed.',
-        ],
-      },
-      {
-        id: 'comms',
-        from: {
-          level: 'high',
-          title: 'Communications mis-step in translating US ambition to European context',
-          detail: 'Communications previously designed for US market misses in EMEA.',
-        },
-        verb: 'Reduced',
-        to: {
-          level: 'low',
-          title: 'EMEA translation layer live, and force multiplication in place',
-          detail: 'Internal fix and external capacity brought to bear on the risk.',
-        },
-        drivers: [
-          'European lens now offered on executive communications (op-eds etc. as produced ' +
-            'for senior leadership approval).',
-          'Focussed executive communications programme initiated through Edelman to build ' +
-            'a repeatable engine for delivery of tailored EMEA messaging in key outlets.',
-        ],
-      },
-      {
-        id: 'horizon',
-        from: {
-          level: 'medium',
-          title: 'No visibility on changes in EMEA priorities',
-          detail:
-            'Engagement was reactive; with no view on 3-5 year horizon. Business not ' +
-            'prepared for change in EC Presidency or shifting sovereignty focus.',
-        },
-        verb: 'Mitigated',
-        to: {
-          level: 'low',
-          title: 'Engagement on longer term horizon',
-          detail:
-            'First engagement conducted with opposition figures and new EC president ' +
-            'engagement planned to insulate IonQ from political change.',
-        },
-        drivers: [
-          'IonQ senior leaders have now met with Reform and Conservative leadership in ' +
-            'the UK.',
-          'Comprehensive engagement with Lithuanian government ahead of EC presidency ' +
-            'planned.',
-          'Longer-term stakeholder management now systematised and carried out across ' +
-            'priority markets.',
-        ],
-      },
-      {
-        id: 'key-person',
-        from: {
-          level: 'medium',
-          title: 'Single point of failure',
-          detail: 'Entire international function will quickly run through one person.',
-        },
-        verb: 'Prepared',
-        to: {
-          level: 'low',
-          title: 'Continuity tools created',
-          detail:
-            'Relationships tracked in a register; with policy positions now codified, not ' +
-            'personal knowledge.',
-        },
-        drivers: [
-          'Relationship register and engagement log built and current.',
-          'Building out function in short-term reduces key person risk in international ' +
-            'government affairs.',
-        ],
-      },
-    ],
+    rows: RISK_ROWS,
   },
   sources:
     'IonQ internal, page 04/16, "Confidential — internal use only". Reproduced verbatim. ' +

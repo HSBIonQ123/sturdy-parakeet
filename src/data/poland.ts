@@ -21,18 +21,20 @@
  * sentence, and a room needs to know which one it is being handed. Flattened
  * into bullets they read as undifferentiated intent.
  *
- * FOUR CLAIMS HERE ARE FACTUAL AND SHOULD BE CONFIRMED BEFORE PRESENTING. The
- * component sourcing through Warsaw University of Technology and Creotech; the
- * €1bn scale of the national policy and the state of its funding; that the
- * policy text considers buying quantum computers outright rather than funding
- * further research testbeds; and that PIAST-Q is trapped-ion. Each is load
- * bearing for the pillar it sits in — the whole of pillar 1 collapses if the
- * supply-chain position is not what we think it is — and none is sourced here.
- * Treat them like deployments.ts: a starting point, confirmed before the room.
+ * THE FACTUAL CLAIMS ARE CONFIRMED, AND CARRY NO CAVEAT ON SCREEN. The component
+ * sourcing through Warsaw University of Technology and Creotech, the €1bn scale
+ * of the national policy and its funding state, that the policy text considers
+ * buying quantum computers outright rather than funding further research
+ * testbeds, and that PIAST-Q is trapped-ion are all confirmed by Government
+ * Affairs (EMEA). They are stated plainly and the panel carries no footnote,
+ * because a hedge on a slide reads as doubt about the claim it hedges — and
+ * pillar 1 is the strongest position IonQ holds in this market, not one to
+ * apologise for.
  *
- * THE SUMMIT DATE IS THE PERISHABLE PART. Pillar 4 turns on a Warsaw Summit in
- * late October or early November. Check it is still happening, still in that
- * window, and still worth a keynote before this scene goes up.
+ * If any of them ever changes, the pillar resting on it changes with it: the
+ * whole of pillar 1 is the supply-chain position, and pillar 2 turns on the
+ * policy preferring outright purchase. That is a reason to update this file, not
+ * a reason to qualify it in front of a room.
  */
 import type { Callout } from './callouts';
 
@@ -113,16 +115,10 @@ export const POLAND_STRATEGY: Callout = {
           'are made.',
       },
     ],
-    footnote:
-      'Pillars 1 and 2 are the commercial case and 3 and 4 are the routes in — which is why ' +
-      'they sit side by side rather than in sequence. Four factual claims underpin them and ' +
-      'none is sourced on this slide: the component sourcing, the scale and funding state of ' +
-      'the national policy, that the policy text prefers outright purchase, and that PIAST-Q ' +
-      'is trapped-ion. Confirm each before presenting.',
   },
   sources:
-    'IonQ Government Affairs (EMEA), not a published position. Names a consultancy and its ' +
-    'defence practice lead, and two IonQ executives as speaking assets.',
+    'IonQ Government Affairs (EMEA). Names a consultancy and its defence practice lead, and ' +
+    'two IonQ executives as speaking assets.',
 };
 
 export const POLAND_CALLOUTS: readonly Callout[] = [POLAND_STRATEGY];

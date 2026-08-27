@@ -822,9 +822,21 @@ source does not.
    and `verify.mjs` asserts that entry renders blank.
 4. **Derive the geometry from the data, never store it beside it.** The risk
    register's arrows come from its two severity meters, so a row cannot point a
-   way its own numbers contradict — the source's own glyphs disagree with its own
-   levels on one row. Pillars are numbered from their position, so reordering
-   them cannot leave a hand-written "3." behind. Both are asserted.
+   way its own numbers contradict — the source marked one row sideways while
+   moving it MEDIUM to LOW, and the levels were right. Pillars are numbered from
+   their position, so reordering them cannot leave a hand-written "3." behind.
+   Both are asserted.
+
+**A confirmed claim carries no caveat.** The Poland pillars rest on four factual
+claims — the component sourcing, the scale and funding state of the national
+policy, that its text prefers outright purchase, and that PIAST-Q is trapped-ion.
+They were confirmed, so the panel states them plainly and carries no footnote: a
+hedge on a slide reads as doubt about the claim it hedges, and pillar 1 is the
+strongest position IonQ holds in that market. The reason to record a dependency
+like that in the file is so it gets updated when it moves, not so a room hears it
+qualified. `deployments.ts` and `politicalEngagement.ts` keep their
+confirm-before-presenting notes, because those lists genuinely go stale on their
+own; a checked fact does not.
 
 **Severity is a meter that gets shorter, not a traffic light.** Red/amber/green
 is unavailable twice over: the palette is monochrome plus one, and a projector

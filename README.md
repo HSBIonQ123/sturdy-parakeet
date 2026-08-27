@@ -169,7 +169,10 @@ every row crosses, so the layout is what claims a single function moved all of
 them. The risk register carries severity as a three-segment meter that gets
 shorter rather than as red/amber/green, for the reason `CLAUDE.md` §7b gives
 about the projector; its arrows are derived from the meters either side of them,
-never stored, so a row can never point a way its own numbers contradict.
+never stored, so a row can never point a way its own numbers contradict. The
+register is also the only place the exposure count lives — the summary sentence
+on scene 6 and the caption on scene 7 are both counted from it, so the two can
+never disagree the way the source deck's two pages did.
 
 **The market panels sit inside their spokes**, on the same argument: Germany
 carries the Franco-German position paper and the five state changes to drive out

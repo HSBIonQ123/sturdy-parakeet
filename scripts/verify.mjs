@@ -604,6 +604,46 @@ check(
   risk.rows === 7 && risk.disagreements.length === 0,
   `${risk.rows} rows; ${risk.disagreements.join(' | ') || 'no disagreements'}`,
 );
+/*
+ * THE SUMMARY AND THE REGISTER MUST AGREE — the fault this fixes.
+ *
+ * The source deck said eight exposures on one page and enumerated seven on the
+ * next. The summary sentence is now counted from the register, so the two cannot
+ * drift; this reads the sentence off the previous scene and checks it against
+ * the rows actually rendered here. It is the assertion that keeps the number
+ * derived rather than typed back in by a later edit.
+ */
+const summary = await page.evaluate(() => {
+  const landings = [...document.querySelectorAll('.risk-row')].map((row) => {
+    const meters = [...row.querySelectorAll('.risk-meter')];
+    return meters[1].querySelectorAll('.risk-seg.is-lit').length;
+  });
+  return {
+    rows: landings.length,
+    low: landings.filter((n) => n === 1).length,
+    medium: landings.filter((n) => n === 2).length,
+    high: landings.filter((n) => n === 3).length,
+  };
+});
+await goto('state-changes');
+await page.mouse.move(40, 1400);
+await sleep(700);
+const summaryText = await page.evaluate(
+  () => document.querySelector('.statechange-row[data-row="risks"] .statechange-cell--to')
+    ?.textContent ?? '',
+);
+check(
+  'the ninety-day summary counts the register rather than restating it',
+  summaryText.includes(`Of ${summary.rows} exposures identified`) &&
+    summaryText.includes(`${summary.low} now sit at low risk`) &&
+    summaryText.includes(`${summary.medium} at medium risk`) &&
+    summaryText.includes(`${summary.high} held at high risk`),
+  `register ${summary.rows} (${summary.low} low / ${summary.medium} med / ${summary.high} high) — "${summaryText.slice(0, 160)}"`,
+);
+await goto('risk-register');
+await page.mouse.move(40, 1400);
+await sleep(700);
+
 check(
   'ProQure is held at high and drawn sideways, not reduced',
   risk.proqure &&
@@ -635,12 +675,14 @@ await sleep(700);
 const stakeholders = await page.evaluate(() => ({
   groups: [...document.querySelectorAll('.stakeholder-group')].map((g) => g.dataset.group),
   entries: document.querySelectorAll('.stakeholder').length,
-  // The source pasted the wrong body's rationale onto the Cyber Security Centre.
-  // It is left blank rather than repaired, so the GAP is what has to render.
-  ncscHasWhy: Boolean(
-    document.querySelector('.stakeholder[data-stakeholder="ncsc"] .stakeholder-why'),
-  ),
-  whys: document.querySelectorAll('.stakeholder-why').length,
+  // The source pasted the Innovation Agency's rationale onto the Cyber Security
+  // Centre. Ours replaces it, so what has to be true is that every entry now
+  // carries one AND that no two entries carry the SAME one — a repeated line is
+  // exactly the fault being corrected, and it would render perfectly.
+  whys: [...document.querySelectorAll('.stakeholder-why')].map((e) => e.textContent),
+  ncscWhy:
+    document.querySelector('.stakeholder[data-stakeholder="ncsc"] .stakeholder-why')
+      ?.textContent ?? null,
 }));
 check(
   'the stakeholder map is three groups and six meetings, grouped not ranked',
@@ -649,9 +691,11 @@ check(
   `groups ${stakeholders.groups.join(', ')}, ${stakeholders.entries} entries`,
 );
 check(
-  'the Cyber Security Centre entry stays blank rather than borrowing the wrong rationale',
-  !stakeholders.ncscHasWhy && stakeholders.whys === 5,
-  `ncsc why ${stakeholders.ncscHasWhy}, ${stakeholders.whys} rationales across 6 entries`,
+  'every stakeholder carries a rationale, and no two carry the same one',
+  stakeholders.whys.length === 6 &&
+    new Set(stakeholders.whys).size === 6 &&
+    /quantum-safe cryptography/.test(stakeholders.ncscWhy ?? ''),
+  `${stakeholders.whys.length} rationales, ${new Set(stakeholders.whys).size} distinct`,
 );
 
 /* ------------------------------------------------------------------ *

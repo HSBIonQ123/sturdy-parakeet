@@ -21,17 +21,19 @@
  * priority order the source does not state and the presenter would then be asked
  * to defend.
  *
- * ONE SOURCE ERROR IS NOT REPRODUCED. The National Cyber Security Centre entry
- * in the source carries the Innovation Agency's "a meeting would help identify
- * relevant local partners…" sentence verbatim — plainly a copy-paste from the
- * preceding page, since it describes the wrong body. It is omitted rather than
- * repaired: `why` is optional on a stakeholder precisely so that a gap in the
- * source can stay a gap instead of becoming an invention. Ask Fabula for the
- * real line and add it here.
+ * ONE ENTRY'S RATIONALE IS OURS, NOT FABULA'S, AND THE SOURCES LINE SAYS SO.
+ * The National Cyber Security Centre entry in the source carried the Innovation
+ * Agency's "a meeting would help identify relevant local partners…" sentence —
+ * plainly pasted from the preceding page, since it describes the wrong body. It
+ * is replaced with a rationale written here, drawn from nothing but the NCSC's
+ * own stated remit on the same page: incident management, cyber security
+ * requirements and accreditation of information resources. That is a short step
+ * to why IonQ would want the meeting, and it is a step this file takes in its
+ * own name rather than attributing it to Fabula. `why` stays optional on a
+ * stakeholder so a future gap can still be left as one.
  *
  * THE DATES ARE THE PERISHABLE PART. 7–11 September 2026, with the caveat about
- * the parliamentary session, is a proposal and not a booking. Confirm before
- * this goes up.
+ * the parliamentary session, is a proposal and not a booking.
  */
 import type { Callout } from './callouts';
 
@@ -104,8 +106,12 @@ export const LITHUANIA_STAKEHOLDERS: Callout = {
               'The main Lithuanian cyber security institution: unified management of cyber ' +
               'incidents, monitoring and control of cyber security requirements, and ' +
               'accreditation of information resources.',
-            // `why` deliberately absent — see the note on the source error in
-            // the header. Do not fill this in from the Innovation Agency entry.
+            // Written here, not by Fabula — see the header. It follows from the
+            // remit above and from nothing else.
+            why:
+              'Open the technical channel where their remit meets ours: quantum-safe ' +
+              'cryptography and the post-quantum transition, and what the accreditation ' +
+              'of information resources will come to require of it.',
           },
         ],
       },
@@ -140,12 +146,11 @@ export const LITHUANIA_STAKEHOLDERS: Callout = {
         ],
       },
     ],
-    footnote:
-      'Prepared by Fabula. The Cyber Security Centre entry carries no meeting rationale ' +
-      'because the source repeated the Innovation Agency’s by mistake; it is left blank ' +
-      'rather than guessed at — see data/lithuania.ts.',
   },
-  sources: 'Fabula, "Stakeholder Mapping for IonQ’s Visit to Lithuania". Condensed.',
+  sources:
+    'Fabula, "Stakeholder Mapping for IonQ’s Visit to Lithuania". Condensed. The Cyber ' +
+    'Security Centre meeting rationale is IonQ’s own — the source repeated the Innovation ' +
+    'Agency’s in error.',
 };
 
 export const LITHUANIA_VISIT: Callout = {

@@ -15,6 +15,7 @@
 import type { Scene } from './types';
 import { NETWORK_DEPLOYMENT_IDS } from '../data/deployments';
 import { capital } from '../data/capitalMarkers';
+import { RISK_EXPOSURE_COUNT } from '../data/ninetyDays';
 
 /**
  * THE HUB, AND WHY IT REPEATS.
@@ -138,11 +139,11 @@ export const DECK: readonly Scene[] = [
   {
     id: 'risk-register',
     title: 'Portfolio risk register',
-    caption: '90-day review · exposures and where they stand',
-    // No count in the caption on purpose. The source's own summary says eight
-    // exposures and the register lists seven; until that is settled at source,
-    // the deck states neither number in a place the eye reads as a headline.
-    // Both are on screen, as supplied — see the note in data/ninetyDays.ts.
+    // COUNTED, NOT TYPED. The source deck's summary and its register disagreed
+    // on how many exposures there were, and the fix was to make the register the
+    // only place that number lives — so the caption reads it too rather than
+    // becoming a third copy to fall out of step. See data/ninetyDays.ts.
+    caption: `90-day review · ${RISK_EXPOSURE_COUNT} exposures and where they stand`,
     callouts: ['risk-register'],
   },
   {
