@@ -48,7 +48,6 @@ The deck as it stands:
 | 32 | Priority European Political Engagement | back out to the six |
 | 33 | Lithuania | close up, held selected, Vilnius marked |
 | 34 | Lithuania | stakeholder map — three groups, six meetings (internal) |
-| 35 | Lithuania | visit agenda — Vilnius, September (internal) |
 
 **Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
 three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
@@ -58,7 +57,7 @@ the region. It is the only scene in the deck that
 opens zoomed, which is why `Map.tsx` applies the first scene's camera on mount —
 nothing ever *steps into* scene 1, so `gotoScene` never runs for it.
 
-Scenes 12 to 35 are **hub and spoke**: the six priority states at region scale,
+Scenes 12 to 34 are **hub and spoke**: the six priority states at region scale,
 then one of them close up, then back out to the six, then the next. Every
 country is introduced against the whole selection rather than in isolation, and
 stepping out is what makes the next zoom mean something. It needed no new
@@ -178,9 +177,8 @@ never disagree the way the source deck's two pages did.
 carries the Franco-German position paper and the five state changes to drive out
 of it; Poland carries its four-pillar strategy side by side rather than in
 sequence, so the shape of the approach is one picture; and the deck ends in
-Lithuania on the stakeholder map and the visit agenda — a plan rather than a
-picture, because Lithuania holds the Council Presidency when the Quantum Act is
-debated. All of them are internal and stamped.
+Lithuania on the stakeholder map — a plan rather than a picture, because
+Lithuania holds the Council Presidency when the Quantum Act is debated. All of them are internal and stamped.
 
 **Callout panels** are listed per scene by id — `callouts: ['career']` — and
 resolved against the registry in `src/data/callouts.ts`, whose sources are

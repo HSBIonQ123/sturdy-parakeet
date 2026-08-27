@@ -791,7 +791,7 @@ is data; `Markers.tsx` flips at the FRAME edge and knows nothing about panels.
 
 ## 7j. Supplied documents, and the four rules they added
 
-Scenes 6, 7, 21, 27, 28, 31, 34 and 35 are built from documents handed over for
+Scenes 6, 7, 21, 27, 28, 31 and 34 are built from documents handed over for
 the talk: a ninety-day review, a core-asks paper, a Franco-German position paper
 with a clause-by-clause assessment, a four-pillar market strategy, and a
 stakeholder map. Every one of them is `internal: true`. Four rules came out of

@@ -489,7 +489,6 @@ for (const [id, phrase] of [
   ['germany-state-changes', 'operational control and substantive presence'],
   ['poland-strategy', 'harvest now, decrypt later'],
   ['lithuania-stakeholders', 'Adviser to the Prime Minister'],
-  ['lithuania-visit', 'least suitable for political meetings'],
 ]) {
   await goto(id);
   await page.mouse.move(40, 1400);
@@ -1450,8 +1449,7 @@ const WALK = [
   { brief: 'Poland', iso: 'POL' },
   { hub: true },
   { title: 'Lithuania', iso: 'LTU' },
-  // The deck ends on a plan rather than a picture: who to meet, then when.
-  { brief: 'Lithuania', iso: 'LTU' },
+  // The deck ends on a plan rather than a picture: the stakeholder map.
   { brief: 'Lithuania', iso: 'LTU' },
 ];
 
@@ -1506,7 +1504,7 @@ for (let i = 0; i < WALK.length; i += 1) {
 check(
   'the hub-and-spoke tail alternates region / country / brief all the way to Lithuania',
   walkProblems.length === 0,
-  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 12 briefs, in order',
+  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 11 briefs, in order',
 );
 // Every hub is generated from one definition, so they cannot drift apart — and
 // the layer must be identical on both sides of a zoom or the spoke would be

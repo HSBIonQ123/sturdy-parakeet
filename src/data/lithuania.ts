@@ -1,11 +1,10 @@
 /**
- * lithuania.ts — the stakeholder map and visit agenda for Vilnius.
+ * lithuania.ts — the stakeholder map for the Vilnius visit.
  *
  * ============================================================================
  * INTERNAL. Built from "Stakeholder Mapping for IonQ's Visit to Lithuania",
- * prepared by Fabula. It names an adviser to the Prime Minister and proposes
- * dates for a visit that has not happened. Removing it is one import and two
- * scenes.
+ * prepared by Fabula. It names an adviser to the Prime Minister, for a visit
+ * that has not happened. Removing it is one import and one scene.
  * ============================================================================
  *
  * WHY LITHUANIA GETS THIS AND THE OTHER SPOKES DO NOT. Lithuania holds the
@@ -14,6 +13,12 @@
  * and the ninety-day register lists engagement with them as a de-risking driver.
  * So the last spoke in the deck is the one with an actual visit behind it, and
  * the deck ends on a plan rather than on a picture.
+ *
+ * THE VISIT AGENDA IS GONE. A second panel here carried the proposed dates, the
+ * location and the case for going; it was cut from the deck and removed from
+ * this file rather than left unreferenced. Dead content in a file that names a
+ * real adviser is exactly what §7g's separation exists to prevent, and the
+ * history has it if the visit comes back.
  *
  * GROUPED, NOT RANKED. The three groups are the source's own. A minister, an
  * agency and a trade association are three different KINDS of meeting with three
@@ -32,8 +37,6 @@
  * own name rather than attributing it to Fabula. `why` stays optional on a
  * stakeholder so a future gap can still be left as one.
  *
- * THE DATES ARE THE PERISHABLE PART. 7–11 September 2026, with the caveat about
- * the parliamentary session, is a proposal and not a booking.
  */
 import type { Callout } from './callouts';
 
@@ -153,57 +156,4 @@ export const LITHUANIA_STAKEHOLDERS: Callout = {
     'Agency’s in error.',
 };
 
-export const LITHUANIA_VISIT: Callout = {
-  id: 'lithuania-visit',
-  heading: 'Lithuania · visit agenda',
-  title: 'Vilnius, September',
-  anchor: 'capital-LTU',
-  /*
-   * LEFT, and this is the one panel in the deck that sits there.
-   *
-   * Vilnius is in the far east of Lithuania, so at any camera that frames the
-   * country the dot lands in the right of the frame — exactly where a right-hand
-   * panel goes, and its label ran under the box. Brussels and Rome were fixed by
-   * shifting the camera east (§7h), but that only works when the subject can
-   * afford to move left; here it cannot without pushing Lithuania off-frame.
-   * Moving the PANEL costs nothing and needs no camera at all, so the spoke's own
-   * framing carries straight through.
-   */
-  side: 'left',
-  size: 'wide',
-  asAt: AS_AT,
-  internal: true,
-  body: {
-    kind: 'sections',
-    sections: [
-      {
-        heading: 'Possible dates',
-        note: '7–11 September — proposed, not booked',
-        items: [
-          'The autumn session of the Parliament starts on 10 September, so that date is likely to be the least suitable for political meetings.',
-        ],
-      },
-      {
-        heading: 'Location',
-        items: [
-          'Most of the suggested stakeholders are based in Vilnius city centre.',
-          'Fabula can offer a meeting room at its office if one is needed.',
-        ],
-      },
-      {
-        heading: 'Why this visit, and why now',
-        items: [
-          'Lithuania holds the Presidency of the Council of the EU when the Quantum Act is debated; shaping their view of the bill and its implementation is a stated engagement priority.',
-          'It is already logged as a de-risking driver against the EMEA-horizon exposure on the ninety-day register — this is the delivery of it.',
-        ],
-      },
-    ],
-  },
-  sources:
-    'Fabula, "IonQ Lithuania Visit Agenda". Dates are a proposal; confirm before presenting.',
-};
-
-export const LITHUANIA_CALLOUTS: readonly Callout[] = [
-  LITHUANIA_STAKEHOLDERS,
-  LITHUANIA_VISIT,
-];
+export const LITHUANIA_CALLOUTS: readonly Callout[] = [LITHUANIA_STAKEHOLDERS];

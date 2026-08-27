@@ -538,12 +538,14 @@ export const DECK: readonly Scene[] = [
    *
    * Lithuania holds the Presidency of the Council when the Quantum Act is
    * debated, so it is the one spoke with an actual visit behind it — and putting
-   * the stakeholder map and the dates last means the talk finishes on the next
-   * thing that happens rather than on the sixth country in a set.
+   * the stakeholder map last means the talk finishes on the next thing that
+   * happens rather than on the sixth country in a set.
    *
-   * Two scenes rather than one: the map is who, at full width; the agenda is
-   * when and where, tethered to Vilnius. Splitting them keeps the six meetings
-   * legible instead of squeezed beside a date.
+   * The visit agenda used to follow this as a second scene, tethered to Vilnius,
+   * and was cut. Restoring it is a scene here and the callout in
+   * data/lithuania.ts, both of which are in the history — it was removed rather
+   * than commented out, because a deck with dead scenes in it is a deck nobody
+   * trusts the running order of.
    */
   {
     id: 'lithuania-stakeholders',
@@ -553,21 +555,6 @@ export const DECK: readonly Scene[] = [
     camera: { lon: 23.9, lat: 55.3, k: 20 },
     selectedIso: 'LTU',
     callouts: ['lithuania-stakeholders'],
-  },
-  {
-    id: 'lithuania-visit',
-    title: 'Lithuania',
-    caption: 'Visit agenda · Vilnius, September',
-    layers: ['political-engagement'],
-    // The spoke's own camera, unchanged. The panel is on the LEFT on this scene
-    // rather than the right — see the note in data/lithuania.ts — so the country
-    // keeps the framing it arrived with and nothing has to be shifted for the
-    // box. It is the cheaper of the two fixes whenever the subject is already
-    // where the panel is not.
-    camera: { lon: 23.9, lat: 55.3, k: 20 },
-    selectedIso: 'LTU',
-    markers: [capital('LTU')],
-    callouts: ['lithuania-visit'],
   },
 ];
 
