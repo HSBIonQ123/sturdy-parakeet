@@ -26,6 +26,7 @@ import { HORIZON_EUROPE } from './horizonEurope';
 import { EUROQCI, EUROQCI_ELIGIBLE } from './euroQci';
 import { POLITICAL_ENGAGEMENT } from './politicalEngagement';
 import { AFRICA_BLOCS } from './africaBlocs';
+import { GCC } from './gcc';
 
 export interface MembershipLayer {
   /** Stable machine id, used in scene definitions in State 4. */
@@ -99,7 +100,11 @@ export const LAYERS: readonly MembershipLayer[] = [
    * the more specific bloc must win, which is what their own order says.
    */
   ...AFRICA_BLOCS,
-  // Still to come: NATO, EU Quantum Flagship, Commonwealth, GCC,
+  // The Gulf. Overlaps nothing above — no GCC member is in an African bloc or a
+  // European one — so its position here is free, and it sits last because it is
+  // the newest.
+  GCC,
+  // Still to come: NATO, EU Quantum Flagship, Commonwealth,
   // Council of Europe. Each is one file here plus one entry in this array.
 ];
 

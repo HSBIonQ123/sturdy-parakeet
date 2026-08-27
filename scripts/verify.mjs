@@ -873,8 +873,24 @@ const sceneState = () =>
     title: document.querySelector('.plate-scene-title')?.textContent ?? null,
     menuOpen: Boolean(document.querySelector('.scene-menu')),
     panels: document.querySelectorAll('.callout').length,
+    /*
+     * The MEMBER tint exactly — 15% — and not any orange fill.
+     *
+     * Hover is 10% and selection 14% (§1), so a looser test also counts
+     * whichever country the suite's cursor is resting on. That was harmless
+     * while every counted scene sat at the fitted frame, where the pointer's
+     * parking spot at the bottom-left is open ocean. It stops being harmless
+     * the moment a counted scene carries a camera: at the Gulf's, that same
+     * point lands on Sudan, and the count silently gained a country that no
+     * layer had lit. Pinning the exact alpha makes the count independent of
+     * where the pointer happens to be.
+     *
+     * The 28s below are NOT this: they are 27 member states plus Åland, which
+     * the topology carries as its own feature. That is real and is asserted
+     * as such.
+     */
     members: [...document.querySelectorAll('path.country')].filter(
-      (el) => el.getAttribute('fill')?.startsWith('rgba(255, 131, 0'),
+      (el) => el.getAttribute('fill') === 'rgba(255, 131, 0, 0.15)',
     ).length,
     // Any hatched layer, not one specific pattern id — the associated tier is
     // a treatment, and more than one layer uses it.
@@ -1673,6 +1689,64 @@ check(
   `stamped ${africa.stamped}`,
 );
 await page.screenshot({ path: `${SHOTS}/scene-africa-blocs.png` });
+
+/* ------------------------------------------------------------------ *
+ * The Gulf.
+ *
+ * One layer, one tier, six capitals — the plainest scene in the second
+ * half of the deck, so the assertions are the plain ones: the six are
+ * lit, nothing else is, and every capital is named.
+ *
+ * The exclusions are what actually matter. Iraq is IN SCOPE on this map
+ * and is not a GCC member, so it sits lit-as-land and dark-as-member
+ * right against Kuwait and Saudi Arabia — the one contrast on this
+ * slide somebody in the room will check. Yemen, Jordan and Morocco are
+ * the near-misses (Yemen has sought accession; Jordan and Morocco were
+ * invited in 2011 and never joined) and all three must stay dark.
+ * ------------------------------------------------------------------ */
+await goto('gcc');
+await page.mouse.move(2400, 60);
+await sleep(900);
+const gcc = await page.evaluate(() => {
+  const fill = (iso) =>
+    document.querySelector(`path.country[data-iso="${iso}"]`)?.getAttribute('fill') ?? null;
+  const lit = (iso) => fill(iso) === 'rgba(255, 131, 0, 0.15)';
+  return {
+    layers: window.__scene?.layers ?? [],
+    scale: window.__scene?.scale ?? null,
+    members: ['BHR', 'KWT', 'OMN', 'QAT', 'SAU', 'ARE'].filter(lit),
+    wronglyLit: ['IRQ', 'YEM', 'JOR', 'MAR', 'EGY', 'ISR', 'TUR'].filter(lit),
+    tier2: document.querySelectorAll('path.country[fill*="layer-hatch"]').length,
+    labels: [...document.querySelectorAll('.marker-label')].map((e) => e.textContent).sort(),
+    inFrame: [...document.querySelectorAll('.marker-label')].every((l) => {
+      const r = l.getBoundingClientRect();
+      return r.left >= 0 && r.top >= 0 && r.right <= window.innerWidth && r.bottom <= window.innerHeight;
+    }),
+  };
+});
+check(
+  'the Gulf scene is the GCC alone, zoomed in',
+  gcc.layers.join() === 'gcc' && gcc.scale > 1.01,
+  `layers [${gcc.layers.join()}], ${gcc.scale?.toFixed(2)}x`,
+);
+check(
+  'all six GCC members are lit, and the layer has a single tier',
+  gcc.members.length === 6 && gcc.tier2 === 0,
+  `${gcc.members.join(', ')}; ${gcc.tier2} hatched`,
+);
+// Iraq is the contrast that makes the slide readable; Yemen, Jordan and
+// Morocco are the near-misses somebody will ask about.
+check(
+  'Iraq and the near-misses stay dark — Yemen, Jordan and Morocco are not members',
+  gcc.wronglyLit.length === 0,
+  `wrongly lit: ${gcc.wronglyLit.join(', ') || 'none'}`,
+);
+check(
+  'all six capitals are named, and every label is inside the frame',
+  gcc.labels.join() === 'Abu Dhabi,Doha,Kuwait City,Manama,Muscat,Riyadh' && gcc.inFrame,
+  `${gcc.labels.join(', ')} — inFrame ${gcc.inFrame}`,
+);
+await page.screenshot({ path: `${SHOTS}/scene-gcc.png` });
 
 /* ------------------------------------------------------------------ *
  * The closing scene.

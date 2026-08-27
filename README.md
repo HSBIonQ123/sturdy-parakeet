@@ -51,7 +51,8 @@ The deck as it stands:
 | 35 | Lithuania | close up, held selected, Vilnius marked |
 | 36 | Lithuania | stakeholder map — three groups, six meetings (internal) |
 | 37 | Africa | four regional blocs — ECOWAS, SADC, EAC, COMESA — and their anchors |
-| 38 | What I need from you | back out to the whole region; four asks (internal) |
+| 38 | Gulf Cooperation Council | six member states, capitals marked |
+| 39 | What I need from you | back out to the whole region; four asks (internal) |
 
 **Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
 three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
@@ -209,7 +210,14 @@ anchor and the panel together and there is no second place to fall out of step.
 The membership lists and their audit notes came across from the sibling project
 `bug-free-chainsaw`.
 
-**Scene 38 closes the talk by going all the way back out.** No camera, no layer,
+**Scene 38 is the Gulf** — the GCC's six member states and their capitals. One
+layer, one tier, no panel: the Council has no associate status and no observer
+ring that belongs on a map, so there is nothing for a hatch to say and six
+countries with six capitals is the whole content. The contrast to watch is Iraq,
+which is in scope on this map and not a member, so it sits lit as land and dark
+as a member right against Kuwait and Saudi Arabia.
+
+**Scene 39 closes the talk by going all the way back out.** No camera, no layer,
 no marker — the fitted EMEA frame, the same picture the region was introduced on
 thirty scenes earlier. That is not a feature: an omitted camera *actively resets*,
 so "back out to the whole region" is the ordinary act of entering a scene that

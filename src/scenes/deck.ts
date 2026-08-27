@@ -634,6 +634,43 @@ export const DECK: readonly Scene[] = [
     callouts: ['africa-blocs'],
   },
   /*
+   * THE GULF — the last region the talk visits before the asks.
+   *
+   * It follows Africa for the same reason Africa follows the six: the deck has
+   * walked Europe country by country, and the two parts of EMEA it has not been
+   * to are the ones that would otherwise go unmentioned a scene before somebody
+   * is asked for plans covering all of them.
+   *
+   * ONE LAYER, ONE TIER, NO PANEL. The GCC has no associate status and no
+   * observer ring that belongs on a map, so there is nothing for a hatch to say
+   * and a second treatment would be inventing one (see layers/gcc.ts). And the
+   * scene needs no panel: six countries and six capitals IS the content, which
+   * makes this the plainest slide in the second half of the deck and a
+   * deliberate change of pace after four dense ones.
+   *
+   * The capitals are listed rather than derived, because a layer is a list of
+   * codes and knows nothing about markers (§3) — deriving them would mean
+   * teaching the layer contract about a second registry to save six lines.
+   */
+  {
+    id: 'gcc',
+    title: 'Gulf Cooperation Council',
+    caption: 'Six member states · capitals marked',
+    layers: ['gcc'],
+    // Framed on the real build at 2560x1440. The region is WIDER than it is
+    // tall — Jeddah to Muscat against Kuwait to Salalah — so k is set by the
+    // longitude span, which is the opposite of the Africa scene before it.
+    camera: { lon: 47.5, lat: 24.0, k: 5.4 },
+    markers: [
+      capital('SAU'),
+      capital('ARE'),
+      capital('QAT'),
+      capital('BHR'),
+      capital('KWT'),
+      capital('OMN'),
+    ],
+  },
+  /*
    * THE LAST SCENE, AND IT GOES ALL THE WAY BACK OUT.
    *
    * No camera and no layers: the fitted EMEA frame, the whole region unlit and
