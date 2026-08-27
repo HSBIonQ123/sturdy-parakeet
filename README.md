@@ -50,6 +50,7 @@ The deck as it stands:
 | 34 | Priority European Political Engagement | back out to the six |
 | 35 | Lithuania | close up, held selected, Vilnius marked |
 | 36 | Lithuania | stakeholder map — three groups, six meetings (internal) |
+| 37 | What I need from you | back out to the whole region; four asks (internal) |
 
 **Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
 three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
@@ -190,6 +191,15 @@ that follow each fly the camera to the place their sentence is about, with Oxfor
 held on screen as the other end of the relationship: Cheltenham for GCHQ and
 cryptanalysis, Daresbury for a proposed system. Nothing is installed at Daresbury,
 and its dot is drawn without the IonQ core to say so.
+
+**Scene 37 closes the talk by going all the way back out.** No camera, no layer,
+no marker — the fitted EMEA frame, the same picture the region was introduced on
+thirty scenes earlier. That is not a feature: an omitted camera *actively resets*,
+so "back out to the whole region" is the ordinary act of entering a scene that
+names no camera. The four asks are laid across rather than down, because they are
+four parts of one request and a numbered column reads as a priority order. The
+panel points at nothing, because it is about how the team works rather than about
+a place.
 
 **Callout panels** are listed per scene by id — `callouts: ['career']` — and
 resolved against the registry in `src/data/callouts.ts`, whose sources are

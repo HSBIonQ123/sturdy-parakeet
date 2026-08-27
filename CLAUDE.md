@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 114 assertions
+npm run verify         # drive the real build in Chromium; 118 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -900,6 +900,51 @@ the ninety-day source, and confirmed against the "DSIT" that the Westminster
 marker used to carry. Both places that name it — the heading in `uk.ts` and the
 `source` line in `institutions.ts` — now agree, and they are the two to change
 if it ever moves.
+
+## 7l. The closing scene — going all the way back out
+
+Scene 37 (`closing.ts`, `kind: 'asks'`) is four requests from the presenter to
+the room. It carries **no camera, no layer, no selection and no marker**, and
+every one of those absences is doing work.
+
+**The reset is the argument.** The asks apply to every market, so finishing on
+the sixth spoke of six would scope them to Lithuania by implication — silently,
+because a zoomed map with a panel on it looks perfectly fine. Because scenes are
+absolute and an omitted camera actively resets (§3a), "back out to the whole
+region" needed nothing built: it is the ordinary act of entering a scene that
+names no camera. It also lands on the same picture the region was introduced on
+at scene 5, so the talk closes where it opened. `verify.mjs` asserts the fitted
+frame, the empty layer set and the cleared selection.
+
+**A fifth kind of claim, so a fifth source file.** `presenter` is personal,
+`policy` is the EU's assessment of us, `strategy`/`poland`/`germany`/`uk`/
+`lithuania` are what we intend to do in a market, `ninetyDays` is what has been
+done. This is a request FROM the presenter TO his colleagues, in the first
+person — which is why its voice reads differently from every other panel, and
+why the file keeps it. **The first person is preserved, not neutralised**:
+rewriting "I want to be there" into "Government Affairs should attend" would turn
+a request between colleagues into a policy, a heavier thing to put on a screen,
+and would be this project editing a person's words in the one place where whose
+words they are is the point.
+
+**`Ask` is not `Pillar`, though it renders almost identically.** A pillar is a
+component of a strategy IonQ is executing; an ask is something being requested
+of the people in the room. Same layout, different claim — §7g's rule applied to
+a body kind rather than a source file — and it saves padding `Pillar`'s three
+fields with empty strings. The index comes from position, as the pillars' does,
+and is asserted.
+
+**Laid across, not down.** Four numbered items in a column read as a priority
+order, and the presenter would be asked which one matters most. Across, they are
+four parts of one request. The columns use **subgrid** so index, title and body
+line up across all four however long a title runs — one of them wraps to two
+lines, and without it that column's text sits a line low, which reads as a
+layout bug rather than as four equal asks.
+
+**The target in ask 2 is the perishable part.** "Two agencies, two FTE by end of
+year" is a commitment with a date on it; after that date the slide either reports
+success or is out of date, and no build can work out which. The as-at stamp is
+what makes a stale one visible.
 
 ## 8. Known limitations
 

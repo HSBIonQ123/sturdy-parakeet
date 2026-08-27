@@ -597,6 +597,27 @@ export const DECK: readonly Scene[] = [
     selectedIso: 'LTU',
     callouts: ['lithuania-stakeholders'],
   },
+  /*
+   * THE LAST SCENE, AND IT GOES ALL THE WAY BACK OUT.
+   *
+   * No camera and no layers: the fitted EMEA frame, the whole region unlit and
+   * undifferentiated. That is deliberate on two counts. The asks are about how
+   * the team works and apply to every market, so finishing on the sixth country
+   * of six would scope them to Lithuania by implication. And it is the same
+   * picture the talk opened the region on — the deck pulls out to EMEA at scene
+   * 5, walks into it for thirty scenes, and steps back to exactly where it
+   * started. Nothing had to be built for that: an omitted camera actively
+   * resets (§3a), so "back out to the whole region" is the ordinary act of
+   * entering a scene that names no camera.
+   *
+   * No markers either. The panel points at nothing because it is about us.
+   */
+  {
+    id: 'closing-asks',
+    title: 'What I need from you',
+    caption: 'Four asks · across the region',
+    callouts: ['closing-asks'],
+  },
 ];
 
 /** Index bounds helper, so nothing off-by-ones its way past the end mid-talk. */

@@ -1913,3 +1913,54 @@ body {
   margin-bottom: 2px;
   color: var(--type-muted);
 }
+
+/* ---- the closing asks ----
+   The pillars' grid and numbering, with one text field instead of three. Laid
+   ACROSS rather than down on purpose: four parts of one request, not a ranked
+   list. A column of four numbered items reads as priority order. */
+/* SUBGRID, so the three rows line up ACROSS the columns however long a title
+   runs. "Talk to me about meetings with government officials" wraps to two
+   lines where the others take one, and without this its body text sits a line
+   lower than its neighbours' — four asks that visibly fail to line up read as a
+   layout bug rather than as four equal asks. Each ask contributes its index,
+   title and text to rows the row itself owns, so the tallest title sets the
+   height for all four and nothing needs a magic min-height. */
+.asks-row {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 0 30px;
+}
+
+.ask {
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  align-content: start;
+  padding-left: 16px;
+  border-left: 1px solid color-mix(in srgb, var(--ionq) 34%, transparent);
+}
+
+.ask-index {
+  margin: 0 0 8px;
+  color: var(--ionq);
+}
+
+.ask-title {
+  margin: 0 0 10px;
+  align-self: start;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-title);
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  color: #fff3e0;
+}
+
+.ask-text {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.5;
+  color: var(--type);
+}

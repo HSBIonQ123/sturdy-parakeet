@@ -222,6 +222,10 @@ function CalloutBody({ callout }: { readonly callout: Callout }) {
     return <RiskRegister body={body} />;
   }
 
+  if (body.kind === 'asks') {
+    return <Asks body={body} />;
+  }
+
   if (body.kind === 'pillars') {
     return <Pillars body={body} />;
   }
@@ -242,6 +246,35 @@ function CalloutBody({ callout }: { readonly callout: Callout }) {
  * The grid is `repeat(n, 1fr)` from the array length for the same reason: add a
  * fifth pillar and the layout takes it, with nothing to keep in step by hand.
  */
+/**
+ * The closing asks, side by side.
+ *
+ * Same grid as the pillars and the same numbering rule — the index comes from
+ * POSITION, so reordering the asks in the data cannot leave a stale number
+ * behind. They are laid across rather than down because the slide's argument is
+ * that these are four parts of one request, not a ranked list: a column of four
+ * with numbers descending reads as priority order, and the presenter would then
+ * be asked which one matters most.
+ */
+function Asks({ body }: { readonly body: Extract<Callout['body'], { kind: 'asks' }> }) {
+  return (
+    <div className="asks">
+      <div
+        className="asks-row"
+        style={{ gridTemplateColumns: `repeat(${body.asks.length}, 1fr)` }}
+      >
+        {body.asks.map((ask, i) => (
+          <section className="ask" key={ask.id} data-ask={ask.id}>
+            <p className="ask-index value">{String(i + 1).padStart(2, '0')}</p>
+            <p className="ask-title">{ask.title}</p>
+            <p className="ask-text">{ask.text}</p>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Pillars({ body }: { readonly body: Extract<Callout['body'], { kind: 'pillars' }> }) {
   return (
     <div className="pillars">

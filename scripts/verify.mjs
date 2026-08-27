@@ -491,6 +491,7 @@ for (const [id, phrase] of [
   ['uk', 'An agreement to buy one of each generation of systems'],
   ['uk-gchq', 'with a view to selling capacity'],
   ['uk-daresbury', 'A project Grizzly duplicate'],
+  ['closing-asks', 'as opposed to the problems that I'],
   ['lithuania-stakeholders', 'Adviser to the Prime Minister'],
 ]) {
   await goto(id);
@@ -1578,6 +1579,56 @@ await page.keyboard.press('End');
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
+/* ------------------------------------------------------------------ *
+ * The closing scene.
+ *
+ * It has to go ALL THE WAY BACK OUT. The asks are about how the team
+ * works and apply to every market, so a camera left anywhere near the
+ * last spoke would scope them to Lithuania by implication — and that
+ * would happen silently, because a zoomed map with a panel on it looks
+ * perfectly fine. Assert the fitted frame, no layers, no selection and
+ * no markers: the panel points at nothing because it is about us.
+ *
+ * The numbering is checked too, for the reason the pillars' is: it comes
+ * from POSITION, so reordering the asks in the data cannot leave a stale
+ * "03" behind — and nothing on screen would show it if it did.
+ * ------------------------------------------------------------------ */
+await goto('closing-asks');
+await page.mouse.move(40, 1400);
+await sleep(900);
+const closing = await page.evaluate(() => ({
+  index: window.__scene?.index ?? null,
+  total: window.__scene?.total ?? null,
+  scale: window.__scene?.scale ?? null,
+  selected: window.__scene?.selected ?? null,
+  layers: window.__scene?.layers ?? [],
+  markers: document.querySelectorAll('.marker').length,
+  leaders: document.querySelectorAll('.callout-leader').length,
+  indices: [...document.querySelectorAll('.ask-index')].map((e) => e.textContent),
+  titles: [...document.querySelectorAll('.ask-title')].map((e) => e.textContent),
+}));
+check(
+  'the deck ends on the whole region — fitted frame, no layer, no selection',
+  closing.index === closing.total - 1 &&
+    Math.abs(closing.scale - 1) < 0.02 &&
+    closing.layers.length === 0 &&
+    closing.selected === null,
+  `index ${closing.index}/${closing.total}, ${closing.scale?.toFixed(2)}x, ` +
+    `layers [${closing.layers.join()}], sel ${closing.selected}`,
+);
+check(
+  'the closing panel points at nothing — no marker, no leader line',
+  closing.markers === 0 && closing.leaders === 0,
+  `${closing.markers} markers, ${closing.leaders} leaders`,
+);
+check(
+  'the four asks are numbered from their position, not from the data',
+  closing.indices.join() === '01,02,03,04' &&
+    closing.titles.some((t) => t.includes('EMEA strategy')),
+  `${closing.indices.join(' ')} — ${closing.titles.length} asks`,
+);
+await page.screenshot({ path: `${SHOTS}/scene-closing-asks.png` });
+
 check('stepping past the last scene is a no-op', st.index === DECK_IDS.length - 1);
 
 /* ---- the menu, for questions ---- */

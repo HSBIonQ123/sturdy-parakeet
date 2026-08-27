@@ -26,6 +26,7 @@ import { GERMANY_CALLOUTS } from './germany';
 import { POLAND_CALLOUTS } from './poland';
 import { LITHUANIA_CALLOUTS } from './lithuania';
 import { UK_CALLOUTS } from './uk';
+import { CLOSING_CALLOUTS } from './closing';
 
 /** A figure in the family panel: one glyph, one name under it. */
 export interface Figure {
@@ -172,6 +173,27 @@ export interface StakeholderGroup {
   readonly entries: readonly Stakeholder[];
 }
 
+/**
+ * One ask of the room — the closing slide's unit.
+ *
+ * Deliberately NOT a `Pillar`, which it resembles. A pillar is a component of a
+ * strategy IonQ is executing; an ask is a thing the presenter is requesting from
+ * the people in front of him, and it is addressed in the first person. Same
+ * layout, different claim, so they are different types — the §7g rule applied to
+ * a body kind instead of a source file. It also keeps `Pillar`'s three fields
+ * from being padded out with empty strings here.
+ *
+ * No number: the index comes from position at render, so reordering the asks
+ * cannot leave a hand-written "3." behind. Same rule as the pillars.
+ */
+export interface Ask {
+  readonly id: string;
+  /** The ask itself, short enough to be read off the screen from the back. */
+  readonly title: string;
+  /** Why, in the presenter's own words. */
+  readonly text: string;
+}
+
 /** One stage of a legislative timeline. */
 export interface Stage {
   readonly id: string;
@@ -186,6 +208,7 @@ export type CalloutBody =
   | { readonly kind: 'list'; readonly items: readonly string[] }
   | { readonly kind: 'prose'; readonly heading: string; readonly text: string }
   | { readonly kind: 'sections'; readonly sections: readonly Section[] }
+  | { readonly kind: 'asks'; readonly asks: readonly Ask[] }
   | {
       readonly kind: 'timeline';
       readonly stages: readonly Stage[];
@@ -348,6 +371,7 @@ export const CALLOUTS: readonly Callout[] = [
   ...POLAND_CALLOUTS,
   ...UK_CALLOUTS,
   ...LITHUANIA_CALLOUTS,
+  ...CLOSING_CALLOUTS,
 ];
 
 export const CALLOUT_BY_ID: Readonly<Record<string, Callout>> = Object.fromEntries(
