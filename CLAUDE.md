@@ -895,10 +895,11 @@ measured on the real build. It costs nothing elsewhere because no other scene
 draws that marker.
 
 **Acronyms are reproduced, not expanded** — "DBIST", "HMT", "ProQure", "AMCs",
-"project Grizzly". One is worth raising rather than silently correcting: the
-department is "DBIST" as supplied and "SoS BIST" in the ninety-day source, but
-`institutions.ts` says "DSIT" on the Westminster marker. Both cannot be right,
-and the fix is one heading in `uk.ts`.
+"project Grizzly". The department is **DBIST**: supplied that way, "SoS BIST" in
+the ninety-day source, and confirmed against the "DSIT" that the Westminster
+marker used to carry. Both places that name it — the heading in `uk.ts` and the
+`source` line in `institutions.ts` — now agree, and they are the two to change
+if it ever moves.
 
 ## 8. Known limitations
 

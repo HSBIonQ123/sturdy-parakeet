@@ -51,7 +51,7 @@ export const INSTITUTIONS: readonly Marker[] = [
     labelSide: 'right',
     source:
       'Seat of the UK Parliament and, in Whitehall alongside it, the ' +
-      'departments a quantum policy conversation runs through — DSIT and the ' +
+      'departments a quantum policy conversation runs through — DBIST and the ' +
       'National Quantum Computing Centre’s sponsoring department among them. ' +
       'A location, not an IonQ facility.',
   },

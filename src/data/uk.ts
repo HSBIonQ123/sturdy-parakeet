@@ -21,11 +21,11 @@
  * any of them would be this project asserting a reading of an internal
  * shorthand — the §4 rule (state what is, and stop) applied to a briefing.
  *
- * ONE OF THEM IS WORTH RAISING RATHER THAN SILENTLY CORRECTING: the department
- * is written "DBIST" here because that is how it was supplied, and the
- * ninety-day source deck likewise says "SoS BIST". Elsewhere in this repo —
- * `institutions.ts`, on the Westminster marker — it is "DSIT". Both cannot be
- * right. Whichever it is, change it in one place: the heading below.
+ * THE DEPARTMENT IS "DBIST", AND THAT IS SETTLED. It was supplied that way, the
+ * ninety-day source deck says "SoS BIST", and the presenter confirmed it against
+ * the "DSIT" that `institutions.ts` used to carry on the Westminster marker.
+ * That entry now says DBIST too, so the two places that name the department
+ * agree. If it ever changes, they are the two.
  *
  * WHY THREE SCENES AND NOT ONE. The Westminster panel is three routes into one
  * government and reads as a set. Cheltenham and Daresbury are each a single
