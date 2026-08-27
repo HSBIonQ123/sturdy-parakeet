@@ -50,7 +50,8 @@ The deck as it stands:
 | 34 | Priority European Political Engagement | back out to the six |
 | 35 | Lithuania | close up, held selected, Vilnius marked |
 | 36 | Lithuania | stakeholder map — three groups, six meetings (internal) |
-| 37 | What I need from you | back out to the whole region; four asks (internal) |
+| 37 | Africa | four regional blocs — ECOWAS, SADC, EAC, COMESA — and their anchors |
+| 38 | What I need from you | back out to the whole region; four asks (internal) |
 
 **Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
 three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
@@ -192,7 +193,23 @@ about, with Oxford held on screen as the other end of the relationship: GCHQ on
 cryptanalysis, at Cheltenham, and Daresbury for a proposed system. Nothing is installed at Daresbury,
 and its dot is drawn without the IonQ core to say so.
 
-**Scene 37 closes the talk by going all the way back out.** No camera, no layer,
+**Scene 37 is Africa** — the four regional economic communities, ECOWAS, SADC,
+the EAC and COMESA, with the anchor country of each. It sits at the end of the
+market walk because it is the one part of the region the talk has not been to:
+the six spokes are all European, and asking for country-by-country plans "for all
+your markets" one scene later would leave the largest part of EMEA unmentioned.
+
+The blocs overlap heavily — the DRC and Tanzania are in two, nine more countries
+are in two — so precedence decides a shared country's fill and **the map cannot
+say which bloc a country is in. It does not try.** This palette has two
+treatments and there are four blocs. What the map distinguishes instead is the
+**anchor**: the largest economy in each, marked at its capital. Those are
+derived from a GDP ranking rather than typed, so a membership change moves the
+anchor and the panel together and there is no second place to fall out of step.
+The membership lists and their audit notes came across from the sibling project
+`bug-free-chainsaw`.
+
+**Scene 38 closes the talk by going all the way back out.** No camera, no layer,
 no marker — the fitted EMEA frame, the same picture the region was introduced on
 thirty scenes earlier. That is not a feature: an omitted camera *actively resets*,
 so "back out to the whole region" is the ordinary act of entering a scene that

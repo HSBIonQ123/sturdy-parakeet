@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 119 assertions
+npm run verify         # drive the real build in Chromium; 124 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -909,6 +909,49 @@ the ninety-day source, and confirmed against the "DSIT" that the Westminster
 marker used to carry. Both places that name it — the heading in `uk.ts` and the
 `source` line in `institutions.ts` — now agree, and they are the two to change
 if it ever moves.
+
+## 7m. Africa — four blocs, and what a fill must refuse to say
+
+Scene 37 lights ECOWAS, SADC, the EAC and COMESA together. The membership lists
+and their audit notes came from the sibling project `bug-free-chainsaw`
+(`organisations.ts`); what is added here is the fit to the layer contract.
+
+**Four blocs, one fill, on purpose.** They overlap heavily — the DRC and
+Tanzania sit in two, and nine more countries do — so `LAYERS` order decides a
+shared country's tint and the map genuinely cannot say which bloc anyone is in.
+It does not try. Four treatments do not exist: §7b measured that two stops of
+the brand gradient differ by about a fifth of the distance from lit to unlit,
+which a projector crushes, and four hues would make this a chart rather than an
+instrument. So the fill states the footprint, and what the map DISTINGUISHES is
+the four anchors. Precedence within the four is most-specific-first, broadest
+last — COMESA is registered last because "one of twenty-one from Tunisia to
+Eswatini" is the least informative thing to say about a country that is also in
+the EAC.
+
+**The anchor is derived, never typed** — the rule `africaGdp.ts` exists for. It
+is the member with the largest nominal GDP, computed at load. An anchor written
+by hand goes stale silently; a computed one is re-checked by updating one
+number, and a bloc gaining a member cannot leave a wrong anchor behind because
+the two are the same edit. Load-time assertions catch the one failure mode a
+derived anchor introduces: a member with no GDP figure can never be the anchor,
+silently. `verify.mjs` re-derives the four names independently of the panel.
+
+**A tall continent decides the panel's shape.** Full width was the obvious
+layout for four blocs and was wrong: Cairo to Pretoria is 56 degrees of
+latitude, and a full-width panel takes that height off the top of the frame, so
+the camera has to zoom out until either the Cape clips or Cairo falls off — the
+map losing an anchor to make room for the panel describing it. A right-hand
+panel costs width instead, which a continent 69 degrees across can spare and 72
+degrees tall cannot. The blocs stack as rows, which also buys each one room for
+its note. **Ask what the subject is short of before choosing a panel size.**
+
+**It is the only content panel in the deck not marked internal**, and that is
+deliberate: it states published membership of four intergovernmental bodies and
+ranks their economies. Stamping it would make the stamp meaningless on the
+panels that need one — if everything is internal, nothing reads as internal.
+It also makes no IonQ claim at all; the deck has not done Africa yet, and this
+is the map of the ground rather than a plan for it. A plan is a second scene and
+a second file.
 
 ## 7l. The closing scene — going all the way back out
 

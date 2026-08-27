@@ -27,6 +27,7 @@ import { POLAND_CALLOUTS } from './poland';
 import { LITHUANIA_CALLOUTS } from './lithuania';
 import { UK_CALLOUTS } from './uk';
 import { CLOSING_CALLOUTS } from './closing';
+import { AFRICA_CALLOUTS } from './africa';
 
 /** A figure in the family panel: one glyph, one name under it. */
 export interface Figure {
@@ -201,6 +202,34 @@ export interface Ask {
   readonly text: string;
 }
 
+/**
+ * One regional bloc on the Africa scene.
+ *
+ * Every field except `note` is DERIVED at build time from the membership list
+ * and the GDP table — the member count, the anchor, all of it. See
+ * layers/africaBlocs.ts: an anchor typed by hand is a claim that goes stale
+ * silently, and a member count typed beside a list is the risk register's fault
+ * (§7j rule 3) waiting to happen again.
+ *
+ * THE NOTE IS ON THE SLIDE, AND THE LAYOUT IS WHY IT CAN BE. Four notes across
+ * a full-width panel made it tall enough to push Cairo off the top of the frame
+ * — the map losing an anchor to make room for a footnote. Stacked as four rows
+ * in a right-hand panel the same text costs the map no height at all, and the
+ * notes are worth having: that ECOWAS is drawn without Burkina Faso, Mali and
+ * Niger is the first question anyone who knows the region will ask.
+ */
+export interface BlocEntry {
+  readonly id: string;
+  readonly abbr: string;
+  readonly fullName: string;
+  readonly aka?: string;
+  readonly memberCount: number;
+  /** Display name of the largest member by nominal GDP. */
+  readonly anchor: string;
+  /** Why this list is this list — accessions, departures, overlaps. */
+  readonly note: string;
+}
+
 /** One stage of a legislative timeline. */
 export interface Stage {
   readonly id: string;
@@ -216,6 +245,7 @@ export type CalloutBody =
   | { readonly kind: 'prose'; readonly heading: string; readonly text: string }
   | { readonly kind: 'sections'; readonly sections: readonly Section[] }
   | { readonly kind: 'asks'; readonly asks: readonly Ask[] }
+  | { readonly kind: 'blocs'; readonly blocs: readonly BlocEntry[] }
   | {
       readonly kind: 'timeline';
       readonly stages: readonly Stage[];
@@ -378,6 +408,7 @@ export const CALLOUTS: readonly Callout[] = [
   ...POLAND_CALLOUTS,
   ...UK_CALLOUTS,
   ...LITHUANIA_CALLOUTS,
+  ...AFRICA_CALLOUTS,
   ...CLOSING_CALLOUTS,
 ];
 

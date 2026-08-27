@@ -1964,3 +1964,78 @@ body {
   line-height: 1.5;
   color: var(--type);
 }
+
+/* ---- the African regional blocs ----
+   Four rows, not four columns. Columns were the shape this wanted; a continent
+   72 degrees tall could not spare the height a full-width panel takes, so the
+   panel moved to the right and the blocs stacked. See data/africa.ts. */
+.blocs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bloc {
+  padding-left: 14px;
+  border-left: 1px solid color-mix(in srgb, var(--ionq) 34%, transparent);
+}
+
+.bloc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.2em;
+}
+
+.bloc-abbr {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-title);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  color: #fff3e0;
+}
+
+/* The anchor is the one thing on this panel the map cannot say, so it is the
+   one thing here that takes the accent. */
+.bloc-anchor {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  white-space: nowrap;
+}
+
+.bloc-key {
+  color: var(--type-muted);
+}
+
+.bloc-anchor-name {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--t-value);
+  color: var(--ionq);
+}
+
+.bloc-count {
+  color: var(--type-muted);
+}
+
+.bloc-name {
+  margin: 2px 0 6px;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.35;
+  color: var(--type-muted);
+}
+
+.bloc-note {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: var(--t-value);
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--type) 82%, transparent);
+}

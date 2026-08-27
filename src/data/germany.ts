@@ -75,7 +75,7 @@ export const FRANCO_GERMAN: Callout = {
         note: 'Heavily protectionist — but a negotiating position, not the final word',
         items: [
           'France was always going to take this line; Alice & Bob and Pasqal have advocated consistently for an aggressively pro-European procurement policy enshrined in the EUQA.',
-          'Germany’s adoption of it is the surprise, and reads as tactics: its own May 2026 quantum strategy acknowledges that national capability lies substantially behind the cutting edge and that systems must be procured from industry leaders outside Germany.',
+          'Germany’s adoption of it reads as tactics: its own May 2026 quantum strategy acknowledges that national capability lies substantially behind the cutting edge and that systems must be procured from industry leaders outside Germany.',
           'Germany is committed elsewhere — in the Italian-German Plan of Action — to recognising the importance of the US to Europe in technology and defence. Partnering with France now buys German negotiators the standing to pull them toward the centre later.',
           'Be clear-eyed regardless: the political centre of gravity of the bill now begins thoroughly in the protectionist camp.',
         ],

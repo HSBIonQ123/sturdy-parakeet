@@ -16,6 +16,7 @@ import type { Scene } from './types';
 import { NETWORK_DEPLOYMENT_IDS } from '../data/deployments';
 import { capital } from '../data/capitalMarkers';
 import { RISK_EXPOSURE_COUNT } from '../data/ninetyDays';
+import { ANCHOR_ISOS } from '../data/layers/africaBlocs';
 
 /**
  * THE HUB, AND WHY IT REPEATS.
@@ -596,6 +597,41 @@ export const DECK: readonly Scene[] = [
     camera: { lon: 23.9, lat: 55.3, k: 20 },
     selectedIso: 'LTU',
     callouts: ['lithuania-stakeholders'],
+  },
+  /*
+   * AFRICA — the four regional economic communities, before the asks.
+   *
+   * It sits here, at the end of the market walk and immediately before the
+   * closing scene, because it is the one part of the region the talk has not
+   * been to: the six spokes are all European, and finishing the tour in
+   * Lithuania and then asking for country-by-country plans "for all your
+   * markets" would leave the largest part of EMEA unmentioned.
+   *
+   * FOUR LAYERS, ONE FILL, AND THAT IS DELIBERATE. The blocs overlap heavily —
+   * the DRC and Tanzania are in two of them, and nine more countries are in two
+   * — so precedence (LAYERS order) decides a shared country's tint and the map
+   * cannot say which bloc anyone is in. It does not try: this palette has two
+   * treatments and there are four blocs (§7b measured why a third and fourth
+   * would vanish on a projector). The fill states the footprint; the ANCHORS
+   * state where you start; the panel carries what no fill could.
+   *
+   * The four anchor markers are derived, not listed — `ANCHOR_ISOS` comes from
+   * the GDP ranking, so the dots and the panel cannot disagree about which four
+   * countries these are, and a membership change moves both at once.
+   */
+  {
+    id: 'africa-blocs',
+    title: 'Africa',
+    caption: 'Regional economic communities · four blocs, four anchors',
+    layers: ['ecowas', 'sadc', 'eac', 'comesa'],
+    // Framed on the real build at 2560x1440. Africa is HEIGHT-limited against a
+    // 16:9 frame — 72 degrees of latitude against 69 of longitude — so k is set
+    // by the Tunis-to-Cape span and not by the width. The centre is pushed far
+    // east so the continent sits in the left of the frame, clear of the panel:
+    // the §7h correction again, at continental scale.
+    camera: { lon: 50, lat: 2, k: 1.44 },
+    markers: ANCHOR_ISOS.map(capital),
+    callouts: ['africa-blocs'],
   },
   /*
    * THE LAST SCENE, AND IT GOES ALL THE WAY BACK OUT.

@@ -25,6 +25,7 @@ import { EEA_EFTA_UK } from './eeaEftaUk';
 import { HORIZON_EUROPE } from './horizonEurope';
 import { EUROQCI, EUROQCI_ELIGIBLE } from './euroQci';
 import { POLITICAL_ENGAGEMENT } from './politicalEngagement';
+import { AFRICA_BLOCS } from './africaBlocs';
 
 export interface MembershipLayer {
   /** Stable machine id, used in scene definitions in State 4. */
@@ -87,7 +88,18 @@ export const LAYERS: readonly MembershipLayer[] = [
   // ever IS combined with a programme layer, the legal fact wins the colour
   // and the priority list reads as an overlay on it — the right way round.
   POLITICAL_ENGAGEMENT,
-  // Still to come: NATO, EuroQCI, EU Quantum Flagship, Commonwealth, GCC,
+  /*
+   * The four African regional economic communities, spread in from
+   * africaBlocs.ts rather than listed one by one — the order in that file IS
+   * the precedence order, and splitting it across two files would let the two
+   * disagree about which bloc wins a shared country.
+   *
+   * They overlap each other heavily and overlap nothing above, so they sit at
+   * the end: no European layer is ever co-active with them, and within the four
+   * the more specific bloc must win, which is what their own order says.
+   */
+  ...AFRICA_BLOCS,
+  // Still to come: NATO, EU Quantum Flagship, Commonwealth, GCC,
   // Council of Europe. Each is one file here plus one entry in this array.
 ];
 

@@ -228,6 +228,10 @@ function CalloutBody({ callout }: { readonly callout: Callout }) {
     return <Asks body={body} />;
   }
 
+  if (body.kind === 'blocs') {
+    return <Blocs body={body} />;
+  }
+
   if (body.kind === 'pillars') {
     return <Pillars body={body} />;
   }
@@ -248,6 +252,40 @@ function CalloutBody({ callout }: { readonly callout: Callout }) {
  * The grid is `repeat(n, 1fr)` from the array length for the same reason: add a
  * fifth pillar and the layout takes it, with nothing to keep in step by hand.
  */
+/**
+ * The African regional blocs, side by side.
+ *
+ * STACKED AS ROWS, not laid across. Four columns is the shape this wanted and
+ * the shape the map could not afford — see the note on `size` in data/africa.ts.
+ * Rows cost the map width instead of height, which a tall continent can spare.
+ *
+ * The ANCHOR is given the accent and its own key, because it is the only thing
+ * on this panel the map cannot show: four overlapping blocs share one fill (see
+ * layers/africaBlocs.ts), so the fill says where the footprint is and this line
+ * says which country is the way in. The member count rides with it, small — it
+ * is context for the anchor, and a bloc's size is not the reason to start there.
+ */
+function Blocs({ body }: { readonly body: Extract<Callout['body'], { kind: 'blocs' }> }) {
+  return (
+    <div className="blocs">
+      {body.blocs.map((bloc) => (
+        <section className="bloc" key={bloc.id} data-bloc={bloc.id}>
+          <div className="bloc-head">
+            <p className="bloc-abbr">{bloc.abbr}</p>
+            <p className="bloc-anchor">
+              <span className="bloc-key label">Anchor</span>
+              <span className="bloc-anchor-name">{bloc.anchor}</span>
+              <span className="bloc-count value">· {bloc.memberCount} members</span>
+            </p>
+          </div>
+          <p className="bloc-name">{bloc.fullName}</p>
+          <p className="bloc-note">{bloc.note}</p>
+        </section>
+      ))}
+    </div>
+  );
+}
+
 /**
  * The closing asks, side by side.
  *

@@ -1606,6 +1606,75 @@ await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
 /* ------------------------------------------------------------------ *
+ * Africa — four blocs, four anchors.
+ *
+ * The anchors are DERIVED from a GDP ranking rather than typed, so the
+ * suite re-derives them independently from what the panel prints: it
+ * reads the four names off the page and checks them against the four
+ * this project claims. A wrong anchor renders perfectly and is a claim
+ * about which government you go to first, so it is worth the check.
+ *
+ * The other assertion is the one the layout is built around: four blocs
+ * that overlap share ONE fill, so the map cannot say which bloc a
+ * country is in — but it must never light a country that is in none of
+ * them. Egypt and Nigeria lit, Algeria and Morocco dark.
+ * ------------------------------------------------------------------ */
+await goto('africa-blocs');
+await page.mouse.move(40, 1400);
+await sleep(900);
+const africa = await page.evaluate(() => {
+  const el = document.querySelector('.callout');
+  const r = el.getBoundingClientRect();
+  const fill = (iso) =>
+    document.querySelector(`path.country[data-iso="${iso}"]`)?.getAttribute('fill') ?? null;
+  const lit = (iso) => Boolean(fill(iso)?.startsWith('rgba(255,'));
+  return {
+    layers: window.__scene?.layers ?? [],
+    blocs: [...document.querySelectorAll('.bloc')].map((b) => b.dataset.bloc),
+    anchors: [...document.querySelectorAll('.bloc-anchor-name')].map((e) => e.textContent),
+    counts: [...document.querySelectorAll('.bloc-count')].map((e) => e.textContent),
+    // Not stamped: this panel is published fact, and a stamp on it would
+    // make the stamp meaningless on the panels that need one.
+    stamped: Boolean(el.querySelector('.callout-stamp')),
+    markers: [...document.querySelectorAll('.marker-label')].map((e) => e.textContent).sort(),
+    labelsClearPanel: [...document.querySelectorAll('.marker-label')].every(
+      (l) => l.getBoundingClientRect().right < r.left,
+    ),
+    litMembers: ['NGA', 'ZAF', 'KEN', 'EGY', 'TZA', 'COD', 'TUN'].filter(lit),
+    wronglyLit: ['DZA', 'MAR', 'MLI', 'NER', 'BFA', 'CMR', 'TCD', 'GAB'].filter(lit),
+  };
+});
+check(
+  'the four African blocs are all active, in precedence order',
+  africa.layers.join() === 'ecowas,sadc,eac,comesa' && africa.blocs.join() === 'ecowas,sadc,eac,comesa',
+  `layers [${africa.layers.join()}], panel [${africa.blocs.join()}]`,
+);
+check(
+  'the anchors are the largest economy in each bloc, derived not typed',
+  africa.anchors.join() === 'Nigeria,South Africa,Kenya,Egypt' &&
+    africa.counts.join() === '· 12 members,· 16 members,· 8 members,· 21 members',
+  `${africa.anchors.join(', ')} — ${africa.counts.join(' ')}`,
+);
+check(
+  'the four anchor capitals are marked, and every label clears the panel',
+  africa.markers.join() === 'Abuja,Cairo,Nairobi,Pretoria' && africa.labelsClearPanel,
+  `${africa.markers.join(', ')}, clear ${africa.labelsClearPanel}`,
+);
+// Mali, Niger and Burkina Faso left ECOWAS in January 2025 and must stay dark;
+// they are the countries an audience most expects to see lit here.
+check(
+  'only members are lit — the three ECOWAS leavers and the Maghreb stay dark',
+  africa.litMembers.length === 7 && africa.wronglyLit.length === 0,
+  `lit ${africa.litMembers.join(', ')}; wrongly lit: ${africa.wronglyLit.join(', ') || 'none'}`,
+);
+check(
+  'the Africa panel is NOT stamped internal — it is published fact',
+  africa.stamped === false,
+  `stamped ${africa.stamped}`,
+);
+await page.screenshot({ path: `${SHOTS}/scene-africa-blocs.png` });
+
+/* ------------------------------------------------------------------ *
  * The closing scene.
  *
  * It has to go ALL THE WAY BACK OUT. The asks are about how the team
