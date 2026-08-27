@@ -52,7 +52,10 @@ The deck as it stands:
 | 36 | Lithuania | stakeholder map — three groups, six meetings (internal) |
 | 37 | Africa | four regional blocs — ECOWAS, SADC, EAC, COMESA — and their anchors |
 | 38 | Gulf Cooperation Council | six member states, capitals marked |
-| 39 | What I need from you | back out to the whole region; four asks (internal) |
+| 39 | Middle East | the route in — UK–GCC, the beachhead, the barrier (internal) |
+| 40 | Middle East | two workstreams — quick wins and the moat (internal) |
+| 41 | Middle East | the 120-day sprint — three phases, three gates (internal) |
+| 42 | What I need from you | back out to the whole region; four asks (internal) |
 
 **Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
 three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
@@ -217,7 +220,19 @@ countries with six capitals is the whole content. The contrast to watch is Iraq,
 which is in scope on this map and not a member, so it sits lit as land and dark
 as a member right against Kuwait and Saudi Arabia.
 
-**Scene 39 closes the talk by going all the way back out.** No camera, no layer,
+**Scenes 39 to 41 are the Gulf strategy**, inside the GCC scene on the same
+placement argument the EU files and the UK block use: the region has just been
+established, so what IonQ intends to do about it belongs there. The route in is
+the UK — the UK–GCC Free Trade Agreement is the first the Gulf has signed with a
+G7 state — defending a contested beachhead at TII in Abu Dhabi, against national
+programmes in Saudi Arabia, the UAE and Qatar that are government-led and
+therefore a political gate as much as an opportunity. Then two workstreams on
+different clocks, and a 120-day sprint whose three phases each end in a decision
+gate. Condensed from a memo rather than reproduced verbatim, and the panels say
+so — the memo's own caveat, that it was written without internal consultation
+and against public information, is carried on all three.
+
+**Scene 42 closes the talk by going all the way back out.** No camera, no layer,
 no marker — the fitted EMEA frame, the same picture the region was introduced on
 thirty scenes earlier. That is not a feature: an omitted camera *actively resets*,
 so "back out to the whole region" is the ordinary act of entering a scene that

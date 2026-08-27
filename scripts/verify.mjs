@@ -491,6 +491,9 @@ for (const [id, phrase] of [
   ['uk', 'An agreement to buy one of each generation of systems'],
   ['uk-gchq', 'with a view to selling capacity'],
   ['uk-daresbury', 'A project Grizzly duplicate'],
+  ['me-route-in', 'bidding 25% below the next best competitor'],
+  ['me-workstreams', 'at least nine qualified opportunities'],
+  ['me-sprint', 'the 2026–2027 convening moments'],
   ['closing-asks', 'as opposed to the problems that I'],
   ['lithuania-stakeholders', 'Adviser to the Prime Minister'],
 ]) {
@@ -1747,6 +1750,55 @@ check(
   `${gcc.labels.join(', ')} — inFrame ${gcc.inFrame}`,
 );
 await page.screenshot({ path: `${SHOTS}/scene-gcc.png` });
+
+/* ------------------------------------------------------------------ *
+ * The 120-day sprint.
+ *
+ * The same track component as the Quantum Act timeline, so the same
+ * failure mode: a "you are here" marker that silently defaults to the
+ * left edge. Here it BELONGS on stage one — the sprint is proposed, not
+ * running — which makes the assertion weaker than the Quantum Act's, so
+ * it is paired with the one that actually distinguishes this track: the
+ * second paragraph of each stage is a DECISION GATE, not an engagement.
+ * That label is the difference between a track that stops three times
+ * and one that merely reports what we are doing while it runs.
+ * ------------------------------------------------------------------ */
+await goto('me-sprint');
+await page.mouse.move(2400, 60);
+await sleep(900);
+const sprint = await page.evaluate(() => {
+  const ring = document.querySelector('.timeline-now-ring');
+  const nowStage = document.querySelector('.timeline-stage.is-now');
+  return {
+    stages: document.querySelectorAll('.timeline-stage').length,
+    onStage: nowStage?.getAttribute('data-stage') ?? null,
+    keys: [...document.querySelectorAll('.timeline-key')].map((e) => e.textContent),
+    nowLabel: document.querySelector('.timeline-now-label')?.textContent ?? null,
+    breathing: ring ? getComputedStyle(ring).animationName : null,
+    // The day each gate falls, read off the text rather than trusted from the
+    // data — three gates that all said "Day 30" would render perfectly.
+    gates: [...document.querySelectorAll('.timeline-engagement')].map(
+      (e) => (e.textContent ?? '').match(/^Day (\d+)/)?.[1] ?? '?',
+    ),
+  };
+});
+check(
+  'the sprint is three phases with the marker on phase one — it is proposed, not running',
+  sprint.stages === 3 && sprint.onStage === 'foundation' && /proposed/i.test(sprint.nowLabel ?? ''),
+  `${sprint.stages} phases, marker on ${sprint.onStage}, "${sprint.nowLabel}"`,
+);
+check(
+  'every phase ends in a decision gate, labelled as one',
+  sprint.keys.length === 3 &&
+    sprint.keys.every((k) => k === 'Decision gate') &&
+    sprint.gates.join() === '30,60,120',
+  `keys ${[...new Set(sprint.keys)].join('/')}; gates at days ${sprint.gates.join(', ')}`,
+);
+check(
+  'the sprint marker breathes, like the legislative timeline',
+  sprint.breathing === 'timeline-now-breathe',
+  `animation ${sprint.breathing}`,
+);
 
 /* ------------------------------------------------------------------ *
  * The closing scene.

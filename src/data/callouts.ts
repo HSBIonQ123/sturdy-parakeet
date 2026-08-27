@@ -28,6 +28,7 @@ import { LITHUANIA_CALLOUTS } from './lithuania';
 import { UK_CALLOUTS } from './uk';
 import { CLOSING_CALLOUTS } from './closing';
 import { AFRICA_CALLOUTS } from './africa';
+import { MIDDLE_EAST_CALLOUTS } from './middleEast';
 
 /** A figure in the family panel: one glyph, one name under it. */
 export interface Figure {
@@ -259,6 +260,14 @@ export type CalloutBody =
       readonly nowAtStage: string;
       /** Label for the marker. Read aloud as much as read off the screen. */
       readonly nowLabel: string;
+      /**
+       * Key printed above each stage's second paragraph. Defaults to "IonQ
+       * engagement", which is what the legislative timeline's second paragraph
+       * is — but the 120-day sprint's is a DECISION GATE, a thing that either
+       * opens or does not. Labelling a gate as engagement would misread the
+       * whole track as continuous when its point is that it stops three times.
+       */
+      readonly engagementLabel?: string;
       readonly footnote?: string;
     }
   | {
@@ -409,6 +418,7 @@ export const CALLOUTS: readonly Callout[] = [
   ...UK_CALLOUTS,
   ...LITHUANIA_CALLOUTS,
   ...AFRICA_CALLOUTS,
+  ...MIDDLE_EAST_CALLOUTS,
   ...CLOSING_CALLOUTS,
 ];
 

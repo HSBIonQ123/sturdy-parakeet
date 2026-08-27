@@ -653,7 +653,7 @@ function Timeline({ body }: { readonly body: Extract<Callout['body'], { kind: 't
             <p className="timeline-timing value">{stage.timing}</p>
             <p className="timeline-stage-name">{stage.stage}</p>
             <p className="timeline-what">{stage.what}</p>
-            <p className="timeline-key label">IonQ engagement</p>
+            <p className="timeline-key label">{body.engagementLabel ?? 'IonQ engagement'}</p>
             <p className="timeline-engagement">{stage.engagement}</p>
           </div>
         ))}

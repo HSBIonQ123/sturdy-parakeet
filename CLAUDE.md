@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 128 assertions
+npm run verify         # drive the real build in Chromium; 134 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 

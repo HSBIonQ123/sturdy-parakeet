@@ -671,6 +671,49 @@ export const DECK: readonly Scene[] = [
     ],
   },
   /*
+   * THE GULF STRATEGY — three scenes inside the GCC scene, on the same
+   * placement argument as the EU files inside Belgium (§7h) and the UK block
+   * inside its spoke (§7k): the region has just been established, so what IonQ
+   * intends to do about it belongs here rather than as a separate section.
+   *
+   * The layer stays on through all three, so the six member states remain lit
+   * behind the argument about them. The camera pushes in and shifts EAST of the
+   * Gulf for the two panelled scenes — the panel takes the right of the frame,
+   * so a camera centred on the region puts Muscat and Abu Dhabi under the box.
+   * That is §7h's correction for the fourth time, and it belongs in the camera,
+   * which is data, not in Markers.tsx, which knows nothing about panels.
+   */
+  {
+    id: 'me-route-in',
+    title: 'Middle East',
+    caption: 'The route in · UK–GCC',
+    layers: ['gcc'],
+    camera: { lon: 61.5, lat: 24.0, k: 4.6 },
+    markers: [capital('ARE'), capital('SAU'), capital('QAT')],
+    callouts: ['me-route-in'],
+  },
+  {
+    id: 'me-workstreams',
+    title: 'Middle East',
+    caption: 'Two workstreams · quick wins and the moat',
+    layers: ['gcc'],
+    camera: { lon: 61.5, lat: 24.0, k: 4.6 },
+    markers: [capital('ARE'), capital('SAU'), capital('QAT')],
+    callouts: ['me-workstreams'],
+  },
+  {
+    id: 'me-sprint',
+    title: 'Middle East',
+    caption: '120-day sprint · three phases, three gates',
+    layers: ['gcc'],
+    // A full-width band takes the lower half, so the map gets the upper frame:
+    // pulled back, and centred well SOUTH of the Gulf so the region rides up
+    // above the panel instead of sitting behind it. Same correction the Quantum
+    // Act timeline makes for Belgium, at a larger scale.
+    camera: { lon: 49.0, lat: 13.6, k: 2.8 },
+    callouts: ['me-sprint'],
+  },
+  /*
    * THE LAST SCENE, AND IT GOES ALL THE WAY BACK OUT.
    *
    * No camera and no layers: the fitted EMEA frame, the whole region unlit and
