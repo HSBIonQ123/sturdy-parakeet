@@ -48,7 +48,14 @@ export interface Figure {
  * bullet of four.
  */
 export interface Section {
-  readonly heading: string;
+  /**
+   * OPTIONAL, because a panel whose own title already names the subject should
+   * not repeat it one line down. The GCHQ panel is the case: it is titled GCHQ
+   * and has one point, so a section heading reading "GCHQ" above that point is
+   * the same word twice in two type sizes. Every multi-section panel still
+   * carries one — a briefing with unlabelled blocks is unreadable.
+   */
+  readonly heading?: string;
   readonly note?: string;
   readonly items: readonly string[];
 }

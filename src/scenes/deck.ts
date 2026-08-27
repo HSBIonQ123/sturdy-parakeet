@@ -291,7 +291,7 @@ export const DECK: readonly Scene[] = [
   {
     id: 'uk-gchq',
     title: 'United Kingdom',
-    caption: 'Cheltenham and Oxford · cryptanalysis',
+    caption: 'GCHQ and Oxford · cryptanalysis',
     layers: ['political-engagement'],
     camera: { lon: 0.6, lat: 52.0, k: 13 },
     selectedIso: 'GBR',

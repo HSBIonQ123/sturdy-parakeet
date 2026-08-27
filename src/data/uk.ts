@@ -43,7 +43,7 @@ const AS_AT = '26 August 2026';
 export const UK_WESTMINSTER: Callout = {
   id: 'uk-westminster',
   heading: 'United Kingdom · engagement',
-  title: 'Three routes out of Westminster',
+  title: 'Current Westminster engagement priorities',
   standfirst:
     'One city, three counterparties, three different asks — which is why they are listed ' +
     'apart rather than as a single government position.',
@@ -88,7 +88,11 @@ export const UK_WESTMINSTER: Callout = {
 export const UK_GCHQ: Callout = {
   id: 'uk-gchq',
   heading: 'United Kingdom · engagement',
-  title: 'Cheltenham',
+  // TITLED FOR THE COUNTERPARTY, NOT THE TOWN. The subject of the slide is the
+  // relationship with GCHQ; Cheltenham is only where it happens to sit, and the
+  // marker on the map already says that. A panel titled "Cheltenham" made the
+  // geography the headline and left the agency as a subheading under it.
+  title: 'GCHQ',
   anchor: 'gchq',
   side: 'right',
   asAt: AS_AT,
@@ -97,7 +101,8 @@ export const UK_GCHQ: Callout = {
     kind: 'sections',
     sections: [
       {
-        heading: 'GCHQ',
+        // No heading: the panel's title is GCHQ, and repeating it here would be
+        // the same word twice in two sizes. See Section.heading in callouts.ts.
         items: ['Deepening partnerships on cryptanalysis, with a view to selling capacity.'],
       },
     ],

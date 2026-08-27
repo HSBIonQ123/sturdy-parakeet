@@ -1395,6 +1395,32 @@ check(
 await page.screenshot({ path: `${SHOTS}/scene-uk.png` });
 
 /*
+ * The GCHQ panel is titled for the COUNTERPARTY and says its name once.
+ *
+ * It used to be titled "Cheltenham" with GCHQ as a section heading under it,
+ * which made the geography the headline. Now the title is GCHQ and the single
+ * section carries no heading — `Section.heading` is optional for exactly this.
+ * Asserted because the failure mode is a future edit helpfully adding the
+ * heading back: the panel would render perfectly and say "GCHQ" twice in two
+ * type sizes, which nobody would file as a bug.
+ */
+await goto('uk-gchq');
+await page.mouse.move(40, 1400);
+await sleep(800);
+const gchq = await page.evaluate(() => {
+  const el = document.querySelector('.callout');
+  return {
+    title: el?.querySelector('.callout-title')?.textContent ?? null,
+    headings: el ? el.querySelectorAll('.callout-section-heading').length : -1,
+  };
+});
+check(
+  'the GCHQ panel is titled for the counterparty and names it once',
+  gchq.title === 'GCHQ' && gchq.headings === 0,
+  `title "${gchq.title}", ${gchq.headings} section headings`,
+);
+
+/*
  * THE CORE IS THE IonQ CLAIM, AND DARESBURY MUST NOT MAKE ONE.
  *
  * Sci-Tech Daresbury is a campus a system is being PROPOSED into. A bright core

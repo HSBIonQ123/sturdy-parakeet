@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 118 assertions
+npm run verify         # drive the real build in Chromium; 119 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -893,6 +893,15 @@ in the same gap — and flipping a side does not help, because both run into it.
 §7e's rule still holds (flip or lift a LABEL, never move a dot), and the lift is
 measured on the real build. It costs nothing elsewhere because no other scene
 draws that marker.
+
+**A panel is titled for its subject, not for its postcode.** The GCHQ scene was
+titled "Cheltenham" with GCHQ as a section heading beneath it, which made the
+geography the headline and the counterparty a subhead. It is now titled GCHQ,
+and `Section.heading` became optional so the single point under it does not
+repeat the word one line down in a smaller size. The marker keeps naming
+Cheltenham — that is the map's job and §7e requires a site-level marker to name
+its place. `verify.mjs` asserts the title and the absence of the heading, because
+the failure mode is somebody helpfully adding it back.
 
 **Acronyms are reproduced, not expanded** — "DBIST", "HMT", "ProQure", "AMCs",
 "project Grizzly". The department is **DBIST**: supplied that way, "SoS BIST" in

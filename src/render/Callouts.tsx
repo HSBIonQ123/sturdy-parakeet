@@ -193,7 +193,9 @@ function CalloutBody({ callout }: { readonly callout: Callout }) {
       <div className="callout-sections">
         {body.sections.map((section) => (
           <section className="callout-section" key={section.heading}>
-            <p className="callout-section-heading label">{section.heading}</p>
+            {section.heading ? (
+              <p className="callout-section-heading label">{section.heading}</p>
+            ) : null}
             {/* The verdict line, given the accent rather than buried as bullet
                 one of four — it is the sentence the room needs. */}
             {section.note ? <p className="callout-section-note">{section.note}</p> : null}

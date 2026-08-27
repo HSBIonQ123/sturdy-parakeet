@@ -27,7 +27,7 @@ The deck as it stands:
 | 11 | EuroQCI | the 27 signatories, 3 eligible states, and the four IonQ QKD networks marked |
 | 12 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
 | 13 | United Kingdom | Westminster and Oxford; DBIST, HMT and Number 10 (internal) |
-| 14 | United Kingdom | Cheltenham and Oxford — GCHQ, cryptanalysis (internal) |
+| 14 | United Kingdom | GCHQ and Oxford — cryptanalysis (internal) |
 | 15 | United Kingdom | Daresbury and Oxford — a system proposed (internal) |
 | 16 | Priority European Political Engagement | back out to the six |
 | 17 | Belgium | close up, held selected, Brussels marked |
@@ -184,12 +184,12 @@ Lithuania on the stakeholder map — a plan rather than a picture, because
 Lithuania holds the Council Presidency when the Quantum Act is debated. All of them are internal and stamped.
 
 **Scenes 13 to 15 are the UK block**, inside the UK spoke on the same argument:
-the talk is already standing in Britain. Westminster carries the three routes into
-government — DBIST on ecosystem opportunities, HMT on a purchase agreement,
-ProQure reform and AMCs, and Number 10 on positioning against the field. The two
-that follow each fly the camera to the place their sentence is about, with Oxford
-held on screen as the other end of the relationship: Cheltenham for GCHQ and
-cryptanalysis, Daresbury for a proposed system. Nothing is installed at Daresbury,
+the talk is already standing in Britain. Westminster carries the current
+engagement priorities — DBIST on ecosystem opportunities, HMT on a purchase
+agreement, ProQure reform and AMCs, and Number 10 on positioning against the
+field. The two that follow each fly the camera to the place their sentence is
+about, with Oxford held on screen as the other end of the relationship: GCHQ on
+cryptanalysis, at Cheltenham, and Daresbury for a proposed system. Nothing is installed at Daresbury,
 and its dot is drawn without the IonQ core to say so.
 
 **Scene 37 closes the talk by going all the way back out.** No camera, no layer,
