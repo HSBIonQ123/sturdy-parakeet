@@ -209,7 +209,7 @@ export const DECK: readonly Scene[] = [
   {
     id: 'uk',
     title: 'United Kingdom',
-    caption: 'Westminster and Oxford · government and engineering',
+    caption: 'Westminster and Oxford · DBIST, HMT, Number 10',
     // The first scene in the deck to move the camera, and it needed no new
     // code to do it: `camera` has been on the Scene type since State 1 and
     // cameraControl.ts has been wired to it since the sequencer was built.
@@ -245,6 +245,10 @@ export const DECK: readonly Scene[] = [
     // WHITEHALL". Swap it for `capital('GBR')` if a plain London dot is ever
     // wanted; do not show both.
     markers: ['westminster', 'oxford'],
+    // The three routes into the British government, tethered to Westminster.
+    // NOT a separate London dot: Westminster IS the capital marker here, for
+    // the sub-pixel reason above.
+    callouts: ['uk-westminster'],
     /*
      * THE SUBJECT, HELD SELECTED — and this is why `selectedIso` was on the
      * Scene type from State 1 without a user.
@@ -266,6 +270,43 @@ export const DECK: readonly Scene[] = [
      * `gotoScene` writes `selectedIso` every time and a hub omits it.
      */
     selectedIso: 'GBR',
+  },
+  /*
+   * TWO MORE UK SCENES, INSIDE THE UK SPOKE.
+   *
+   * Same placement argument as the EU files in Belgium (§7h) and the circuit in
+   * Italy (§7i): the talk is already standing in the UK, so the other two
+   * relationships belong here rather than as a separate British section later.
+   *
+   * Each one MOVES THE CAMERA to the place its sentence is about, and that is
+   * what earns it a scene of its own. A slide whose whole content is one line is
+   * not thin when the map beneath it has flown to the site being discussed —
+   * Oxford stays on screen in both, because in both it is the other end of the
+   * relationship: the engineering that makes the ask credible.
+   *
+   * Both cameras are centred EAST of the pair they frame, the §7h correction:
+   * the panel takes the right of the frame, so a camera centred on the dots puts
+   * their labels under the box. Framed on the real build at 2560x1440.
+   */
+  {
+    id: 'uk-gchq',
+    title: 'United Kingdom',
+    caption: 'Cheltenham and Oxford · cryptanalysis',
+    layers: ['political-engagement'],
+    camera: { lon: 0.6, lat: 52.0, k: 13 },
+    selectedIso: 'GBR',
+    markers: ['gchq', 'oxford'],
+    callouts: ['uk-gchq'],
+  },
+  {
+    id: 'uk-daresbury',
+    title: 'United Kingdom',
+    caption: 'Daresbury and Oxford · a system proposed',
+    layers: ['political-engagement'],
+    camera: { lon: 0.2, lat: 53.0, k: 9 },
+    selectedIso: 'GBR',
+    markers: ['daresbury', 'oxford'],
+    callouts: ['uk-daresbury'],
   },
   hub('engagement-after-uk'),
   {

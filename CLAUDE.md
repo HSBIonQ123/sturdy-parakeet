@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 110 assertions
+npm run verify         # drive the real build in Chromium; 114 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -791,7 +791,7 @@ is data; `Markers.tsx` flips at the FRAME edge and knows nothing about panels.
 
 ## 7j. Supplied documents, and the four rules they added
 
-Scenes 6, 7, 21, 27, 28, 31 and 34 are built from documents handed over for
+Scenes 6, 7, 13, 14, 15, 23, 29, 30, 33 and 36 are built from documents handed over for
 the talk: a ninety-day review, a core-asks paper, a Franco-German position paper
 with a clause-by-clause assessment, a four-pillar market strategy, and a
 stakeholder map. Every one of them is `internal: true`. Four rules came out of
@@ -864,6 +864,41 @@ under a right-hand panel. That scene sets `side: 'left'` instead and keeps the
 spoke's own camera untouched. The rule is the same either way: `Markers.tsx`
 flips at the FRAME edge and knows nothing about panels, so the fix is always
 data.
+
+## 7k. The UK block, and the marker that must never grow a core
+
+Scenes 13–15 (`uk.ts`) sit inside the UK spoke, the placement argument of §7h
+and §7i for a third time. Westminster carries three routes into one government;
+Cheltenham and Daresbury each carry one relationship and each fly the camera to
+the place their sentence is about. **A slide whose whole content is one line is
+not thin when the map beneath it has moved to the site that line is about** —
+that is what earns them separate scenes rather than a fourth section on the
+Westminster panel. Oxford stays on screen in all three, because in all three it
+is the other end of the relationship.
+
+**`institutions.ts` widened, and the invariant did not.** It began as seats of
+government and now also carries an agency (GCHQ) and a campus a system is being
+proposed into (Sci-Tech Daresbury). What holds the file together is the
+negative, not the category: nothing in it is a place IonQ occupies, and nothing
+in it gets the bright core. Daresbury is the entry to watch — the day a system
+is actually installed there it moves to `deployments.ts` with its provenance and
+earns a core, and `verify.mjs` asserts the absence now so that move has to be
+deliberate rather than accidental. Oxford is checked on the same scene as the
+control, so a change that flattened every glyph could not pass by making the two
+agree.
+
+**Two labels 2px apart is a `labelDy`, not a camera move.** Cheltenham and
+Oxford are ~75km apart, which at any camera that frames both puts their labels
+in the same gap — and flipping a side does not help, because both run into it.
+§7e's rule still holds (flip or lift a LABEL, never move a dot), and the lift is
+measured on the real build. It costs nothing elsewhere because no other scene
+draws that marker.
+
+**Acronyms are reproduced, not expanded** — "DBIST", "HMT", "ProQure", "AMCs",
+"project Grizzly". One is worth raising rather than silently correcting: the
+department is "DBIST" as supplied and "SoS BIST" in the ninety-day source, but
+`institutions.ts` says "DSIT" on the Westminster marker. Both cannot be right,
+and the fix is one heading in `uk.ts`.
 
 ## 8. Known limitations
 

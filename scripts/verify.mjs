@@ -488,6 +488,9 @@ for (const [id, phrase] of [
   ['germany-franco', 'entirely designed and manufactured in Europe'],
   ['germany-state-changes', 'operational control and substantive presence'],
   ['poland-strategy', 'harvest now, decrypt later'],
+  ['uk', 'An agreement to buy one of each generation of systems'],
+  ['uk-gchq', 'with a view to selling capacity'],
+  ['uk-daresbury', 'A project Grizzly duplicate'],
   ['lithuania-stakeholders', 'Adviser to the Prime Minister'],
 ]) {
   await goto(id);
@@ -1390,9 +1393,52 @@ check(
 
 await page.screenshot({ path: `${SHOTS}/scene-uk.png` });
 
+/*
+ * THE CORE IS THE IonQ CLAIM, AND DARESBURY MUST NOT MAKE ONE.
+ *
+ * Sci-Tech Daresbury is a campus a system is being PROPOSED into. A bright core
+ * on that dot would announce an installed machine — exactly the claim §7e's
+ * shape rule exists to stop a marker making by accident, and a fault invisible
+ * in a thumbnail. The same check as Westminster's, on the entry most likely to
+ * drift: the day a system does land there the entry moves to deployments.ts,
+ * and this assertion is what forces that to be a deliberate act.
+ *
+ * Oxford is checked alongside it as the control — on the same scene, one dot
+ * must have a core and the other must not, so a change that flattened every
+ * glyph could not pass by making them agree.
+ */
+await goto('uk-daresbury');
+await page.mouse.move(40, 1400);
+await sleep(800);
+const daresbury = await page.evaluate(() => {
+  const find = (t) =>
+    [...document.querySelectorAll('.marker')].find((m) =>
+      m.querySelector('.marker-label')?.textContent?.includes(t),
+    );
+  const dar = find('Daresbury');
+  const ox = find('Oxford');
+  return {
+    daresburyCores: dar ? dar.querySelectorAll('.marker-core').length : -1,
+    oxfordCores: ox ? ox.querySelectorAll('.marker-core').length : -1,
+  };
+});
+check(
+  'Daresbury is drawn without the IonQ core — a system is proposed there, not installed',
+  daresbury.daresburyCores === 0 && daresbury.oxfordCores === 1,
+  `Daresbury cores ${daresbury.daresburyCores}, Oxford cores ${daresbury.oxfordCores}`,
+);
+
 // A scene's camera must leave with the scene. If a zoomed scene could leak
 // its camera backwards, every scene before it would be one step away from
 // being wrong, which is the whole property `gotoScene` exists to guarantee.
+//
+// Stepped back from the UK SPOKE by name rather than from wherever the suite
+// happened to be: the scene behind the spoke is a hub, so the fitted frame is
+// what must come back. Reached by name because the two Cheltenham and Daresbury
+// scenes were later inserted between the spoke and the section above, and a
+// blind PageUp then landed on another zoomed scene and read as a real failure.
+await goto('uk');
+await sleep(400);
 await page.keyboard.press('PageUp');
 await sleep(1400);
 const backOut = await page.evaluate(() => window.__scene?.scale ?? null);
@@ -1420,6 +1466,10 @@ check(
 const WALK = [
   { hub: true },
   { title: 'United Kingdom', iso: 'GBR' },
+  // Two more UK scenes inside the spoke, on the same argument as the EU files
+  // inside Belgium: Cheltenham, then Daresbury.
+  { brief: 'United Kingdom', iso: 'GBR' },
+  { brief: 'United Kingdom', iso: 'GBR' },
   { hub: true },
   { title: 'Belgium', iso: 'BEL' },
   // The five EU files sit INSIDE the Belgium spoke: the talk is already in
@@ -1504,7 +1554,7 @@ for (let i = 0; i < WALK.length; i += 1) {
 check(
   'the hub-and-spoke tail alternates region / country / brief all the way to Lithuania',
   walkProblems.length === 0,
-  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 11 briefs, in order',
+  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 13 briefs, in order',
 );
 // Every hub is generated from one definition, so they cannot drift apart — and
 // the layer must be identical on both sides of a zoom or the spoke would be

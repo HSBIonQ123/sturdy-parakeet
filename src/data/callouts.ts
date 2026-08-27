@@ -25,6 +25,7 @@ import { EUQA_CALLOUTS } from './euQuantumAct';
 import { GERMANY_CALLOUTS } from './germany';
 import { POLAND_CALLOUTS } from './poland';
 import { LITHUANIA_CALLOUTS } from './lithuania';
+import { UK_CALLOUTS } from './uk';
 
 /** A figure in the family panel: one glyph, one name under it. */
 export interface Figure {
@@ -345,6 +346,7 @@ export const CALLOUTS: readonly Callout[] = [
   ...EUQA_CALLOUTS,
   ...GERMANY_CALLOUTS,
   ...POLAND_CALLOUTS,
+  ...UK_CALLOUTS,
   ...LITHUANIA_CALLOUTS,
 ];
 
