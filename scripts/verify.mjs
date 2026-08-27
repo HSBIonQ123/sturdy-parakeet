@@ -478,6 +478,18 @@ for (const [id, phrase] of [
   ['quantum-act-situation', 'no group entity is a clean EU participant'],
   ['quantum-act-action', 'place of operational control'],
   ['quantum-act-timeline', 'blocking arithmetic'],
+  // The ninety-day pair, the asks grid, and the market panels. The same two
+  // failures matter on all of them: a panel clipped at the bottom loses its
+  // last row silently, and a panel that lost its internal stamp is
+  // confidential content on screen with nothing saying so.
+  ['state-changes', 'Force multiplication achieved through a three-agency model'],
+  ['risk-register', 'Relationship register and engagement log built and current'],
+  ['euqa-asks', 'cost per useful computation'],
+  ['germany-franco', 'entirely designed and manufactured in Europe'],
+  ['germany-state-changes', 'operational control and substantive presence'],
+  ['poland-strategy', 'harvest now, decrypt later'],
+  ['lithuania-stakeholders', 'Adviser to the Prime Minister'],
+  ['lithuania-visit', 'least suitable for political meetings'],
 ]) {
   await goto(id);
   await page.mouse.move(40, 1400);
@@ -508,7 +520,142 @@ for (const [id, phrase] of [
 }
 
 /* ------------------------------------------------------------------ *
- * The Italy italyCircuit.
+ * The new body kinds — what each one has to get RIGHT to be true.
+ *
+ * These are tables and diagrams built from supplied documents, so the
+ * failure mode is not a crash: it is a panel that renders beautifully
+ * while saying something the source does not. Every check below is one
+ * of those.
+ * ------------------------------------------------------------------ */
+await goto('state-changes');
+await page.mouse.move(40, 1400);
+await sleep(700);
+const stateChange = await page.evaluate(() => ({
+  rows: document.querySelectorAll('.statechange-row').length,
+  // One ion per state, and only the Day 90 side gets a bright core — the
+  // marker grammar from §7e. If both sides ever draw the same glyph the row
+  // stops saying which end it moved to.
+  ions: document.querySelectorAll('.statechange-ion').length,
+  lit: document.querySelectorAll('.statechange-ion--lit').length,
+  drive: document.querySelector('.statechange-drive')?.textContent ?? null,
+  // The drive label must sit over the gutter its rails run down, not over a
+  // text column. Header cells were auto-placed once and the last label wrapped
+  // onto a second row, which read as a heading for the wrong column.
+  driveOverGutter: (() => {
+    const d = document.querySelector('.statechange-drive')?.getBoundingClientRect();
+    const rail = document.querySelector('.statechange-rail')?.getBoundingClientRect();
+    if (!d || !rail) return false;
+    return Math.abs(d.left + d.width / 2 - (rail.left + rail.width / 2)) < 40;
+  })(),
+  headRows: (() => {
+    const head = document.querySelector('.statechange-head');
+    if (!head) return -1;
+    return new Set([...head.children].map((c) => Math.round(c.getBoundingClientRect().top))).size;
+  })(),
+}));
+check(
+  'the four state changes are four rows, each with one dark ion and one lit',
+  stateChange.rows === 4 && stateChange.ions === 8 && stateChange.lit === 4,
+  `${stateChange.rows} rows, ${stateChange.ions} ions, ${stateChange.lit} lit`,
+);
+check(
+  'the drive is named once, over the gutter every row crosses',
+  stateChange.drive === 'Government Affairs' &&
+    stateChange.driveOverGutter &&
+    stateChange.headRows === 1,
+  `"${stateChange.drive}", over gutter ${stateChange.driveOverGutter}, ${stateChange.headRows} header row(s)`,
+);
+
+await goto('risk-register');
+await page.mouse.move(40, 1400);
+await sleep(700);
+const risk = await page.evaluate(() => {
+  const rows = [...document.querySelectorAll('.risk-row')];
+  const litOf = (row) =>
+    [...row.querySelectorAll('.risk-meter')].map(
+      (m) => m.querySelectorAll('.risk-seg.is-lit').length,
+    );
+  return {
+    rows: rows.length,
+    // Severity is the meter, so the arrow has to agree with it. The source's own
+    // glyphs disagree with its own levels on one row, which is why the direction
+    // is derived rather than stored — this is the check that keeps it derived.
+    disagreements: rows
+      .map((row) => {
+        const lit = litOf(row);
+        const dir = row.querySelector('.risk-shift')?.dataset.direction;
+        return lit[1] < lit[0] === (dir === 'down')
+          ? null
+          : `${row.dataset.row}: ${lit.join('>')} but ${dir}`;
+      })
+      .filter(Boolean),
+    // ProQure is the one exposure held at its level rather than reduced. A
+    // falling arrow here would claim a de-risking the source does not.
+    proqure: (() => {
+      const row = document.querySelector('.risk-row[data-row="proqure"]');
+      return row
+        ? { lit: litOf(row), dir: row.querySelector('.risk-shift')?.dataset.direction }
+        : null;
+    })(),
+  };
+});
+check(
+  'every risk row’s arrow agrees with its own two meters',
+  risk.rows === 7 && risk.disagreements.length === 0,
+  `${risk.rows} rows; ${risk.disagreements.join(' | ') || 'no disagreements'}`,
+);
+check(
+  'ProQure is held at high and drawn sideways, not reduced',
+  risk.proqure &&
+    risk.proqure.lit[0] === 3 &&
+    risk.proqure.lit[1] === 3 &&
+    risk.proqure.dir === 'held',
+  risk.proqure ? `${risk.proqure.lit.join('>')}, ${risk.proqure.dir}` : 'row missing',
+);
+
+await goto('poland-strategy');
+await page.mouse.move(40, 1400);
+await sleep(700);
+const poland = await page.evaluate(() => ({
+  pillars: document.querySelectorAll('.pillar').length,
+  // Numbered from position, not from the data — a hand-written number goes
+  // stale silently the moment somebody reorders the array.
+  indices: [...document.querySelectorAll('.pillar-index')].map((e) => e.textContent).join(','),
+  parts: document.querySelectorAll('.pillar-part').length,
+}));
+check(
+  'Poland is four pillars, numbered from position, each carrying all three parts',
+  poland.pillars === 4 && poland.indices === '01,02,03,04' && poland.parts === 12,
+  `${poland.pillars} pillars [${poland.indices}], ${poland.parts} parts`,
+);
+
+await goto('lithuania-stakeholders');
+await page.mouse.move(40, 1400);
+await sleep(700);
+const stakeholders = await page.evaluate(() => ({
+  groups: [...document.querySelectorAll('.stakeholder-group')].map((g) => g.dataset.group),
+  entries: document.querySelectorAll('.stakeholder').length,
+  // The source pasted the wrong body's rationale onto the Cyber Security Centre.
+  // It is left blank rather than repaired, so the GAP is what has to render.
+  ncscHasWhy: Boolean(
+    document.querySelector('.stakeholder[data-stakeholder="ncsc"] .stakeholder-why'),
+  ),
+  whys: document.querySelectorAll('.stakeholder-why').length,
+}));
+check(
+  'the stakeholder map is three groups and six meetings, grouped not ranked',
+  stakeholders.groups.join() === 'political,institutional,academic-business' &&
+    stakeholders.entries === 6,
+  `groups ${stakeholders.groups.join(', ')}, ${stakeholders.entries} entries`,
+);
+check(
+  'the Cyber Security Centre entry stays blank rather than borrowing the wrong rationale',
+  !stakeholders.ncscHasWhy && stakeholders.whys === 5,
+  `ncsc why ${stakeholders.ncscHasWhy}, ${stakeholders.whys} rationales across 6 entries`,
+);
+
+/* ------------------------------------------------------------------ *
+ * The Italy circuit.
  *
  * A diagram makes a claim through its SHAPE, so the shape is what has to
  * be asserted. Two things would let it argue the wrong thing while still
@@ -700,13 +847,31 @@ check(
   JSON.stringify(st.title),
 );
 
-// Step from the base map, which is scene 2 now.
+/*
+ * The clicker path, asserted where it actually goes.
+ *
+ * Two Government Affairs scenes now sit between the base map and the first
+ * layer scene, so stepping once from `emea` lands on the function rather than
+ * on the Union. That is the placement the deck wants — every perimeter that
+ * follows is read by someone the room has been introduced to — and the thing
+ * that must never break is simply that Page Down MOVES.
+ */
 await toBaseMap();
 await page.keyboard.press('PageDown');
 await sleep(700);
 st = await sceneState();
 check(
-  'Page Down steps to the EU scene (this is what a clicker sends)',
+  'Page Down steps off the base map (this is what a clicker sends)',
+  st.index === idx('state-changes') && st.title === 'Government Affairs',
+  `index ${st.index}, title "${st.title}"`,
+);
+
+// Then reach the EU layer scene by name — see the note at the top of this file
+// about indices by name rather than by position.
+await goto('eu');
+st = await sceneState();
+check(
+  'the EU scene is the first of the layer builds',
   st.index === idx('eu') && st.layers?.join() === 'eu',
   `index ${st.index}, layers ${st.layers}, title "${st.title}"`,
 );
@@ -718,10 +883,21 @@ check(
 
 await page.screenshot({ path: `${SHOTS}/scene-eu.png` });
 
+// Page Up must step BACK, which is the other half of the clicker path. It lands
+// on the risk register now rather than on the base map: two Government Affairs
+// scenes sit between the region and the layers, and that is by design. Assert
+// the step, then reach the base map by name to check the tint clears.
 await page.keyboard.press('PageUp');
 await sleep(700);
 st = await sceneState();
-check('Page Up steps back to the base map', st.index === idx('emea') && st.layers?.length === 0);
+check(
+  'Page Up steps back into the Government Affairs pair',
+  st.index === idx('risk-register'),
+  `index ${st.index}, title "${st.title}"`,
+);
+await toBaseMap();
+st = await sceneState();
+check('the base map carries no layers', st.layers?.length === 0, `layers ${st.layers}`);
 check('member tint clears on the base map', st.members === 0, `${st.members} tinted`);
 
 // Stepping must not run off either end mid-talk. Tested from the FIRST scene
@@ -1211,6 +1387,9 @@ const WALK = [
   { brief: 'EU Quantum Act', iso: 'BEL' },
   { brief: 'EU Quantum Act', iso: 'BEL' },
   { brief: 'EU Quantum Act', iso: 'BEL' },
+  // The core asks close the Brussels block: the timeline says when the bill
+  // moves, this says what we will be asking for when it does.
+  { brief: 'EU Quantum Act', iso: 'BEL' },
   { hub: true },
   { title: 'Italy', iso: 'ITA' },
   // And one inside the Italy spoke, for the same reason: the talk is already
@@ -1220,10 +1399,16 @@ const WALK = [
   { brief: 'Italy and Brussels', iso: 'ITA' },
   { hub: true },
   { title: 'Germany', iso: 'DEU' },
+  { brief: 'Franco-German position paper', iso: 'DEU' },
+  { brief: 'Germany', iso: 'DEU' },
   { hub: true },
   { title: 'Poland', iso: 'POL' },
+  { brief: 'Poland', iso: 'POL' },
   { hub: true },
   { title: 'Lithuania', iso: 'LTU' },
+  // The deck ends on a plan rather than a picture: who to meet, then when.
+  { brief: 'Lithuania', iso: 'LTU' },
+  { brief: 'Lithuania', iso: 'LTU' },
 ];
 
 // Start at the first hub and step forward through the tail. Its index is read
@@ -1277,7 +1462,7 @@ for (let i = 0; i < WALK.length; i += 1) {
 check(
   'the hub-and-spoke tail alternates region / country / brief all the way to Lithuania',
   walkProblems.length === 0,
-  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 6 briefs, in order',
+  walkProblems.length ? walkProblems.join(' | ') : '6 hubs, 6 spokes and 12 briefs, in order',
 );
 // Every hub is generated from one definition, so they cannot drift apart — and
 // the layer must be identical on both sides of a zoom or the spoke would be
@@ -1304,6 +1489,42 @@ st = await sceneState();
 check('stepping past the last scene is a no-op', st.index === DECK_IDS.length - 1);
 
 /* ---- the menu, for questions ---- */
+/*
+ * THE MENU MUST STILL REACH SCENE 1 — the failure §3a records, found at 21
+ * scenes and now tested rather than remembered. The menu is anchored to the
+ * bottom of the frame and grows upward, so a long deck pushes its earliest
+ * entries off the top of the screen, and those are exactly the scenes a
+ * question sends you back to. `.scene-menu-list` scrolls; this asserts the
+ * first entry can actually be brought into view inside it.
+ */
+await page.keyboard.press('Escape');
+await sleep(150);
+await page.keyboard.press('m');
+await page.waitForSelector('.scene-menu', { timeout: 5000 });
+await sleep(350);
+const menuReach = await page.evaluate((firstId) => {
+  const list = document.querySelector('.scene-menu-list');
+  const first = document.querySelector(`.scene-item[data-scene="${firstId}"]`);
+  if (!list || !first) return null;
+  first.scrollIntoView({ block: 'nearest' });
+  const l = list.getBoundingClientRect();
+  const f = first.getBoundingClientRect();
+  return {
+    items: document.querySelectorAll('.scene-item').length,
+    scrolls: list.scrollHeight > list.clientHeight,
+    inView: f.top >= l.top - 1 && f.bottom <= l.bottom + 1,
+  };
+}, DECK_IDS[0]);
+check(
+  `the scene menu still reaches scene 1 at ${DECK_IDS.length} scenes`,
+  menuReach && menuReach.items === DECK_IDS.length && menuReach.inView,
+  menuReach
+    ? `${menuReach.items} items, list scrolls ${menuReach.scrolls}, first in view ${menuReach.inView}`
+    : 'no menu',
+);
+await page.keyboard.press('Escape');
+await sleep(200);
+
 check('menu is closed by default', !st.menuOpen);
 
 await page.keyboard.press('m');

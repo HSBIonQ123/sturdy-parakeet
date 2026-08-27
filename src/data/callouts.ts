@@ -20,6 +20,11 @@ import type { FigureIconId } from '../render/FigureIcon';
 import { PRESENTER_CALLOUTS } from './presenter';
 import { POLICY_CALLOUTS } from './policy';
 import { STRATEGY_CALLOUTS } from './strategy';
+import { NINETY_DAY_CALLOUTS } from './ninetyDays';
+import { EUQA_CALLOUTS } from './euQuantumAct';
+import { GERMANY_CALLOUTS } from './germany';
+import { POLAND_CALLOUTS } from './poland';
+import { LITHUANIA_CALLOUTS } from './lithuania';
 
 /** A figure in the family panel: one glyph, one name under it. */
 export interface Figure {
@@ -85,6 +90,87 @@ export interface CircuitArm {
   readonly levers?: readonly CircuitLever[];
 }
 
+/**
+ * One row of a before/after register: a thing that was in one state and is now
+ * in another.
+ *
+ * `topic` is what the row is ABOUT and is required, because the two states only
+ * read as a pair once you know what pair they are — a grid of befores and afters
+ * with no keys is a wall of prose. Adding a row is one object here and nothing
+ * else; the guard against adding one too many is `verify.mjs`, which fails when
+ * the panel stops fitting the frame.
+ */
+export interface StateChangeRow {
+  readonly id: string;
+  readonly topic: string;
+  readonly from: string;
+  readonly to: string;
+}
+
+/** How severe an exposure is. Three levels, drawn as a three-segment meter. */
+export type RiskLevel = 'low' | 'medium' | 'high';
+
+/** One end of a risk row: where it stood, at what severity. */
+export interface RiskState {
+  readonly level: RiskLevel;
+  readonly title: string;
+  readonly detail: string;
+}
+
+/**
+ * One exposure, from where it was to where it is.
+ *
+ * `verb` is the source's own word for the shift — Reduced, Mitigated, Prepared.
+ * There is deliberately NO direction field: the arrow is derived at render from
+ * the two levels, so it can never point a way its own row contradicts. See the
+ * note in ninetyDays.ts, where the source's glyphs disagree with its own levels
+ * on one row.
+ */
+export interface RiskRow {
+  readonly id: string;
+  readonly from: RiskState;
+  readonly verb: string;
+  readonly to: RiskState;
+  readonly drivers: readonly string[];
+}
+
+/**
+ * One pillar of a market strategy: what we are doing, what we say, how it gets
+ * done.
+ *
+ * The three parts are separate FIELDS rather than three bullets, because they
+ * are three different kinds of sentence and the room needs to know which it is
+ * hearing — a strategy is a position, a message is what comes out of your
+ * mouth, and an execution step is a thing somebody has to go and do. Flattened
+ * into a list they read as one undifferentiated paragraph of intent.
+ */
+export interface Pillar {
+  readonly id: string;
+  readonly name: string;
+  readonly strategy: string;
+  readonly message: string;
+  readonly execution: string;
+}
+
+/** One person or body worth meeting, and why. */
+export interface Stakeholder {
+  readonly id: string;
+  readonly name: string;
+  /** A post, where the stakeholder is a person rather than an institution. */
+  readonly role?: string;
+  /** What they are, or what they do. */
+  readonly what: string;
+  /** What a meeting would achieve. Omitted where the source does not say. */
+  readonly why?: string;
+}
+
+/** A category of stakeholder — political, institutional, and so on. */
+export interface StakeholderGroup {
+  readonly id: string;
+  readonly label: string;
+  readonly entries: readonly Stakeholder[];
+}
+
 /** One stage of a legislative timeline. */
 export interface Stage {
   readonly id: string;
@@ -131,6 +217,68 @@ export type CalloutBody =
       readonly bottom: CircuitNode;
       readonly arms: readonly [CircuitArm, CircuitArm];
       readonly footnote?: string;
+    }
+  | {
+      /**
+       * A register of before/after pairs, with one drive across the gutter they
+       * all cross. The rows are ions in a trap and the drive is what flips them
+       * — which is the deck's own metaphor rather than a chart borrowed into it.
+       */
+      readonly kind: 'state-change';
+      readonly fromLabel: string;
+      readonly toLabel: string;
+      /** Printed once over the gutter: the one thing flipping every row. */
+      readonly driveLabel: string;
+      readonly rows: readonly StateChangeRow[];
+      /**
+       * For what belongs with the grid but is not a row. A state-change table
+       * with a row that does not change teaches the eye to stop trusting the
+       * arrows, so anything already where it needs to be goes here instead.
+       */
+      readonly footnote?: string;
+    }
+  | {
+      /**
+       * A risk register: severity, the shift, and what drove it.
+       *
+       * NOT merged with `state-change`, though both are before/after tables.
+       * A risk row carries severity levels and a list of drivers, and it earns
+       * a severity meter and a four-column layout that a state-change row would
+       * have nothing to put in. The union exists precisely so a body cannot be
+       * handed to a layout that cannot render it, and two kinds that differ by
+       * three optional fields is how that guarantee gets given up.
+       */
+      readonly kind: 'risk-register';
+      readonly fromLabel: string;
+      readonly shiftLabel: string;
+      readonly toLabel: string;
+      readonly driversLabel: string;
+      readonly rows: readonly RiskRow[];
+    }
+  | {
+      /**
+       * A market strategy as its pillars, side by side — a column each, so the
+       * whole approach is one picture rather than four consecutive slides. The
+       * pillars are numbered in the layout from their position, not in the data,
+       * because a hand-written number is the thing that goes stale the moment
+       * somebody reorders them.
+       */
+      readonly kind: 'pillars';
+      readonly pillars: readonly Pillar[];
+      readonly footnote?: string;
+    }
+  | {
+      /**
+       * A stakeholder map: who to meet, grouped by the kind of body they are.
+       *
+       * Grouped rather than ranked. A visit is not a priority list — a minister,
+       * an agency and a trade association are three different KINDS of meeting
+       * with three different purposes, and putting them in one ordered column
+       * would imply a ranking the source does not make.
+       */
+      readonly kind: 'stakeholders';
+      readonly groups: readonly StakeholderGroup[];
+      readonly footnote?: string;
     };
 
 /** Panel width. `full` spans the frame and takes no leader line. */
@@ -165,6 +313,17 @@ export interface Callout {
   /** Which side of the frame the panel sits on. Ignored when size is `full`. */
   readonly side?: 'left' | 'right';
   readonly size?: CalloutSize;
+  /**
+   * Where the panel's top edge sits, as a fraction of viewport height,
+   * overriding the default for its size.
+   *
+   * `full`'s default is set for the timeline, which is a BAND across the lower
+   * frame with the map legible above it. A full-width TABLE is a page: it starts
+   * high and runs down. Rather than invent a second full-width size whose only
+   * difference is one number, the number itself is the field — and it stays
+   * optional, so the two panels that need it say so and nothing else changes.
+   */
+  readonly top?: number;
   /** Provenance, printed small at the foot of the panel. */
   readonly sources?: string;
   /** As-at date of the content, printed with the heading. */
@@ -182,6 +341,11 @@ export const CALLOUTS: readonly Callout[] = [
   ...PRESENTER_CALLOUTS,
   ...POLICY_CALLOUTS,
   ...STRATEGY_CALLOUTS,
+  ...NINETY_DAY_CALLOUTS,
+  ...EUQA_CALLOUTS,
+  ...GERMANY_CALLOUTS,
+  ...POLAND_CALLOUTS,
+  ...LITHUANIA_CALLOUTS,
 ];
 
 export const CALLOUT_BY_ID: Readonly<Record<string, Callout>> = Object.fromEntries(

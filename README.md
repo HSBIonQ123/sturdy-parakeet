@@ -19,28 +19,36 @@ The deck as it stands:
 | 03 | Salisbury | deep focus, career panel |
 | 04 | Salisbury | deep focus, why IonQ |
 | 05 | Base region | 124 EMEA countries, nothing highlighted |
-| 06 | European Union | the 27, solid |
-| 07 | EEA, EFTA and the UK | the 27, plus five states hatched |
-| 08 | Horizon Europe | the 27, plus 19 associated states hatched |
-| 09 | EuroQCI | the 27 signatories, 3 eligible states, and the four IonQ QKD networks marked |
-| 10 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
-| 11 | United Kingdom | the camera flies in; Westminster and Oxford marked |
-| 12 | Priority European Political Engagement | back out to the six |
-| 13 | Belgium | close up, held selected, Brussels marked |
-| 14 | EU procurement | PPA — situation and risk (internal) |
-| 15 | EU procurement | PPA — timeline and next steps (internal) |
-| 16 | EU Quantum Act | situation and risk (internal) |
-| 17 | EU Quantum Act | timeline and next steps (internal) |
-| 18 | EU Quantum Act | seven-stage engagement timeline, "you are here" at Aug 2026 (internal) |
-| 19 | Priority European Political Engagement | back out to the six |
-| 20 | Italy | close up, held selected, Rome marked |
-| 21 | Italy and Brussels | the influence circuit — top-down and bottom-up (internal) |
+| 06 | Government Affairs | the state-change agent — four state changes in ninety days (internal) |
+| 07 | Portfolio risk register | seven exposures and where each one stands (internal) |
+| 08 | European Union | the 27, solid |
+| 09 | EEA, EFTA and the UK | the 27, plus five states hatched |
+| 10 | Horizon Europe | the 27, plus 19 associated states hatched |
+| 11 | EuroQCI | the 27 signatories, 3 eligible states, and the four IonQ QKD networks marked |
+| 12 | Priority European Political Engagement | six states — UK, Belgium, Lithuania, Poland, Italy, Germany |
+| 13 | United Kingdom | the camera flies in; Westminster and Oxford marked |
+| 14 | Priority European Political Engagement | back out to the six |
+| 15 | Belgium | close up, held selected, Brussels marked |
+| 16 | EU procurement | PPA — situation and risk (internal) |
+| 17 | EU procurement | PPA — timeline and next steps (internal) |
+| 18 | EU Quantum Act | situation and risk (internal) |
+| 19 | EU Quantum Act | timeline and next steps (internal) |
+| 20 | EU Quantum Act | seven-stage engagement timeline, "you are here" at Aug 2026 (internal) |
+| 21 | EU Quantum Act | the five core asks, before there is bill text (internal) |
 | 22 | Priority European Political Engagement | back out to the six |
-| 23 | Germany | close up, held selected, Berlin marked |
-| 24 | Priority European Political Engagement | back out to the six |
-| 25 | Poland | close up, held selected, Warsaw marked |
-| 26 | Priority European Political Engagement | back out to the six |
-| 27 | Lithuania | close up, held selected, Vilnius marked |
+| 23 | Italy | close up, held selected, Rome marked |
+| 24 | Italy and Brussels | the influence circuit — top-down and bottom-up (internal) |
+| 25 | Priority European Political Engagement | back out to the six |
+| 26 | Germany | close up, held selected, Berlin marked |
+| 27 | Franco-German position paper | the top lines, the assessment, the engagement (internal) |
+| 28 | Germany | the five state changes to drive in the bill (internal) |
+| 29 | Priority European Political Engagement | back out to the six |
+| 30 | Poland | close up, held selected, Warsaw marked |
+| 31 | Poland | engagement strategy in four pillars (internal) |
+| 32 | Priority European Political Engagement | back out to the six |
+| 33 | Lithuania | close up, held selected, Vilnius marked |
+| 34 | Lithuania | stakeholder map — three groups, six meetings (internal) |
+| 35 | Lithuania | visit agenda — Vilnius, September (internal) |
 
 **Scenes 1 to 4 are the opening**: the map of the UK with Salisbury marked, then
 three deep-focus scenes whose panels — family, career, why IonQ — are tethered to
@@ -50,7 +58,7 @@ the region. It is the only scene in the deck that
 opens zoomed, which is why `Map.tsx` applies the first scene's camera on mount —
 nothing ever *steps into* scene 1, so `gotoScene` never runs for it.
 
-Scenes 10 to 27 are **hub and spoke**: the six priority states at region scale,
+Scenes 12 to 35 are **hub and spoke**: the six priority states at region scale,
 then one of them close up, then back out to the six, then the next. Every
 country is introduced against the whole selection rather than in isolation, and
 stepping out is what makes the next zoom mean something. It needed no new
@@ -130,15 +138,16 @@ Omitting `camera` is meaningful: it means "return to the fitted frame", not
 "leave the camera alone". Scenes are absolute so that a rehearsed picture is
 reproducible after any amount of improvisation.
 
-**Scenes 14 to 18 are the live EU files** — the Public Procurement Regulation and
+**Scenes 16 to 21 are the live EU files** — the Public Procurement Regulation and
 the Quantum Act — reproduced verbatim from two Government Affairs information
 boxes. They sit **inside the Belgium spoke**, because that is where the talk is
 already standing: Belgium closes up, these push in on Brussels, and the hub that
 follows returns to the six. They are **internal**, stamped as such on screen with
-their as-at date. Scene 18 is the seven-stage engagement timeline, with a pulsing
-"you are here" marker on the stage the talk is standing in.
+their as-at date. Scene 20 is the seven-stage engagement timeline, with a pulsing
+"you are here" marker on the stage the talk is standing in, and scene 21 closes the
+block with the five core asks — condensed, not verbatim, and the panel says so.
 
-**Scene 21 is the Italy circuit**, and it sits inside the Italy spoke for the same
+**Scene 24 is the Italy circuit**, and it sits inside the Italy spoke for the same
 reason: the talk is already standing in Italy, so the argument about what Italy is
 *for* belongs there rather than beside a layer scene. Its panel is a diagram —
 Brussels and Rome as two terminals, with a conductor running each way between
@@ -150,6 +159,25 @@ Top-down is the return path — what Brussels settles is what decides the Italia
 sale, which is the procurement and Quantum Act files seen from the other end. It
 is the one scene whose camera holds two capitals, because the diagram names both.
 Internal, and stamped.
+
+**Scenes 6 and 7 open with the function itself**, before the first perimeter is
+drawn: four state changes delivered in ninety days, and the portfolio risk
+register behind them. The state-change grid draws each row's two states with the
+map's own marker grammar — a hollow ring for the state that was, a ring with a
+bright core for the state that is — and runs one labelled drive down the gutter
+every row crosses, so the layout is what claims a single function moved all of
+them. The risk register carries severity as a three-segment meter that gets
+shorter rather than as red/amber/green, for the reason `CLAUDE.md` §7b gives
+about the projector; its arrows are derived from the meters either side of them,
+never stored, so a row can never point a way its own numbers contradict.
+
+**The market panels sit inside their spokes**, on the same argument: Germany
+carries the Franco-German position paper and the five state changes to drive out
+of it; Poland carries its four-pillar strategy side by side rather than in
+sequence, so the shape of the approach is one picture; and the deck ends in
+Lithuania on the stakeholder map and the visit agenda — a plan rather than a
+picture, because Lithuania holds the Council Presidency when the Quantum Act is
+debated. All of them are internal and stamped.
 
 **Callout panels** are listed per scene by id — `callouts: ['career']` — and
 resolved against the registry in `src/data/callouts.ts`, whose sources are

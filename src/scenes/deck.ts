@@ -114,6 +114,37 @@ export const DECK: readonly Scene[] = [
     caption: 'Equal-area · λ₀ 20°E · 1:50m',
     // No layers, no camera: the base region map, fitted to the frame.
   },
+  /*
+   * WHAT THE FUNCTION IS, BEFORE WHAT THE MAP SHOWS.
+   *
+   * These two sit between the base region map and the first layer scene, and
+   * the placement is the argument — the same one §7h makes for the EU files.
+   * The layer scenes that follow are the substance of the brief; these say who
+   * is doing it and what has already moved. Put them after the layers and they
+   * are a postscript; put them here and every perimeter that follows is being
+   * read by someone the room has already been introduced to.
+   *
+   * No camera and no layers on either: the region arrived on the previous scene
+   * and is held while the content changes, which is the discipline the three
+   * Salisbury panels use. Both panels are full-width and start high, because
+   * they are TABLES rather than the timeline's band — see `top` in callouts.ts.
+   */
+  {
+    id: 'state-changes',
+    title: 'Government Affairs',
+    caption: 'The state-change agent · first ninety days',
+    callouts: ['state-changes'],
+  },
+  {
+    id: 'risk-register',
+    title: 'Portfolio risk register',
+    caption: '90-day review · exposures and where they stand',
+    // No count in the caption on purpose. The source's own summary says eight
+    // exposures and the register lists seven; until that is settled at source,
+    // the deck states neither number in a place the eye reads as a headline.
+    // Both are on screen, as supplied — see the note in data/ninetyDays.ts.
+    callouts: ['risk-register'],
+  },
   {
     id: 'eu',
     title: 'European Union',
@@ -350,6 +381,19 @@ export const DECK: readonly Scene[] = [
     // on the map is being pointed at. The panel spans the frame instead.
     callouts: ['quantum-act-timeline'],
   },
+  {
+    id: 'euqa-asks',
+    title: 'EU Quantum Act',
+    caption: 'Core asks · pre-bill text',
+    layers: ['eu'],
+    // Same camera as the timeline it follows, so the block reads as one move
+    // into Brussels rather than four. The panel is full-width and covers most
+    // of the frame; what the camera is doing here is holding the PLACE, which
+    // is why the block keeps Belgium selected throughout.
+    camera: { lon: 6.0, lat: 49.2, k: 24 },
+    selectedIso: 'BEL',
+    callouts: ['euqa-asks'],
+  },
   hub('engagement-after-belgium'),
   {
     id: 'italy',
@@ -407,6 +451,42 @@ export const DECK: readonly Scene[] = [
     selectedIso: 'DEU',
     markers: [capital('DEU')],
   },
+  /*
+   * THE FRANCO-GERMAN BLOCK — two scenes inside the Germany spoke.
+   *
+   * Same placement argument as the EU files in Belgium (§7h) and the circuit in
+   * Italy (§7i): the talk is already standing in Germany, so a paper Germany has
+   * just signed belongs here rather than beside a layer scene. The first panel
+   * is what the paper says and what we make of it; the second is what has to
+   * move, and it uses the same state-change register as the ninety-day slides
+   * because that is exactly what those clauses are.
+   *
+   * Germany stays selected throughout. France is the other signatory and is NOT
+   * selected — this is the German spoke, and the assessment is that Germany is
+   * the one that moves.
+   */
+  {
+    id: 'germany-franco',
+    title: 'Franco-German position paper',
+    caption: 'EU Quantum Act · signed 17 July 2026',
+    layers: ['political-engagement'],
+    // Centred EAST of Berlin for the §7h reason: the panel takes the right 42%
+    // of the frame, so a camera centred on the dot leaves Berlin's label nowhere
+    // to go. Framed on the real build.
+    camera: { lon: 15.6, lat: 51.4, k: 9 },
+    selectedIso: 'DEU',
+    markers: [capital('DEU')],
+    callouts: ['germany-franco'],
+  },
+  {
+    id: 'germany-state-changes',
+    title: 'Germany',
+    caption: 'State changes to drive',
+    layers: ['political-engagement'],
+    camera: { lon: 10.3, lat: 51.2, k: 9 },
+    selectedIso: 'DEU',
+    callouts: ['germany-state-changes'],
+  },
   hub('engagement-after-germany'),
   {
     id: 'poland',
@@ -430,6 +510,15 @@ export const DECK: readonly Scene[] = [
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'POL',
   },
+  {
+    id: 'poland-strategy',
+    title: 'Poland',
+    caption: 'Engagement strategy · four pillars',
+    layers: ['political-engagement'],
+    camera: { lon: 19.2, lat: 52.1, k: 11 },
+    selectedIso: 'POL',
+    callouts: ['poland-strategy'],
+  },
   hub('engagement-after-poland'),
   {
     id: 'lithuania',
@@ -442,6 +531,42 @@ export const DECK: readonly Scene[] = [
     // The subject, held selected — see the note on the UK scene.
     selectedIso: 'LTU',
     markers: [capital('LTU')],
+  },
+  /*
+   * THE DECK ENDS ON A PLAN, NOT A PICTURE.
+   *
+   * Lithuania holds the Presidency of the Council when the Quantum Act is
+   * debated, so it is the one spoke with an actual visit behind it — and putting
+   * the stakeholder map and the dates last means the talk finishes on the next
+   * thing that happens rather than on the sixth country in a set.
+   *
+   * Two scenes rather than one: the map is who, at full width; the agenda is
+   * when and where, tethered to Vilnius. Splitting them keeps the six meetings
+   * legible instead of squeezed beside a date.
+   */
+  {
+    id: 'lithuania-stakeholders',
+    title: 'Lithuania',
+    caption: 'Stakeholder map · three groups, six meetings',
+    layers: ['political-engagement'],
+    camera: { lon: 23.9, lat: 55.3, k: 20 },
+    selectedIso: 'LTU',
+    callouts: ['lithuania-stakeholders'],
+  },
+  {
+    id: 'lithuania-visit',
+    title: 'Lithuania',
+    caption: 'Visit agenda · Vilnius, September',
+    layers: ['political-engagement'],
+    // The spoke's own camera, unchanged. The panel is on the LEFT on this scene
+    // rather than the right — see the note in data/lithuania.ts — so the country
+    // keeps the framing it arrived with and nothing has to be shifted for the
+    // box. It is the cheaper of the two fixes whenever the subject is already
+    // where the panel is not.
+    camera: { lon: 23.9, lat: 55.3, k: 20 },
+    selectedIso: 'LTU',
+    markers: [capital('LTU')],
+    callouts: ['lithuania-visit'],
   },
 ];
 

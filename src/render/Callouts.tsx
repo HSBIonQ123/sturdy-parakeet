@@ -90,8 +90,10 @@ function CalloutsImpl({ projection, width, height, ids }: Props) {
 
     const left =
       callout.size === 'full' || callout.side === 'left' ? inset : width - inset - panelWidth;
-    // Stack, in case a scene ever shows two panels on one side.
-    const top = height * size.top + i * 40;
+    // Stack, in case a scene ever shows two panels on one side. `callout.top`
+    // overrides the size default — a full-width TABLE starts high where the
+    // timeline, a band, sits low. See the field's note in callouts.ts.
+    const top = height * (callout.top ?? size.top) + i * 40;
     const meetX = callout.side === 'left' ? left + panelWidth : left;
     return { callout, anchor, left, top, panelWidth, meetX, meetY: top + LEADER_INSET };
   });
@@ -212,7 +214,249 @@ function CalloutBody({ callout }: { readonly callout: Callout }) {
     return <Circuit body={body} />;
   }
 
+  if (body.kind === 'state-change') {
+    return <StateChange body={body} />;
+  }
+
+  if (body.kind === 'risk-register') {
+    return <RiskRegister body={body} />;
+  }
+
+  if (body.kind === 'pillars') {
+    return <Pillars body={body} />;
+  }
+
+  if (body.kind === 'stakeholders') {
+    return <Stakeholders body={body} />;
+  }
+
   return <Timeline body={body} />;
+}
+
+/**
+ * A market strategy as its pillars, side by side.
+ *
+ * THE NUMBER COMES FROM THE POSITION, not from the data. A pillar written as
+ * "3." in its own name goes stale the moment somebody reorders the array, and
+ * goes stale silently — the slide still renders, it just lies about the order.
+ * The grid is `repeat(n, 1fr)` from the array length for the same reason: add a
+ * fifth pillar and the layout takes it, with nothing to keep in step by hand.
+ */
+function Pillars({ body }: { readonly body: Extract<Callout['body'], { kind: 'pillars' }> }) {
+  return (
+    <div className="pillars">
+      <div
+        className="pillars-row"
+        style={{ gridTemplateColumns: `repeat(${body.pillars.length}, 1fr)` }}
+      >
+        {body.pillars.map((pillar, i) => (
+          <section className="pillar" key={pillar.id} data-pillar={pillar.id}>
+            <p className="pillar-index value">{String(i + 1).padStart(2, '0')}</p>
+            <p className="pillar-name">{pillar.name}</p>
+            {(
+              [
+                ['Strategy', pillar.strategy],
+                ['Message', pillar.message],
+                ['Execution', pillar.execution],
+              ] as const
+            ).map(([key, text]) => (
+              <div className="pillar-part" key={key}>
+                <p className="pillar-key label">{key}</p>
+                <p className="pillar-text">{text}</p>
+              </div>
+            ))}
+          </section>
+        ))}
+      </div>
+      {body.footnote ? <p className="callout-footnote">{body.footnote}</p> : null}
+    </div>
+  );
+}
+
+/**
+ * A stakeholder map: who to meet, grouped by the kind of body they are.
+ *
+ * `why` IS OPTIONAL AND THE LAYOUT HAS TO COPE WITH IT MISSING, which is not a
+ * defensive nicety — one entry in the Lithuania source carries the wrong body's
+ * rationale, pasted from the page before. The honest rendering of that is a gap,
+ * so the component simply draws no line rather than the data file inventing one.
+ * See the note in lithuania.ts.
+ */
+function Stakeholders({
+  body,
+}: {
+  readonly body: Extract<Callout['body'], { kind: 'stakeholders' }>;
+}) {
+  return (
+    <div className="stakeholders">
+      <div
+        className="stakeholders-row"
+        style={{ gridTemplateColumns: `repeat(${body.groups.length}, 1fr)` }}
+      >
+        {body.groups.map((group) => (
+          <section className="stakeholder-group" key={group.id} data-group={group.id}>
+            <p className="stakeholder-group-label label">{group.label}</p>
+            {group.entries.map((entry) => (
+              <article className="stakeholder" key={entry.id} data-stakeholder={entry.id}>
+                <p className="stakeholder-name">{entry.name}</p>
+                {entry.role ? <p className="stakeholder-role label">{entry.role}</p> : null}
+                <p className="stakeholder-what">{entry.what}</p>
+                {entry.why ? (
+                  <p className="stakeholder-why">
+                    <span className="label stakeholder-why-key">The meeting</span>
+                    {entry.why}
+                  </p>
+                ) : null}
+              </article>
+            ))}
+          </section>
+        ))}
+      </div>
+      {body.footnote ? <p className="callout-footnote">{body.footnote}</p> : null}
+    </div>
+  );
+}
+
+/**
+ * The state-change register.
+ *
+ * THE GLYPHS ARE THE DECK'S OWN, NOT A CHART'S. A row's two states are drawn
+ * with the marker grammar from §7e — a hollow ring for the state that was, a
+ * ring with a bright core for the state that is. That is the same distinction
+ * the map already makes between a place the talk points at and a place IonQ
+ * occupies, so the room reads a row before it reads the row's words, and no new
+ * visual vocabulary had to be invented to say "this one is live now".
+ *
+ * ONE DRIVE, MANY ROWS. Every row crosses the same gutter, and the gutter is
+ * labelled once at its head. The layout is what claims that a single function
+ * flipped all of them, which is better than a sentence claiming it — an ion
+ * register with one drive line is exactly the picture the metaphor already owns.
+ *
+ * Adding a row is one object in the data. The guard against adding one too many
+ * is `verify.mjs`, which fails the moment the panel stops fitting the frame —
+ * the failure this deck must never have quietly, because a table clipped at the
+ * bottom loses its last row without looking wrong.
+ */
+function StateChange({
+  body,
+}: {
+  readonly body: Extract<Callout['body'], { kind: 'state-change' }>;
+}) {
+  return (
+    <div className="statechange">
+      <div className="statechange-head">
+        <span className="statechange-topic label" />
+        <span className="statechange-from label">{body.fromLabel}</span>
+        <span className="statechange-drive label">{body.driveLabel}</span>
+        <span className="statechange-to label">{body.toLabel}</span>
+      </div>
+
+      {body.rows.map((row) => (
+        <div className="statechange-row" key={row.id} data-row={row.id}>
+          <p className="statechange-topic-name">{row.topic}</p>
+          <div className="statechange-cell statechange-cell--from">
+            <span className="statechange-ion" aria-hidden />
+            <p className="statechange-text">{row.from}</p>
+          </div>
+          {/* The drive. Geometry only — the rule and the arrowhead are CSS, so
+              the gutter stretches to whatever height the row came to. */}
+          <span className="statechange-rail" aria-hidden />
+          <div className="statechange-cell statechange-cell--to">
+            <span className="statechange-ion statechange-ion--lit" aria-hidden />
+            <p className="statechange-text">{row.to}</p>
+          </div>
+        </div>
+      ))}
+      {body.footnote ? <p className="callout-footnote">{body.footnote}</p> : null}
+    </div>
+  );
+}
+
+/** Which meter segments are lit, per level. Three levels, three segments. */
+const RISK_SEGMENTS: Record<string, number> = { low: 1, medium: 2, high: 3 };
+
+/**
+ * A severity meter: three segments, filled to the level.
+ *
+ * SEVERITY IS CARRIED BY SHAPE, NOT BY HUE, and that is the §7b argument again
+ * rather than a new one. The obvious rendering is red/amber/green, and it is
+ * unavailable twice over: the palette is monochrome plus one, and a projector
+ * crushes exactly the part of the range those three would have to separate in.
+ * A bar that gets SHORTER is legible at any brightness, and it makes the shift
+ * itself visible — eight rows of shortening bars is the slide's whole claim.
+ */
+function RiskMeter({ level }: { readonly level: string }) {
+  const lit = RISK_SEGMENTS[level] ?? 0;
+  return (
+    <span className={`risk-meter risk-meter--${level}`} title={level}>
+      {[0, 1, 2].map((i) => (
+        <span className={`risk-seg${i < lit ? ' is-lit' : ''}`} key={i} />
+      ))}
+      <span className="risk-level label">{level}</span>
+    </span>
+  );
+}
+
+/**
+ * The portfolio risk register.
+ *
+ * THE ARROW IS DERIVED, NOT DATA. A row where the severity falls gets a down
+ * arrow; a row held at its level gets a sideways one, which is what "mitigated
+ * but not reduced" looks like. The source deck's own glyphs disagree with its
+ * own levels on one row, and an arrow that argues against the meters either
+ * side of it is worse than one that simply follows them — so the direction is
+ * computed here and only the WORD comes from the data. See ninetyDays.ts.
+ */
+function RiskRegister({
+  body,
+}: {
+  readonly body: Extract<Callout['body'], { kind: 'risk-register' }>;
+}) {
+  return (
+    <div className="risk">
+      <div className="risk-head">
+        <span className="label">{body.fromLabel}</span>
+        <span className="label">{body.shiftLabel}</span>
+        <span className="label">{body.toLabel}</span>
+        <span className="label">{body.driversLabel}</span>
+      </div>
+
+      {body.rows.map((row) => {
+        const fell = (RISK_SEGMENTS[row.to.level] ?? 0) < (RISK_SEGMENTS[row.from.level] ?? 0);
+        return (
+          <div className="risk-row" key={row.id} data-row={row.id}>
+            <div className="risk-state">
+              <RiskMeter level={row.from.level} />
+              <p className="risk-title">{row.from.title}</p>
+              <p className="risk-detail">{row.from.detail}</p>
+            </div>
+
+            <div
+              className={`risk-shift risk-shift--${fell ? 'fell' : 'held'}`}
+              data-direction={fell ? 'down' : 'held'}
+            >
+              <span className="risk-arrow" aria-hidden />
+              <p className="risk-verb label">{row.verb}</p>
+            </div>
+
+            <div className="risk-state risk-state--now">
+              <RiskMeter level={row.to.level} />
+              <p className="risk-title">{row.to.title}</p>
+              <p className="risk-detail">{row.to.detail}</p>
+            </div>
+
+            <ul className="risk-drivers">
+              {row.drivers.map((driver) => (
+                <li className="callout-point" key={driver}>
+                  {driver}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 /**

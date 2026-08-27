@@ -346,7 +346,7 @@ against Africa by a factor that is not defensible in front of this audience.
 npm run dev            # dev server
 npm run build          # typecheck + production bundle
 npm run preview        # serve the build — works with the wifi off
-npm run verify         # drive the real build in Chromium; 92 assertions
+npm run verify         # drive the real build in Chromium; 110 assertions
 npm run prepare:data   # regenerate vendored geo + iso.ts from upstream
 ```
 
@@ -788,6 +788,70 @@ Brussels is the other END of the circuit, not a new subject. The camera is
 centred east and pulled back to k=6.5 for the §7h reason: at the first framing
 tried, Rome's label ran under the panel. That fix belongs in the camera, which
 is data; `Markers.tsx` flips at the FRAME edge and knows nothing about panels.
+
+## 7j. Supplied documents, and the four rules they added
+
+Scenes 6, 7, 21, 27, 28, 31, 34 and 35 are built from documents handed over for
+the talk: a ninety-day review, a core-asks paper, a Franco-German position paper
+with a clause-by-clause assessment, a four-pillar market strategy, and a
+stakeholder map. Every one of them is `internal: true`. Four rules came out of
+building them, and all four are about not letting a layout make a claim the
+source does not.
+
+1. **A source file per document, named for its subject.** `ninetyDays.ts`,
+   `euQuantumAct.ts`, `germany.ts`, `poland.ts`, `lithuania.ts` — alongside
+   `presenter.ts`, `policy.ts` and `strategy.ts`. This is §7g's rule under load:
+   these name real third parties, a live legal decision-gate, and an intention to
+   leverage a named relationship. Removing any one of them is one import and its
+   scenes, and a reviewer asked to check what we claim about the Italians does
+   not have to read a stakeholder map to find it.
+2. **Say on screen whether a panel is verbatim.** `policy.ts` and `ninetyDays.ts`
+   reproduce their sources word for word because the wording is the point.
+   `euQuantumAct.ts` is condensed at the presenter's instruction, and its
+   `sources` line says so, because a condensed ask is a prompt for the presenter
+   and not an approved form of words. Where a document is quoted inside a
+   condensed panel — the Franco-German clauses — the quotation is exact, since
+   those are what member states have actually signed.
+3. **Reproduce contradictions; do not reconcile them.** The ninety-day summary
+   says eight exposures and the register lists seven, and the distributions do
+   not match either. Both are on screen as supplied, the file says so at length,
+   and the scene's caption carries NO count — a headline number is exactly where
+   a build would quietly pick a side. Same rule as §4: state what is, and stop.
+   The Lithuania source pastes the wrong body's rationale onto the Cyber
+   Security Centre; `why` is optional on a stakeholder so the gap can stay a gap,
+   and `verify.mjs` asserts that entry renders blank.
+4. **Derive the geometry from the data, never store it beside it.** The risk
+   register's arrows come from its two severity meters, so a row cannot point a
+   way its own numbers contradict — the source's own glyphs disagree with its own
+   levels on one row. Pillars are numbered from their position, so reordering
+   them cannot leave a hand-written "3." behind. Both are asserted.
+
+**Severity is a meter that gets shorter, not a traffic light.** Red/amber/green
+is unavailable twice over: the palette is monochrome plus one, and a projector
+crushes exactly the range those three have to separate in. Three segments filled
+to the level reads at any brightness, and it makes the shift itself visible —
+seven rows of shortening bars is the slide's whole claim. The §7b argument,
+applied to risk instead of to membership tiers.
+
+**A full-width panel puts its internal stamp beside the heading.** The default is
+the top-right corner, which is where the readout lives, and the stamp was being
+drawn under it and clipped to "INTERNAL · AS". Fixed in CSS on `.callout-full`
+rather than by pushing the panel down the frame: the readout's height depends on
+whether a country is hovered and its inset scales with the viewport, so a magic
+top offset would be right at 2560×1440 and wrong everywhere else.
+
+**`Callout.top` overrides the size default, and `full` needed it.** `full` was
+built for the timeline, a band across the lower frame; a full-width TABLE is a
+page and starts high. That is one number, so it is a field rather than a second
+full-width size.
+
+**When a label collides with a panel, move whichever costs less.** Brussels and
+Rome were fixed by shifting the camera east (§7h, §7i). Vilnius could not be —
+it sits in the far east of Lithuania, so any camera framing the country puts it
+under a right-hand panel. That scene sets `side: 'left'` instead and keeps the
+spoke's own camera untouched. The rule is the same either way: `Markers.tsx`
+flips at the FRAME edge and knows nothing about panels, so the fix is always
+data.
 
 ## 8. Known limitations
 
