@@ -13,6 +13,13 @@
  * marker ids come from the derived anchor list, so the dots and the panel cannot
  * disagree about which four countries these are.
  *
+ * NO STANDFIRST. It used to carry one explaining that the blocs overlap, so the
+ * fill cannot say which bloc a country is in. That is true and it is why the
+ * scene is built the way it is (see layers/africaBlocs.ts), but it is an
+ * explanation of the DESIGN rather than a fact about Africa — the slide was
+ * apologising for its own legend. The four blocs, their anchors and their notes
+ * are the content; a room does not need to be told what the fill is not saying.
+ *
  * NOT MARKED INTERNAL, and this is the only content panel in the deck that is
  * not. It states published membership of four intergovernmental organisations
  * and ranks their economies — every word of it is public fact. Stamping it would
@@ -50,9 +57,6 @@ export const AFRICA_BLOCS_PANEL: Callout = {
   id: 'africa-blocs',
   heading: 'Africa · regional economic communities',
   title: 'Four blocs, four anchors',
-  standfirst:
-    'They overlap, so the fill cannot tell you which bloc a country is in and does not try. ' +
-    'What the map distinguishes is the anchor — the largest economy in each, and the way in.',
   /*
    * WIDE AND ON THE RIGHT, NOT FULL — and this was the second attempt.
    *
